@@ -1,61 +1,62 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import Usage from "./Usage";
+import SimpleBar from "simplebar-react";
+import "simplebar/dist/simplebar.min.css";
 
 const TimeTable = () => {
   return (
-    <StyledTimeTable>
-      <LabContainer>
-        <Padding />
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-      </LabContainer>
-      <UsageContainer>
-        <DayOfWeek>Monday</DayOfWeek>
-        <DayOfWeek>Tuesday</DayOfWeek>
-        <DayOfWeek>Wednesday</DayOfWeek>
-        <DayOfWeek>Thursday</DayOfWeek>
-        <DayOfWeek>Friday</DayOfWeek>
-        <DayOfWeek>Saturday</DayOfWeek>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-      </UsageContainer>
-    </StyledTimeTable>
+    <SimpleBar style={{ maxHeight: "calc(100%)" }}>
+      <StyledTimeTable>
+        <LabContainer>
+          <Padding />
+          <Lab>A1-101</Lab>
+          <Lab>A1-101</Lab>
+          <Lab>A1-101</Lab>
+          <Lab>A1-101</Lab>
+          <Lab>A1-101</Lab>
+          <Lab>A1-101</Lab>
+        </LabContainer>
+        <UsageContainer>
+          <DayOfWeek>Monday</DayOfWeek>
+          <DayOfWeek>Tuesday</DayOfWeek>
+          <DayOfWeek>Wednesday</DayOfWeek>
+          <DayOfWeek>Thursday</DayOfWeek>
+          <DayOfWeek>Friday</DayOfWeek>
+          <DayOfWeek>Saturday</DayOfWeek>
+          <Cell position={false}>
+            <Usage
+              startPeriod={1}
+              endPeriod={3}
+              courseName="Database Management System"
+              lecturerName="Nguyen Thanh Son"
+            />
+          </Cell>
+          <Cell position={false}>
+            <Usage
+              startPeriod={1}
+              endPeriod={3}
+              courseName="Database Management System"
+              lecturerName="Nguyen Thanh Son"
+            />
+          </Cell>
+          <Cell position={false}>
+            <Usage
+              startPeriod={1}
+              endPeriod={3}
+              courseName="Database Management System"
+              lecturerName="Nguyen Thanh Son"
+            />
+          </Cell>
+        </UsageContainer>
+      </StyledTimeTable>
+    </SimpleBar>
   );
 };
 
 const StyledTimeTable = styled.div`
   display: flex;
-  height: 100%;
   width: 100%;
-  /* This line of code makes the table scroll */
-  overflow: auto;
 `;
 
 const LabContainer = styled.div`

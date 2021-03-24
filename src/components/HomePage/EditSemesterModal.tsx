@@ -3,18 +3,19 @@ import styled from "styled-components";
 import { styled as materialStyled } from "@material-ui/core/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../../types/modal";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { TextField } from "@material-ui/core";
 import Button from "../common/Button";
-
-interface Semester {
-  semesterName: string;
-  startDate: Date;
-  numberOfWeeks: number;
-}
+import { DateTimePicker } from "@material-ui/lab";
+import { Semester } from "../../react-app-env";
 
 const EditSemesterModal = (props: ModalProps) => {
-  const { register, handleSubmit, errors } = useForm<Semester>();
+  const {
+    register,
+    handleSubmit,
+    errors,
+    control,
+  } = useForm<Semester>();
 
   const onSubmit = (data: Semester) => console.log(data);
 
@@ -30,11 +31,26 @@ const EditSemesterModal = (props: ModalProps) => {
             errors.semesterName && "*This field is required"
           }
         />
+        <Controller
+          name="startDate"
+          control={control}
+          rules={{ required: true }}
+          render={(props) => (
+            <DateTimePicker
+              label="Start date"
+              inputFormat="dd/MM/yyyy hh:mm a"
+              renderInput={(props) => <StyledTextField {...props} />}
+              onChange={(value) => props.onChange(value)}
+              value={props.value}
+            />
+          )}
+        />
         <StyledTextField
           label="Number of weeks"
           inputRef={register({ required: true })}
           name="numberOfWeeks"
           error={Boolean(errors.numberOfWeeks)}
+          type="number"
           helperText={
             errors.numberOfWeeks && "*This field is required"
           }
@@ -65,7 +81,6 @@ const StyledButton = styled(Button)`
       background-color: #e7f3ff;
     }
   }
-
 `;
 
 const StyledTextField = materialStyled(TextField)({

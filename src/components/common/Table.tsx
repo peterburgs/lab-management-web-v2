@@ -24,6 +24,9 @@ import {
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { TableSortLabel } from "@material-ui/core";
+import SimpleBar from "simplebar-react";
+import "simplebar/dist/simplebar.min.css";
+import { ReactComponent as Image } from "../../assets/images/empty.svg";
 
 // Define the interface for the props of this component
 export interface TableProperties<T extends Record<string, unknown>>
@@ -141,42 +144,50 @@ const Table = <T extends Record<string, unknown>>(
           </StyledTHeadRow>
         ))}
       </StyledThead>
+      <SimpleBar style={{ maxHeight: "calc(100% - 50px)" }}>
+        <StyledTbody {...getTableBodyProps()}>
+          {/* tbody */}
+          {rows.length === 0 ? (
+            <EmptyImage>
+              <Image />
+              <div>There is nothing to show</div>
+            </EmptyImage>
+          ) : (
+            rows.map((row) => {
+              prepareRow(row);
 
-      <StyledTbody {...getTableBodyProps()}>
-        {/* tbody */}
-        {rows.map((row) => {
-          prepareRow(row);
-
-          return (
-            <StyledTBodyRow
-              onClick={() => {
-                toggleAllRowsSelected(false);
-                row.toggleRowSelected();
-              }}
-              {...row.getRowProps()}
-              className={`${row.isSelected ? "selected" : ""}`}
-            >
-              {/* tr */}
-              {row.cells.map((cell) => {
-                return (
-                  <StyledTd {...cell.getCellProps(cellProps)}>
-                    {/* td */}
-                    {cell.render("Cell")}
-                  </StyledTd>
-                );
-              })}
-              <ActionButtonContainer>
-                <ActionButton>
-                  <EditIcon fontSize="small" />
-                </ActionButton>
-                <ActionButton>
-                  <DeleteIcon fontSize="small" />
-                </ActionButton>
-              </ActionButtonContainer>
-            </StyledTBodyRow>
-          );
-        })}
-      </StyledTbody>
+              return (
+                <StyledTBodyRow
+                  onClick={() => {
+                    toggleAllRowsSelected(false);
+                    row.toggleRowSelected();
+                  }}
+                  {...row.getRowProps()}
+                  className={`${row.isSelected ? "selected" : ""}`}
+                >
+                  {/* tr */}
+                  {row.cells.map((cell) => {
+                    return (
+                      <StyledTd {...cell.getCellProps(cellProps)}>
+                        {/* td */}
+                        {cell.render("Cell")}
+                      </StyledTd>
+                    );
+                  })}
+                  <ActionButtonContainer>
+                    <ActionButton>
+                      <EditIcon fontSize="small" />
+                    </ActionButton>
+                    <ActionButton>
+                      <DeleteIcon fontSize="small" />
+                    </ActionButton>
+                  </ActionButtonContainer>
+                </StyledTBodyRow>
+              );
+            })
+          )}
+        </StyledTbody>
+      </SimpleBar>
     </StyledTable>
   );
 };
@@ -187,7 +198,7 @@ const StyledTable = styled.div`
   height: 100%;
   width: 100%;
   border-spacing: 0;
-  overflow: auto;
+  overflow: hidden;
 `;
 
 const Resizer = styled.div`
@@ -323,12 +334,10 @@ const StyledTh = styled.div`
   margin: 0;
   padding: 0.5rem;
   position: relative;
+  font-size: 14px;
 `;
 
 const StyledTbody = styled.div`
-  overflow-y: scroll;
-  overflow-x: hidden;
-  height: calc(100% - 50px);
   margin-top: 0.5rem;
 `;
 
@@ -340,6 +349,7 @@ const StyledTd = styled.div`
   line-height: 2.5;
   font-weight: 400;
   color: rgba(0, 0, 0, 0.7);
+  font-size: 14px;
 `;
 
 const StyledTableSortLabel = styled(TableSortLabel)`
@@ -348,6 +358,29 @@ const StyledTableSortLabel = styled(TableSortLabel)`
     height: 16px;
     margin-top: 0px;
     margin-left: 2px;
+  }
+`;
+
+const EmptyImage = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  svg {
+    width: 400px;
+    height: auto;
+  }
+  &:hover {
+    svg {
+      fill: black;
+    }
+  }
+  & > div {
+    margin-top: 0.5rem;
+    font-weight: 500;
+    font-size: 1.25rem;
   }
 `;
 

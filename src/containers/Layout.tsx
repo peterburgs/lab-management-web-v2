@@ -5,25 +5,28 @@ import styled, { css } from "styled-components";
 
 interface LayoutProps {
   children: ReactNode;
+  handleSidebarToggle: () => void;
+  isCollapsed: boolean;
+  setCollapsed: (a: boolean) => void;
 }
 
-const Layout = ({ children }: LayoutProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const Layout = ({
+  children,
+  handleSidebarToggle,
+  isCollapsed,
+  setCollapsed,
+}: LayoutProps) => {
   const prevWindowWidth = useRef(window.innerWidth);
   const [isShowNotifyPanel, setIsShowNotifyPanel] = useState(false);
   const [isShowAvatarPanel, setIsShowAvatarPanel] = useState(false);
 
-  const handleSidebarToggle = () => {
-    setIsCollapsed((isCollapsed) => !isCollapsed);
-  };
-
   useEffect(() => {
     const handleSidebarToggleOnWindowResize = () => {
       if (window.innerWidth > 1220) {
-        setIsCollapsed(false);
+        setCollapsed(false);
         prevWindowWidth.current = window.innerWidth;
       } else if (prevWindowWidth.current > 1220) {
-        setIsCollapsed(true);
+        setCollapsed(true);
         prevWindowWidth.current = window.innerWidth;
       }
     };
@@ -32,7 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
       "resize",
       handleSidebarToggleOnWindowResize
     );
-  }, []);
+  }, [setCollapsed]);
 
   const handleClosePanel = () => {
     setIsShowAvatarPanel(false);

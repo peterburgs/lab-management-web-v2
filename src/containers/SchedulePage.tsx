@@ -124,7 +124,7 @@ const Action = styled.div`
 const TableContainer = styled.div`
   padding-top: 1rem;
   height: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 `;
 
 export default SchedulePage;

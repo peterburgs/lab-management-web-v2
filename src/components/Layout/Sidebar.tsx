@@ -4,6 +4,8 @@ import NavItem from "./NavItem";
 import { ReactComponent as DashboardIcon } from "../../assets/images/dashboard-icon.svg";
 import { ReactComponent as CourseIcon } from "../../assets/images/course-icon.svg";
 import { ReactComponent as ScheduleIcon } from "../../assets/images/schedule-icon.svg";
+import { ReactComponent as LabIcon } from "../../assets/images/lab-icon.svg";
+import { ReactComponent as RequestIcon } from "../../assets/images/request-icon.svg";
 
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
@@ -35,9 +37,21 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         />
         <NavItem
           isCollapsed={isCollapsed}
+          path="/labs"
+          name="Labs"
+          icon={<LabIcon />}
+        />
+        <NavItem
+          isCollapsed={isCollapsed}
           path="/schedule"
           name="Schedule"
           icon={<ScheduleIcon />}
+        />
+        <NavItem
+          isCollapsed={isCollapsed}
+          path="/requests"
+          name="Requests"
+          icon={<RequestIcon />}
         />
       </NavItemContainer>
     </StyledSidebar>

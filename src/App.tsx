@@ -1,58 +1,78 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React from "react";
+import SchedulePage from "./containers/SchedulePage";
+import CoursesPage from "./containers/CoursesPage";
+import HomePage from "./containers/HomePage";
+import { Switch, Route } from "react-router-dom";
+import { createGlobalStyle } from "styled-components";
+import Layout from "./containers/Layout";
+import ReactModal from "react-modal";
+import { ThemeProvider, createMuiTheme } from "@material-ui/core";
 
-function App() {
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#0070f3",
+    },
+  },
+  typography: {
+    fontFamily: "Roboto",
+    fontSize: 12,
+  },
+});
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <div>
+        <GlobalStyle />
+        <Switch>
+          <Route
+            path="/"
+            exact
+            render={() => (
+              <Layout>
+                <HomePage />
+              </Layout>
+            )}
+          />
+          <Route
+            path="/courses"
+            exact
+            render={() => (
+              <Layout>
+                <CoursesPage />
+              </Layout>
+            )}
+          />
+          <Route
+            path="/schedule"
+            exact
+            render={() => (
+              <Layout>
+                <SchedulePage />
+              </Layout>
+            )}
+          />
+        </Switch>
+      </div>
+    </ThemeProvider>
   );
-}
+};
+
+ReactModal.setAppElement("#root");
+
+// Global style
+const GlobalStyle = createGlobalStyle`
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+  *, *::after, *::before {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Roboto;
+  }
+`;
 
 export default App;

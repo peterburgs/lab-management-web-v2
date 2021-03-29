@@ -144,7 +144,12 @@ const Table = <T extends Record<string, unknown>>(
           </StyledTHeadRow>
         ))}
       </StyledThead>
-      <SimpleBar style={{ maxHeight: "calc(100% - 50px)" }}>
+      <SimpleBar
+        style={{
+          maxHeight: "calc(100% - 50px)",
+          overflowX: "hidden",
+        }}
+      >
         <StyledTbody {...getTableBodyProps()}>
           {/* tbody */}
           {rows.length === 0 ? (
@@ -229,10 +234,11 @@ const Resizer = styled.div`
 `;
 
 const StyledThead = styled.div`
-  overflow-x: hidden;
+  overflow: hidden;
   overflow-y: auto;
   box-shadow: 0 6px 8px -2px rgb(0 118 255 / 39%);
   border-radius: 0.7rem;
+  border: 0.5px solid rgb(0 118 255 / 39%);
 `;
 
 const StyledTHeadRow = styled.div`

@@ -21,7 +21,6 @@ const SchedulePage = () => {
 
   return (
     <StyledSchedulePage>
-      <Header>Schedule</Header>
       <Toolbar>
         <Filter>
           <FormControl>
@@ -86,11 +85,6 @@ const StyledSchedulePage = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-`;
-
-const Header = styled.div`
-  font-size: 18px;
-  font-weight: 500;
 `;
 
 const Toolbar = styled.div`

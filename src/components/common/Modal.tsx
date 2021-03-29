@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import ReactModal from "react-modal";
+import ReactModal, {Styles} from "react-modal";
 import styled from "styled-components";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -8,6 +8,7 @@ interface ModalProps {
   showModal: boolean;
   setShowModal: (showModal: boolean) => void;
   children: ReactNode;
+  style?: Styles;
 }
 
 const Modal = ({
@@ -15,9 +16,10 @@ const Modal = ({
   setShowModal,
   name,
   children,
+  style,
 }: ModalProps) => {
   return (
-    <StyledModal isOpen={showModal}>
+    <StyledModal isOpen={showModal} style={style}>
       <Header>{name}</Header>
       <CloseIconButton onClick={() => setShowModal(false)}>
         <CloseIcon />

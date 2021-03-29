@@ -53,7 +53,7 @@ export type User = {
   _id: string;
   email: string;
   fullName: string;
-  roles: UserRole[];
+  roles: "ADMIN" | "LECTURER";
   createdAt: Date;
   updatedAt: Date;
   isHidden: boolean;

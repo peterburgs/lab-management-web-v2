@@ -18,7 +18,7 @@ const Button = ({
 }: ButtonProps) => {
   return (
     <StyledButton onClick={onClick} className={className} type={type}>
-      <Icon>{icon}</Icon>
+      {icon ? <Icon>{icon}</Icon> : null}
       {children}
     </StyledButton>
   );
@@ -29,7 +29,7 @@ const StyledButton = styled.button`
   box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
   margin: 0;
   padding: 0 2.5rem;
-  height: 2.5rem;
+  min-height: 2.5rem;
   border-radius: 7px;
   color: white;
   align-items: center;
@@ -58,7 +58,7 @@ const StyledButton = styled.button`
   &:focus {
     outline: 1px solid blue;
   }
-  
+
   @media (max-width: 900px) {
     padding: 0 2rem;
   }

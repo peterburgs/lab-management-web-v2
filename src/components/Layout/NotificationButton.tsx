@@ -3,17 +3,17 @@ import React from "react";
 import styled, { css } from "styled-components";
 import { ReactComponent as Icon } from "../../assets/images/notification-icon.svg";
 
-interface NotificationProps {
+interface NotificationButtonProps {
   onFocus?: () => void;
   onBlur?: () => void;
   onClick?: () => void;
 }
 
-const Notification = ({
+const NotificationButton = ({
   onFocus,
   onBlur,
   onClick,
-}: NotificationProps) => {
+}: NotificationButtonProps) => {
   return (
     <Tooltip title="Notification">
       <StyledNotification
@@ -75,14 +75,14 @@ const NotificationIcon = styled.span`
   justify-content: center;
   height: auto;
   svg {
-    fill: #c0cbcb;
+    fill: black;
     width: 22px;
   }
   &:hover {
     svg {
-      fill: black;
+      fill: #0070f3;
     }
   }
 `;
 
-export default Notification;
+export default NotificationButton;

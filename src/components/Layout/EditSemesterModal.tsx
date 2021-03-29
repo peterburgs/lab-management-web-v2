@@ -20,7 +20,7 @@ const EditSemesterModal = (props: ModalProps) => {
   const onSubmit = (data: Semester) => console.log(data);
 
   return (
-    <Modal {...props}>
+    <Modal {...props} style={{ overlay: { zIndex: 1000 } }}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledTextField
           label="Semester name"

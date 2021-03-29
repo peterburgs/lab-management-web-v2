@@ -30,8 +30,7 @@ interface StyledSearchBarProps {
 }
 
 const StyledSearchBar = styled.div<StyledSearchBarProps>`
-  color: red;
-  max-width: 520px;
+  min-width: 60%;
   box-sizing: border-box;
   background: #f4f4f4;
   border-radius: 8px;

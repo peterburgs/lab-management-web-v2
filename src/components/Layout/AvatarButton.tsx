@@ -11,29 +11,34 @@ interface AvatarProps {
 const Avatar = ({ onFocus, onBlur, onClick }: AvatarProps) => {
   return (
     <Tooltip title="User menu">
-      <StyledAvatar
+      <StyledAvatarButton
         onFocus={onFocus}
         onBlur={onBlur}
         onClick={onClick}
       >
-        TD
-      </StyledAvatar>
+        <img
+          src="https://lh3.googleusercontent.com/ogw/ADGmqu8ZheC6aMQHlzfcT3QuhG0ufB5hBxyNcbg1bLR_=s32-c-mo"
+          alt="avatar"
+        />
+      </StyledAvatarButton>
     </Tooltip>
   );
 };
 
 // Styling
-const StyledAvatar = styled.button`
+const StyledAvatarButton = styled.button`
   width: 32px;
   height: 32px;
   border-radius: 1rem;
   display: flex;
   align-items: center;
-  color: white;
-  background: #2486fc;
   border: none;
   justify-content: center;
   cursor: pointer;
+
+  img {
+    border-radius: 1rem;
+  }
 `;
 
 export default Avatar;

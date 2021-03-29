@@ -7,10 +7,13 @@ export interface TeachingState {
   error: unknown;
 }
 
-export const fetchTeachings = createAsyncThunk<Teaching[]>(
-  "teachings/fetchTeachings",
-  async () => {
-    const response = await fetch("/api/teachings");
+export const fetchAllTeachingsByRegistrationId = createAsyncThunk<
+  Teaching[],
+  string
+>(
+  "teachings/fetchAllTeachingsByRegistrationId",
+  async (registrationId) => {
+    const response = await fetch(`/api/teachings/${registrationId}`);
     const data = await response.json();
     return data.teachings as Teaching[];
   }
@@ -27,14 +30,14 @@ export const teachingSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchTeachings.pending, (state, action) => {
+    builder.addCase(fetchAllTeachingsByRegistrationId.pending, (state, action) => {
       state.status = "loading";
     });
-    builder.addCase(fetchTeachings.fulfilled, (state, action) => {
+    builder.addCase(fetchAllTeachingsByRegistrationId.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.teachings = state.teachings.concat(action.payload);
     });
-    builder.addCase(fetchTeachings.rejected, (state, action) => {
+    builder.addCase(fetchAllTeachingsByRegistrationId.rejected, (state, action) => {
       state.status = "failed";
       state.error = action.payload;
     });

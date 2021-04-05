@@ -11,8 +11,8 @@ import {
 } from "@material-ui/core";
 import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
-import { Semester } from "../../react-app-env";
-import { editSemester } from "../../reducers/semesterSlice";
+import { Registration } from "../../react-app-env";
+import { openRegistration } from "../../reducers/registrationSlice";
 import { useAppDispatch, useAppSelector } from "../../store";
 import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
@@ -22,13 +22,13 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 
-const EditSemesterModal = (props: ModalProps) => {
+const OpenModal = (props: ModalProps) => {
   const {
     register,
     handleSubmit,
     errors,
     control,
-  } = useForm<Semester>();
+  } = useForm<Registration>();
 
   const dispatch = useAppDispatch();
   const semester = useAppSelector((state) => state.semester.semester);

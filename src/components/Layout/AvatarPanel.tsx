@@ -17,10 +17,11 @@ const AvatarPanel = () => {
   );
 };
 
+// Styling
 const StyledAvatarPanel = styled.div`
-  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 10%);
+  box-shadow: ${({ theme }) => theme.greyShadow};
   border-radius: 8px;
-  border: 1px solid #e8e8e8;
+  border: ${({ theme }) => `1px solid ${theme.lightGrey}`};
   opacity: 1;
   padding: 1.5rem;
   width: 150px;
@@ -48,7 +49,7 @@ const LogoutButton = styled.button`
   width: 130px;
   margin-top: 1rem;
   &:hover {
-    background: #c0bdbd;
+    background: ${({ theme }) => theme.grey};
   }
   &:active {
     transform: scale(0.98);
@@ -62,7 +63,6 @@ const AvatarContainer = styled.div`
   display: flex;
   align-items: center;
   color: white;
-  background: #2486fc;
   border: none;
   justify-content: center;
 
@@ -81,7 +81,7 @@ const Email = styled.div`
   font-size: 14px;
   font-weight: 400;
   margin-top: 5px;
-  color: #a4a1a1;
+  color: ${({ theme }) => theme.grey};
 `;
 
 export default AvatarPanel;

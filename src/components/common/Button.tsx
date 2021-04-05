@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import styled from "styled-components";
+import { ClipLoader } from "react-spinners";
 
 interface ButtonProps {
   children: ReactNode;
@@ -7,6 +8,8 @@ interface ButtonProps {
   icon?: ReactNode;
   className?: string;
   type?: "button" | "submit" | "reset" | undefined;
+  disabled?: boolean;
+  loading?: boolean;
 }
 
 const Button = ({
@@ -15,18 +18,37 @@ const Button = ({
   icon,
   className,
   type,
+  disabled,
+  loading,
 }: ButtonProps) => {
   return (
-    <StyledButton onClick={onClick} className={className} type={type}>
-      {icon ? <Icon>{icon}</Icon> : null}
-      {children}
+    <StyledButton
+      onClick={onClick}
+      className={className}
+      type={type}
+      disabled={disabled}
+    >
+      {loading ? (
+        <ClipLoader color="#fff" loading={loading} size={20} />
+      ) : (
+        <>
+          {icon ? <Icon>{icon}</Icon> : null}
+          {children}
+        </>
+      )}
     </StyledButton>
   );
 };
 
-const StyledButton = styled.button`
-  background-color: #0070f3;
-  box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
+interface StyledButtonProps {
+  disabled?: boolean;
+}
+
+const StyledButton = styled.button<StyledButtonProps>`
+  background-color: ${({ disabled, theme }) =>
+    disabled ? theme.grey : theme.blue};
+  box-shadow: ${({ disabled, theme }) =>
+    !disabled && theme.blueShadow};
   margin: 0;
   padding: 0 2.5rem;
   min-height: 2.5rem;
@@ -44,20 +66,20 @@ const StyledButton = styled.button`
   transition: background 0.2s ease 0s, color 0.2s ease 0s;
 
   &:active {
-    background-color: #0070f3;
+    background-color: ${({ theme }) => theme.blue};
     transform: scale(0.98);
     &:hover {
-      background-color: #0070f3;
+      background-color: ${({ theme }) => theme.blue};
     }
   }
 
   &:hover {
-    background-color: #3e96e9;
+    background-color: ${({ theme }) => theme.lightBlue};
   }
 
-  &:focus {
+  /* &:focus {
     outline: 1px solid blue;
-  }
+  } */
 
   @media (max-width: 900px) {
     padding: 0 2rem;
@@ -69,7 +91,7 @@ const Icon = styled.span`
   display: flex;
   align-items: center;
   height: auto;
-  margin-right: 15px;
+  margin-right: 7px;
   & > svg {
     fill: white;
     width: 20px;

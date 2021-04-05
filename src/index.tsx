@@ -6,10 +6,14 @@ import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
 import makeServer from "./server";
+import { ThemeProvider } from "styled-components";
+import theme from "./styles/theme";
 
 if (
-  process.env.NODE_ENV === "development" &&
-  typeof makeServer === "function"
+  (process.env.NODE_ENV === "development" &&
+    typeof makeServer === "function") ||
+  (process.env.NODE_ENV === "production" &&
+    typeof makeServer === "function")
 ) {
   makeServer();
 }
@@ -18,7 +22,9 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router>
-        <App />
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
       </Router>
     </Provider>
   </React.StrictMode>,

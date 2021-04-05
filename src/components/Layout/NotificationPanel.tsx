@@ -16,9 +16,9 @@ const NotificationPanel = () => {
 };
 
 const StyledNotificationPanel = styled.div`
-  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 10%);
+  box-shadow: ${({ theme }) => theme.greyShadow};
   border-radius: 8px;
-  border: 1px solid #e8e8e8;
+  border: ${({ theme }) => `1px solid ${theme.lightGrey}`};
   opacity: 1;
   padding: 1rem;
   width: 400px;
@@ -26,6 +26,12 @@ const StyledNotificationPanel = styled.div`
   background: white;
   display: flex;
   flex-direction: column;
+  z-index: 5;
+
+  @media (max-width: 600px) {
+    width: 300px;
+    height: 300px;
+  }
 `;
 
 const Header = styled.div`

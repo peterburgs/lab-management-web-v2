@@ -6,13 +6,23 @@ import {
 import teachingReducer from "../reducers/teachingSlice";
 import semesterReducer from "../reducers/semesterSlice";
 import registrationReducer from "../reducers/registrationSlice";
-import { useDispatch } from "react-redux";
+import courseReducer from "../reducers/courseSlice";
+import userReducer from "../reducers/userSlice";
+import notificationReducer from "../reducers/notificationSlice";
+import {
+  useDispatch,
+  useSelector,
+  TypedUseSelectorHook,
+} from "react-redux";
 
 export const store = configureStore({
   reducer: {
     teachings: teachingReducer,
     registrations: registrationReducer,
     semester: semesterReducer,
+    courses: courseReducer,
+    users: userReducer,
+    notifications: notificationReducer,
   },
   devTools: process.env.NODE_ENV === "development",
 });
@@ -26,3 +36,4 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 >;
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

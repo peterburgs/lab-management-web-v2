@@ -35,7 +35,9 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(
+    window.innerWidth > 1220 ? false : true
+  );
 
   const handleSidebarToggle = () => {
     setIsCollapsed((isCollapsed) => !isCollapsed);
@@ -68,8 +70,11 @@ const App = () => {
                             ? "calc(100vw - 67px)"
                             : "calc(100vw - 240px)",
                           position: "absolute",
-                          right: 0,
-                          top: 0,
+                          right: "0px",
+                          top:
+                            window.innerWidth < 1220
+                              ? "-80px"
+                              : "0px",
                         }}
                       />
                     }
@@ -97,7 +102,10 @@ const App = () => {
                             : "calc(100vw - 240px)",
                           position: "absolute",
                           right: 0,
-                          top: 0,
+                          top:
+                            window.innerWidth < 1220
+                              ? "-80px"
+                              : "0px",
                         }}
                       />
                     }
@@ -125,7 +133,10 @@ const App = () => {
                             : "calc(100vw - 240px)",
                           position: "absolute",
                           right: 0,
-                          top: 0,
+                          top:
+                            window.innerWidth < 1220
+                              ? "-80px"
+                              : "0px",
                         }}
                       />
                     }
@@ -153,7 +164,10 @@ const App = () => {
                             : "calc(100vw - 240px)",
                           position: "absolute",
                           right: 0,
-                          top: 0,
+                          top:
+                            window.innerWidth < 1220
+                              ? "-80px"
+                              : "0px",
                         }}
                       />
                     }
@@ -181,7 +195,10 @@ const App = () => {
                             : "calc(100vw - 240px)",
                           position: "absolute",
                           right: 0,
-                          top: 0,
+                          top:
+                            window.innerWidth < 1220
+                              ? "-80px"
+                              : "0px",
                         }}
                       />
                     }

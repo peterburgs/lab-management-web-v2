@@ -1,16 +1,15 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useAppDispatch, RootState } from "../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { fetchAllRegistrationsBySemesterId } from "../reducers/registrationSlice";
+import { fetchAllRegistrationsBySemesterId } from "../../reducers/registrationSlice";
 
 const useFetchRegistrations = (semesterId: string | undefined) => {
   const dispatch = useAppDispatch();
-  const registrations = useSelector(
-    (state: RootState) => state.registrations.registrations
+  const registrations = useAppSelector(
+    (state) => state.registrations.registrations
   );
-  const registrationStatus = useSelector(
-    (state: RootState) => state.registrations.status
+  const registrationStatus = useAppSelector(
+    (state) => state.registrations.status
   );
 
   useEffect(() => {

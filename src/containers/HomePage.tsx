@@ -8,14 +8,22 @@ import {
   Skeleton,
 } from "@material-ui/core";
 import Button from "../components/common/Button";
-import { Teaching, Registration } from "../react-app-env";
-import useFetchTeachings from "../hooks/useFetchTeachings";
+import {
+  Teaching,
+  Registration,
+  Course,
+  User,
+  Semester,
+} from "../react-app-env";
+import useFetchTeachings from "../hooks/teaching/useFetchTeachings";
 import { Column } from "react-table";
-import RegistrationStatus from "../components/HomePage/RegistrationStatus";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
-import useFetchRegistrations from "../hooks/useFetchRegistrations";
+import RegistrationStatus from "../components/home-page/RegistrationStatus";
+import useFetchRegistrations from "../hooks/registration/useFetchRegistrations";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
+import StartSemesterModal from "../components/home-page/StartSemesterModal";
+import useFetchCourses from "../hooks/course/useFetchCourses";
+import useFetchUsers from "../hooks/user/useFetchUsers";
+import useFetchSemester from "../hooks/semester/useFetchSemester";
 
 type TeachingTable = {
   courseId: string;
@@ -24,87 +32,180 @@ type TeachingTable = {
   period: string;
   credit: number;
   numOfStudents: number;
+  lecturer: string;
 };
 
 const prepareData = (
-  teachings: Teaching[]
+  teachings: Teaching[],
+  courses: Course[],
+  users: User[]
 ): {
   data: TeachingTable[];
-  columns: Array<Column<TeachingTable>>;
 } => {
   let data: TeachingTable[];
 
   if (teachings.length > 0) {
     data = teachings.map((teaching) => {
       return {
-        courseId: teaching.course._id,
-        courseName: teaching.course.courseName,
+        courseId: teaching.course,
+        courseName: courses.find((c) => c._id === teaching.course)!
+          .courseName,
         group: teaching.group,
         period: `${teaching.startPeriod} - ${teaching.endPeriod}`,
-        credit: teaching.course.numberOfCredits,
+        credit: courses.find((c) => c._id === teaching.course)!
+          .numberOfCredits,
         numOfStudents: teaching.numberOfStudents,
+        lecturer: users.find((c) => c._id === teaching.user)!
+          .fullName,
       };
     });
   } else {
     data = [];
   }
 
-  const columns = [
-    {
-      Header: "Course ID",
-      accessor: "courseId" as const,
-    },
-    {
-      Header: "Course Name",
-      accessor: "courseName" as const,
-    },
-    {
-      Header: "Group",
-      accessor: "group" as const,
-    },
-    {
-      Header: "Period",
-      accessor: "period" as const,
-    },
-    {
-      Header: "Credits",
-      accessor: "credit" as const,
-    },
-    {
-      Header: "Number of students",
-      accessor: "numOfStudents" as const,
-    },
-  ];
-
-  return { data, columns };
+  return { data };
 };
 
 const HomePage = () => {
   // state
   const [batch, setBatch] = useState(1);
-  const semester = useSelector(
-    (state: RootState) => state.semester.semester
-  );
-  const semesterStatus = useSelector(
-    (state: RootState) => state.semester.status
+  const [showStartSemesterModal, setShowSemesterModal] = useState(
+    false
   );
 
   // hooks
+  // * Call API
+  const [semester, semesterStatus] = useFetchSemester();
   const [registrations, registrationStatus] = useFetchRegistrations(
-    semester?._id
+    (semester as Semester)?._id
   );
   const [teachings, teachingStatus] = useFetchTeachings(
-    (registrations as Registration[]).find(
-      (reg) => reg.batch === batch
-    )?._id
+    registrations as Registration[],
+    batch
   );
+  const [courses, courseStatus] = useFetchCourses();
+  const [users, userStatus] = useFetchUsers();
 
-  // Prepare data for displaying
-  const { data, columns } = prepareData(teachings as Teaching[]);
+  const renderTable = () => {
+    const columns: Array<Column<TeachingTable>> = [
+      {
+        Header: "Course ID",
+        accessor: "courseId" as const,
+      },
+      {
+        Header: "Course Name",
+        accessor: "courseName" as const,
+      },
+      {
+        Header: "Group",
+        accessor: "group" as const,
+      },
+      {
+        Header: "Period",
+        accessor: "period" as const,
+      },
+      {
+        Header: "Credits",
+        accessor: "credit" as const,
+      },
+      {
+        Header: "Number of students",
+        accessor: "numOfStudents" as const,
+      },
+      {
+        Header: "Lecturer",
+        accessor: "lecturer" as const,
+      },
+    ];
+    if (courseStatus === "succeeded" && userStatus === "succeeded") {
+      const { data } = prepareData(
+        teachings as Teaching[],
+        courses as Course[],
+        users as User[]
+      );
+      if (teachingStatus === "succeeded") {
+        return (
+          <Table<TeachingTable>
+            data={data}
+            columns={columns}
+            name="Teaching"
+          />
+        );
+      } else if (teachingStatus === "failed") {
+        const data: TeachingTable[] = [];
+        return (
+          <Table<TeachingTable>
+            data={data}
+            columns={columns}
+            name="Teaching"
+          />
+        );
+      } else {
+        return (
+          <SkeletonContainer>
+            <Skeleton
+              variant="rectangular"
+              height={40}
+              animation="wave"
+            />
+            <Skeleton
+              variant="rectangular"
+              height={40}
+              animation="wave"
+            />
+            <Skeleton
+              variant="rectangular"
+              height={40}
+              animation="wave"
+            />
+            <Skeleton
+              variant="rectangular"
+              height={40}
+              animation="wave"
+            />
+          </SkeletonContainer>
+        );
+      }
+    } else if (courseStatus === "failed" || userStatus === "failed") {
+      const data: TeachingTable[] = [];
+      return (
+        <Table<TeachingTable>
+          data={data}
+          columns={columns}
+          name="Teaching"
+        />
+      );
+    } else {
+      return (
+        <SkeletonContainer>
+          <Skeleton
+            variant="rectangular"
+            height={40}
+            animation="wave"
+          />
+          <Skeleton
+            variant="rectangular"
+            height={40}
+            animation="wave"
+          />
+          <Skeleton
+            variant="rectangular"
+            height={40}
+            animation="wave"
+          />
+          <Skeleton
+            variant="rectangular"
+            height={40}
+            animation="wave"
+          />
+        </SkeletonContainer>
+      );
+    }
+  };
 
   const renderContent = () => {
-    if (semesterStatus === "succeeded" && semester) {
-      if (registrationStatus === "loading") {
+    if (semesterStatus === "succeeded") {
+      if (registrationStatus === "pending") {
         return (
           <Skeleton
             variant="rectangular"
@@ -113,10 +214,7 @@ const HomePage = () => {
           />
         );
       }
-      if (
-        registrationStatus === "succeeded" &&
-        registrations.length === 0
-      ) {
+      if (registrationStatus === "failed") {
         return (
           <NotFoundContainer>
             <NothingImage />
@@ -125,10 +223,7 @@ const HomePage = () => {
           </NotFoundContainer>
         );
       }
-      if (
-        registrationStatus === "succeeded" &&
-        registrations.length > 0
-      ) {
+      if (registrationStatus === "succeeded") {
         return (
           <>
             <Toolbar>
@@ -143,15 +238,26 @@ const HomePage = () => {
                       setBatch(e.target.value as number)
                     }
                   >
-                    <MenuItem value={1}>1</MenuItem>
-                    <MenuItem value={2}>2</MenuItem>
-                    <MenuItem value={3}>3</MenuItem>
+                    {(registrations as Registration[]).map((reg) => (
+                      <MenuItem value={reg.batch} key={reg._id}>
+                        {reg.batch}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Filter>
 
               <Action>
-                <StyledButton>Generate schedule</StyledButton>
+                <Button
+                  disabled={
+                    (registrations as Registration[]).findIndex(
+                      (reg) => reg.isOpening === true
+                    ) !== -1
+                  }
+                >
+                  Open registration
+                </Button>
+                <Button>Generate schedule</Button>
               </Action>
             </Toolbar>
             <RegistrationStatus
@@ -162,52 +268,30 @@ const HomePage = () => {
               }
             />
 
-            <TableContainer>
-              {teachingStatus === "loading" ? (
-                <SkeletonContainer>
-                  <Skeleton
-                    variant="rectangular"
-                    height={40}
-                    animation="wave"
-                  />
-                  <Skeleton
-                    variant="rectangular"
-                    height={40}
-                    animation="wave"
-                  />
-                  <Skeleton
-                    variant="rectangular"
-                    height={40}
-                    animation="wave"
-                  />
-                  <Skeleton
-                    variant="rectangular"
-                    height={40}
-                    animation="wave"
-                  />
-                </SkeletonContainer>
-              ) : (
-                <Table<TeachingTable>
-                  data={data}
-                  columns={columns}
-                  name="Teaching"
-                />
-              )}
-            </TableContainer>
+            <TableContainer>{renderTable()}</TableContainer>
           </>
         );
       }
-    } else {
-      <NotFoundContainer>
-        <NothingImage />
-        <span>There is no semester</span>
-        <Button>Open semester</Button>
-      </NotFoundContainer>;
+    } else if (semesterStatus === "failed") {
+      return (
+        <NotFoundContainer>
+          <NothingImage />
+          <span>There is no semester</span>
+          <Button onClick={() => setShowSemesterModal(true)}>
+            Start semester
+          </Button>
+        </NotFoundContainer>
+      );
     }
   };
 
   return (
     <>
+      <StartSemesterModal
+        name="Start semester"
+        showModal={showStartSemesterModal}
+        setShowModal={setShowSemesterModal}
+      />
       <StyledHomePage>{renderContent()}</StyledHomePage>
     </>
   );
@@ -226,10 +310,6 @@ const SkeletonContainer = styled.div`
   grid-row-gap: 1rem;
 `;
 
-const StyledButton = styled(Button)`
-  width: 250px;
-`;
-
 const RegistrationText = styled.div`
   font-size: 15px;
   font-weight: 500;
@@ -242,7 +322,8 @@ const RegistrationText = styled.div`
 const TableContainer = styled.div`
   padding-top: 1rem;
   height: 100%;
-  overflow-x: hidden;
+  width: 100%;
+  overflow: hidden;
 `;
 
 const Toolbar = styled.div`
@@ -254,11 +335,8 @@ const Toolbar = styled.div`
   @media (max-width: 600px) {
     display: inline-flex;
     flex-wrap: wrap;
-    ${StyledButton} {
-      width: 180px;
-    }
     & > div {
-      margin: 6px;
+      margin-bottom: 6px;
     }
   }
 `;
@@ -270,8 +348,20 @@ const Filter = styled.div`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   font-size: 0.875rem;
+  margin-left: 1rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    row-gap: 0.5rem;
+    width: 100%;
+    margin: 0;
+
+    button {
+      width: 100%;
+    }
+  }
 `;
 
 const NotFoundContainer = styled.div`
@@ -293,6 +383,13 @@ const NotFoundContainer = styled.div`
 
   button {
     margin-top: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    svg {
+      max-width: 300px;
+      height: auto;
+    }
   }
 `;
 

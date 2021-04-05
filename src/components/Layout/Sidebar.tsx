@@ -60,7 +60,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
 
 // Styling
 const StyledSidebar = styled.div`
-  background: #0070f3;
+  background: ${({ theme }) => theme.blue};
   height: 100%;
   display: flex;
   flex-direction: column;

@@ -1,23 +1,20 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useAppDispatch, RootState } from "../store";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { fetchOpenSemester } from "../../reducers/semesterSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { fetchSemester } from "../reducers/semesterSlice";
 
 const useFetchSemester = () => {
   const dispatch = useAppDispatch();
-  const semester = useSelector(
-    (state: RootState) => state.semester.semester
-  );
-  const semesterStatus = useSelector(
-    (state: RootState) => state.semester.status
+  const semester = useAppSelector((state) => state.semester.semester);
+  const semesterStatus = useAppSelector(
+    (state) => state.semester.status
   );
 
   useEffect(() => {
     if (semesterStatus === "idle") {
       (async () => {
         try {
-          const actionResult = await dispatch(fetchSemester());
+          const actionResult = await dispatch(fetchOpenSemester());
           unwrapResult(actionResult);
         } catch (err) {
           console.log(err);

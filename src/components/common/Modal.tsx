@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import ReactModal, {Styles} from "react-modal";
+import ReactModal, { Styles } from "react-modal";
 import styled from "styled-components";
 import CloseIcon from "@material-ui/icons/Close";
 
@@ -19,7 +19,10 @@ const Modal = ({
   style,
 }: ModalProps) => {
   return (
-    <StyledModal isOpen={showModal} style={style}>
+    <StyledModal
+      isOpen={showModal}
+      style={{ overlay: { zIndex: 5 }, ...style }}
+    >
       <Header>{name}</Header>
       <CloseIconButton onClick={() => setShowModal(false)}>
         <CloseIcon />
@@ -32,16 +35,14 @@ const Modal = ({
 const StyledModal = styled(ReactModal)`
   position: relative;
   max-width: 700px;
-  width: 100%;
+  width: 95%;
   margin: auto;
   top: 70px;
   border: none;
   background: #fff;
   --webkit-overflow-scrolling: touch;
   border-radius: 8px;
-  box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2),
-    0 2px 4px 0 rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  box-shadow: ${({ theme }) => theme.greyShadow};
   overflow-x: hidden;
   overflow-y: auto;
   display: flex;
@@ -68,7 +69,7 @@ const CloseIconButton = styled.button`
   height: auto;
   top: 12px;
   right: 16px;
-  background: #dddada;
+  background: ${({ theme }) => theme.lightGrey};
   border-radius: 1rem;
   padding: 0.25rem;
   position: absolute;
@@ -79,7 +80,7 @@ const CloseIconButton = styled.button`
     transform: scale(0.98);
   }
   & > svg {
-    fill: #6b6a6a;
+    fill: ${({ theme }) => theme.darkGrey};
   }
 `;
 

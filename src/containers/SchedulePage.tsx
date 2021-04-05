@@ -6,7 +6,7 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import TimeTable from "../components/SchedulePage/TimeTable";
+import TimeTable from "../components/schedule-page/TimeTable";
 import Button from "../components/common/Button";
 
 enum ViewMode {
@@ -88,7 +88,7 @@ const StyledSchedulePage = styled.div`
 `;
 
 const Toolbar = styled.div`
-  padding-top: 2rem;
+  padding-top: 1rem;
   display: flex;
   justify-content: space-between;
 
@@ -113,11 +113,18 @@ const Action = styled.div`
   column-gap: 1rem;
   grid-template-columns: 1fr 1fr;
   font-size: 0.875rem;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+    width: 100%;
+  }
 `;
 
 const TableContainer = styled.div`
   padding-top: 1rem;
   height: 100%;
+  width: 100%;
   overflow: hidden;
 `;
 

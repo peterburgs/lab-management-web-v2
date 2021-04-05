@@ -5,10 +5,13 @@ import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
 import SearchBar from "./SearchBar";
-import { Skeleton } from "@material-ui/core";
-import useFetchSemester from "../../hooks/useFetchSemester";
-import { Semester } from "../../react-app-env";
+import { Hidden, Skeleton } from "@material-ui/core";
+import { Semester, Registration } from "../../react-app-env";
 import SemesterModal from "./SemesterModal";
+import { useAppSelector } from "../../store";
+import Countdown from "react-countdown";
+import EditSemesterModal from "./EditSemesterModal";
+import CloseSemesterModal from "./CloseSemesterModal";
 
 interface TopNavBarProps {
   isShowNotifyPanel: boolean;
@@ -26,13 +29,28 @@ const TopNavBar = ({
   handleClosePanel,
 }: TopNavBarProps) => {
   const [showSemesterModal, setShowSemesterModal] = useState(false);
-  const [semester, semesterStatus] = useFetchSemester();
+  const [showEditSemesterModal, setShowEditSemesterModal] = useState(
+    false
+  );
+  const [
+    showCloseSemesterModal,
+    setShowCloseSemesterModal,
+  ] = useState(false);
+
+  const semesterStatus = useAppSelector(
+    (state) => state.semester.status
+  );
+  const semester = useAppSelector((state) => state.semester.semester);
+
+  const registrations = useAppSelector(
+    (state) => state.registrations.registrations
+  );
+  const registrationStatus = useAppSelector(
+    (state) => state.registrations.status
+  );
 
   const renderSemester = () => {
-    if (semesterStatus === "succeeded" && !semester) {
-      return null;
-    }
-    if (semesterStatus === "loading") {
+    if (semesterStatus === "pending") {
       return (
         <Skeleton
           variant="rectangular"
@@ -41,38 +59,79 @@ const TopNavBar = ({
         />
       );
     }
-    if (semesterStatus === "succeeded" && semester) {
+    if (semesterStatus === "succeeded") {
       return (
         <SemesterLink onClick={() => setShowSemesterModal(true)}>
           {(semester as Semester).semesterName}
         </SemesterLink>
       );
     }
+    return null;
   };
 
   const renderSemesterModal = () => {
-    if (semesterStatus === "succeeded" && !semester) {
-      return null;
-    }
-    if (semesterStatus === "succeeded" && semester) {
+    if (semesterStatus === "succeeded") {
       return (
-        <SemesterModal
-          showModal={showSemesterModal}
-          setShowModal={setShowSemesterModal}
-          name={(semester as Semester).semesterName}
-          semester={semester as Semester}
-        />
+        <>
+          <CloseSemesterModal
+            name={`Do you want you close ${
+              (semester as Semester).semesterName
+            }`}
+            showModal={showCloseSemesterModal}
+            setShowModal={setShowCloseSemesterModal}
+            setShowSemesterModal={setShowSemesterModal}
+          />
+          <EditSemesterModal
+            name={"Edit Semester"}
+            showModal={showEditSemesterModal}
+            setShowModal={setShowEditSemesterModal}
+          />
+          <SemesterModal
+            showModal={showSemesterModal}
+            setShowModal={setShowSemesterModal}
+            name={(semester as Semester).semesterName}
+            semester={semester as Semester}
+            setShowEditSemesterModal={setShowEditSemesterModal}
+            setShowCloseSemesterModal={setShowCloseSemesterModal}
+          />
+        </>
       );
     }
+    return null;
+  };
+
+  const handleRegAutoClose = () => {
+    console.log("Hello");
+  };
+
+  const renderCountdown = () => {
+    if (registrationStatus === "succeeded") {
+      const openingReg = (registrations as Registration[]).find(
+        (reg) => reg.isOpening === true
+      );
+      if (openingReg) {
+        return (
+          <Hidden xsUp implementation="css">
+            <Countdown
+              date={openingReg.endDate}
+              onComplete={handleRegAutoClose}
+            />
+          </Hidden>
+        );
+      }
+      return null;
+    }
+    return null;
   };
 
   return (
     <>
+      {renderCountdown()}
       {renderSemesterModal()}
       <StyledTopNavBar>
         <SemesterContainer>{renderSemester()}</SemesterContainer>
         <SearchBarContainer onClick={handleClosePanel}>
-          {semester ? <SearchBar /> : null}
+          {registrationStatus === "succeeded" ? <SearchBar /> : null}
         </SearchBarContainer>
 
         <UserSectionContainer>
@@ -141,7 +200,7 @@ const SemesterLink = styled.a`
   align-items: center;
   cursor: pointer;
   text-decoration: underline;
-  color: #0070f3;
+  color: ${({ theme }) => theme.blue};
 `;
 
 const SemesterContainer = styled.div`

@@ -53,18 +53,17 @@ const StyledNotification = styled.button<StyledNotificationProps>`
       position: relative;
       &:after {
         position: absolute;
-        right: -10px;
-        top: -10px;
+        right: -5px;
+        top: -4px;
         min-width: ${badge.length === 1 ? "22px" : "10px"};
         min-height: 10px;
         line-height: 10px;
         padding: 5px;
-        color: #fff;
-        background-color: #bf1f1f;
+        color: white;
+        background-color: ${({ theme }) => theme.red};
         font-size: 10px;
         border-radius: 20px;
         content: "${badge}";
-        border: solid 1px #c93a3a;
       }
     `}
 `;
@@ -80,7 +79,7 @@ const NotificationIcon = styled.span`
   }
   &:hover {
     svg {
-      fill: #0070f3;
+      fill: ${({ theme }) => theme.blue};
     }
   }
 `;

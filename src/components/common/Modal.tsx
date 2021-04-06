@@ -35,6 +35,8 @@ const Modal = ({
 const StyledModal = styled(ReactModal)`
   position: relative;
   max-width: 700px;
+  max-height: 636px;
+  overflow-y: hidden;
   width: 95%;
   margin: auto;
   top: 70px;
@@ -44,7 +46,6 @@ const StyledModal = styled(ReactModal)`
   border-radius: 8px;
   box-shadow: ${({ theme }) => theme.greyShadow};
   overflow-x: hidden;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   outline: none;

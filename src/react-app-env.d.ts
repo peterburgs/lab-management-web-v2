@@ -50,7 +50,7 @@ export type Course = {
 };
 
 export type RegistrableCourse = {
-  _id: string;
+  _id?: string;
   registration: string;
   course: string;
 };

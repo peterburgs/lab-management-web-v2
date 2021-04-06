@@ -24,6 +24,9 @@ import StartSemesterModal from "../components/home-page/StartSemesterModal";
 import useFetchCourses from "../hooks/course/useFetchCourses";
 import useFetchUsers from "../hooks/user/useFetchUsers";
 import useFetchSemester from "../hooks/semester/useFetchSemester";
+import OpenRegistrationModal from "../components/home-page/OpenRegistrationModal";
+import SelectCourseModal from "../components/home-page/SelectCourseModal";
+import { CheckboxItem } from "../components/common/CheckboxList";
 
 type TeachingTable = {
   courseId: string;
@@ -69,7 +72,15 @@ const prepareData = (
 const HomePage = () => {
   // state
   const [batch, setBatch] = useState(1);
-  const [showStartSemesterModal, setShowSemesterModal] = useState(
+  const [
+    showStartSemesterModal,
+    setShowStartSemesterModal,
+  ] = useState(false);
+  const [
+    showOpenRegistrationModal,
+    setShowOpenRegistrationModal,
+  ] = useState(false);
+  const [showSelectCourseModal, setShowSelectCourseModal] = useState(
     false
   );
 
@@ -85,6 +96,27 @@ const HomePage = () => {
   );
   const [courses, courseStatus] = useFetchCourses();
   const [users, userStatus] = useFetchUsers();
+
+  const [selectedCourses, setSelectedCourses] = useState<
+    CheckboxItem[]
+  >([]);
+
+  const handleSelectCourse = (value: CheckboxItem) => () => {
+    const currentIndex = selectedCourses.findIndex(
+      (course) => course._id === value._id
+    );
+    const newSelectedCourses = [...selectedCourses];
+
+    if (currentIndex === -1) {
+      newSelectedCourses.push(value);
+    } else {
+      newSelectedCourses.splice(currentIndex, 1);
+    }
+
+    console.log(newSelectedCourses);
+
+    setSelectedCourses(newSelectedCourses);
+  };
 
   const renderTable = () => {
     const columns: Array<Column<TeachingTable>> = [
@@ -219,7 +251,11 @@ const HomePage = () => {
           <NotFoundContainer>
             <NothingImage />
             <span>There is no registration</span>
-            <Button>Open registration</Button>
+            <Button
+              onClick={() => setShowOpenRegistrationModal(true)}
+            >
+              Open registration
+            </Button>
           </NotFoundContainer>
         );
       }
@@ -249,6 +285,7 @@ const HomePage = () => {
 
               <Action>
                 <Button
+                  onClick={() => setShowOpenRegistrationModal(true)}
                   disabled={
                     (registrations as Registration[]).findIndex(
                       (reg) => reg.isOpening === true
@@ -277,7 +314,7 @@ const HomePage = () => {
         <NotFoundContainer>
           <NothingImage />
           <span>There is no semester</span>
-          <Button onClick={() => setShowSemesterModal(true)}>
+          <Button onClick={() => setShowStartSemesterModal(true)}>
             Start semester
           </Button>
         </NotFoundContainer>
@@ -290,7 +327,22 @@ const HomePage = () => {
       <StartSemesterModal
         name="Start semester"
         showModal={showStartSemesterModal}
-        setShowModal={setShowSemesterModal}
+        setShowModal={setShowStartSemesterModal}
+      />
+      <SelectCourseModal
+        name="Select course"
+        selectedCourses={selectedCourses}
+        courses={courses as Course[]}
+        handleSelectCourse={handleSelectCourse}
+        showModal={showSelectCourseModal}
+        setShowModal={setShowSelectCourseModal}
+      />
+      <OpenRegistrationModal
+        name="Open registration"
+        showModal={showOpenRegistrationModal}
+        setShowModal={setShowOpenRegistrationModal}
+        setShowSelectCourseModal={setShowSelectCourseModal}
+        selectedCourses={selectedCourses}
       />
       <StyledHomePage>{renderContent()}</StyledHomePage>
     </>

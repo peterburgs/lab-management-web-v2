@@ -42,8 +42,8 @@ const StyledRegistrationStatus = styled.div<StyledRegistrationStatusProps>`
   border-radius: 4px;
   padding: 4px;
   text-transform: uppercase;
-  background-color: ${({ isOpening }) =>
-    isOpening ? "#44BD63" : "#F02849"};
+  background-color: ${({ isOpening, theme }) =>
+    isOpening ? theme.green : theme.red};
   color: white;
   margin-top: 1rem;
   text-align: center;

@@ -1,23 +1,40 @@
-import React, { useState } from "react";
+import React, { SyntheticEvent, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { ReactComponent as SearchIcon } from "../../assets/images/search-icon.svg";
 
-const SearchBar = () => {
+interface SearchBarProps {
+  setSearchText?: (a: string) => void;
+  placeholder?: string;
+}
+
+const SearchBar = ({
+  setSearchText,
+  placeholder,
+}: SearchBarProps) => {
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    if (inputRef.current && setSearchText) {
+      setSearchText(inputRef.current.value);
+    }
+  };
 
   return (
     <StyledSearchBar isFocused={isFocused}>
-      <SearchForm>
-        <SearchIconContainer>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchIconContainer type="submit">
           <StyledSearchIcon>
             <SearchIcon />
           </StyledSearchIcon>
         </SearchIconContainer>
         <SearchInput
+          ref={inputRef}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           type="text"
-          placeholder="Search courses"
+          placeholder={placeholder}
         />
       </SearchForm>
     </StyledSearchBar>

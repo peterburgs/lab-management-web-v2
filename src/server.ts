@@ -70,45 +70,68 @@ const server = () => {
           },
         ],
         registrations: [
-          // {
-          //   _id: "registration-1",
-          //   batch: 1,
-          //   startDate: new Date(),
-          //   endDate: add(new Date(), { minutes: 1 }),
-          //   isOpening: true,
-          //   updatedAt: new Date(),
-          //   createdAt: new Date(),
-          //   semester: "semester-1",
-          // },
-          // {
-          //   _id: "registration-2",
-          //   batch: 2,
-          //   startDate: new Date(),
-          //   endDate: new Date(),
-          //   isOpening: false,
-          //   updatedAt: new Date(),
-          //   createdAt: new Date(),
-          //   semester: "semester-1",
-          // },
-          // {
-          //   _id: "registration-3",
-          //   batch: 3,
-          //   startDate: new Date(),
-          //   endDate: new Date(),
-          //   isOpening: false,
-          //   updatedAt: new Date(),
-          //   createdAt: new Date(),
-          //   semester: "semester-1",
-          // },
+          {
+            _id: "registration-1",
+            batch: 1,
+            startDate: new Date(),
+            endDate: add(new Date(), { minutes: 1 }),
+            isOpening: false,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+            semester: "semester-1",
+          },
+          {
+            _id: "registration-2",
+            batch: 2,
+            startDate: new Date(),
+            endDate: new Date(),
+            isOpening: false,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+            semester: "semester-1",
+          },
+          {
+            _id: "registration-3",
+            batch: 3,
+            startDate: new Date(),
+            endDate: new Date(),
+            isOpening: false,
+            updatedAt: new Date(),
+            createdAt: new Date(),
+            semester: "semester-1",
+          },
         ],
         courses: [
           {
             _id: "course-1",
             courseName: "Deep Learning",
-            numberOfCredits: "3",
+            numberOfCredits: 3,
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
+          },
+          {
+            _id: "course-2",
+            courseName: "Machine Learning",
+            numberOfCredits: 3,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+        ],
+        registrableCourses: [
+          {
+            _id: "registrable-course-1",
+            registration: "registration-1",
+            course: "course-1",
           },
         ],
         teachings: [
@@ -166,7 +189,7 @@ const server = () => {
           }
         );
       });
-      this.post("/semester", (schema, request) => {
+      this.post("/semester", (schema: AppSchema, request) => {
         let attrs = JSON.parse(request.requestBody);
         attrs._id = "semester-1";
         attrs.createdAt = new Date();
@@ -249,21 +272,13 @@ const server = () => {
           }
         );
       });
-      this.post("/registrations", (schema, request) => {
+      this.post("/registrations", (schema: AppSchema, request) => {
         let attrs = JSON.parse(request.requestBody);
+        attrs._id = "registration-4";
         attrs.createdAt = new Date();
         attrs.updatedAt = new Date();
-        const registrableCourses = _.cloneDeep(
-          attrs.registrableCourses
-        );
-
-        delete attrs.registrableCourses;
 
         const result = schema.create("registration", attrs);
-
-        for (let i = 0; i < registrableCourses.length; i++) {
-          schema.create("registrableCourse", registrableCourses[i]);
-        }
 
         return {
           registrations: [{ ...result.attrs }],
@@ -271,6 +286,51 @@ const server = () => {
           count: 1,
         };
       });
+      this.get(
+        "/registrable-courses",
+        (schema: AppSchema, request) => {
+          let registrationId = request.queryParams.registrationId;
+          const registrableCourses = schema.where(
+            "registrableCourse",
+            {
+              registration: registrationId,
+            }
+          );
+          if (registrableCourses.models.length > 0) {
+            return {
+              registrableCourses: registrableCourses.models,
+              message: "Get registrable courses successfully",
+              count: registrableCourses.models.length,
+            };
+          }
+          return new Response(
+            404,
+            { some: "header" },
+            {
+              registrableCourses: [],
+              message: "Cannot find any registrable courses",
+              count: 0,
+            }
+          );
+        }
+      );
+      this.post(
+        "/registrable-courses",
+        (schema: AppSchema, request) => {
+          let attrs = JSON.parse(request.requestBody);
+          attrs._id = "registrable-course-2";
+          attrs.createdAt = new Date();
+          attrs.updatedAt = new Date();
+
+          const result = schema.create("registrableCourse", attrs);
+
+          return {
+            registrableCourses: [{ ...result.attrs }],
+            message: "Create registrable course successfully",
+            count: 1,
+          };
+        }
+      );
       this.get("/courses", (schema: AppSchema, request) => {
         const courses = schema.all("course");
 

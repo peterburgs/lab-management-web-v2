@@ -13,79 +13,92 @@ import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
 import { Registration } from "../../react-app-env";
 import { openRegistration } from "../../reducers/registrationSlice";
+import { newRegistrableCourse } from "../../reducers/registrableCourseSlice";
 import { useAppDispatch, useAppSelector } from "../../store";
-import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
+import { CheckboxItem } from "../common/CheckboxList";
 
-const OpenModal = (props: ModalProps) => {
-  const {
-    register,
-    handleSubmit,
-    errors,
-    control,
-  } = useForm<Registration>();
+interface OpenRegistrationModalProps extends ModalProps {
+  setShowSelectCourseModal: (a: boolean) => void;
+  selectedCourses: CheckboxItem[];
+}
+
+const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
+  const { handleSubmit, control } = useForm<Registration>();
 
   const dispatch = useAppDispatch();
+  const courses = useAppSelector((state) => state.courses.courses);
+  const registrations = useAppSelector(
+    (state) => state.registrations.registrations
+  );
   const semester = useAppSelector((state) => state.semester.semester);
   const [status, setStatus] = useState("idle");
-  const [isEditNumberOfWeeks, setIsEditNumberOfWeeks] = useState(
-    false
+  const [isAllCoursesApplied, setIsAllCoursesApplied] = useState(
+    true
   );
 
-  const onSubmit = async (data: Semester) => {
-    if (semester) {
+  const onSubmit = async (data: Registration) => {
+    console.log(props.selectedCourses);
+    if (courses.length > 0 && semester) {
       try {
-        const clonedSemester = _.cloneDeep(semester);
-        clonedSemester.semesterName = data.semesterName;
-        clonedSemester.startDate = data.startDate;
-        clonedSemester.numberOfWeeks = data.numberOfWeeks;
+        data.batch = registrations.length + 1;
+        data.isOpening = true;
+        data.isHidden = false;
+        data.semester = semester._id;
         setStatus("pending");
-        const actionResult = await dispatch(
-          editSemester(clonedSemester)
-        );
+        const actionResult = await dispatch(openRegistration(data));
+        const regResult = actionResult.payload?.registrations[0];
+        if (regResult) {
+          if (isAllCoursesApplied) {
+            const registrableCourses = courses.map((course) => {
+              return {
+                registration: regResult._id,
+                course: course._id,
+              };
+            });
+            // TODO: Can be improved?
+            for (let i = 0; i < registrableCourses.length; i++) {
+              const actionResult = await dispatch(
+                newRegistrableCourse(registrableCourses[i])
+              );
+              unwrapResult(actionResult);
+            }
+          }
+        }
         unwrapResult(actionResult);
 
-        setStatus("idle");
-        dispatch(setSnackBarContent("Edit semester successfully"));
+        dispatch(
+          setSnackBarContent("Open registration successfully")
+        );
         dispatch(setShowSuccessSnackBar(true));
-        props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to edit semester", err);
+        console.log("Failed to open registration", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {
-          dispatch(setSnackBarContent("Failed to edit semester"));
+          dispatch(setSnackBarContent("Failed to open registration"));
         }
-        setStatus("idle");
         dispatch(setShowErrorSnackBar(true));
+      } finally {
+        setStatus("idle");
         props.setShowModal(false);
       }
     }
   };
 
   return (
-    <Modal {...props} style={{ overlay: { zIndex: 1000 } }}>
+    <Modal {...props}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        <StyledTextField
-          label="Semester name"
-          inputRef={register({ required: true })}
-          name="semesterName"
-          defaultValue={semester ? semester.semesterName : null}
-          error={Boolean(errors.semesterName)}
-          helperText={
-            errors.semesterName && "*This field is required"
-          }
-        />
         <Controller
           name="startDate"
           control={control}
           rules={{ required: true }}
-          defaultValue={semester ? semester.startDate : null}
+          defaultValue={new Date()}
           render={(props) => (
             <DateTimePicker
               label="Start date"
@@ -96,41 +109,52 @@ const OpenModal = (props: ModalProps) => {
             />
           )}
         />
+        <Controller
+          name="endDate"
+          control={control}
+          defaultValue={new Date()}
+          rules={{ required: true }}
+          render={(props) => (
+            <DateTimePicker
+              label="End date"
+              inputFormat="dd/MM/yyyy hh:mm a"
+              renderInput={(props) => <StyledTextField {...props} />}
+              onChange={(value) => props.onChange(value)}
+              value={props.value}
+            />
+          )}
+        />
         <FormControlLabel
           control={
             <Checkbox
-              checked={isEditNumberOfWeeks}
+              checked={isAllCoursesApplied}
               onChange={(e) => {
-                setIsEditNumberOfWeeks(e.target.checked);
+                setIsAllCoursesApplied(e.target.checked);
               }}
             />
           }
-          label="Change the number of Weeks"
+          label="Apply to all courses"
         />
-        <StyledTextField
-          label="Number of weeks"
-          inputRef={register({ required: true })}
-          name="numberOfWeeks"
-          disabled={!isEditNumberOfWeeks}
-          defaultValue={semester ? semester.numberOfWeeks : null}
-          error={Boolean(errors.numberOfWeeks)}
-          type="number"
-          helperText={
-            errors.numberOfWeeks && "*This field is required"
+        {!isAllCoursesApplied && (
+          <SelectCourseButton
+            onClick={() => props.setShowSelectCourseModal(true)}
+            type="button"
+          >
+            Select course
+          </SelectCourseButton>
+        )}
+
+        <SubmitButton
+          disabled={
+            status === "pending" ||
+            (isAllCoursesApplied === false &&
+              props.selectedCourses.length === 0)
           }
-        />
-        {isEditNumberOfWeeks ? (
-          <Warning>
-            The existing schedule will be removed due to this change!
-          </Warning>
-        ) : null}
-        <StyledButton
-          disabled={status === "pending"}
           loading={status === "pending"}
           type="submit"
         >
           Submit
-        </StyledButton>
+        </SubmitButton>
       </StyledForm>
     </Modal>
   );
@@ -141,27 +165,41 @@ const StyledForm = styled.form`
   flex-direction: column;
 `;
 
-const Warning = styled.div`
-  color: ${({ theme }) => theme.red};
-  font-size: 13px;
-  margin-bottom: 1rem;
-`;
-
-const StyledButton = styled(Button)`
-  background-color: ${({ theme }) => theme.veryLightBlue};
+const SubmitButton = styled(Button)`
+  background-color: ${({ disabled, theme }) =>
+    disabled ? theme.grey : theme.veryLightBlue};
   box-shadow: none;
-  color: ${({ theme }) => theme.blue};
+  color: ${({ disabled, theme }) =>
+    disabled ? theme.darkGrey : theme.blue};
   font-weight: 500;
   font-size: 18px;
+  margin-top: 1rem;
   &:active {
     background-color: ${({ theme }) => theme.veryLightBlue};
     &:hover {
       background-color: ${({ theme }) => theme.veryLightBlue};
     }
   }
-
   &:hover {
     background-color: ${({ theme }) => theme.veryLightBlue};
+  }
+`;
+
+const SelectCourseButton = styled(Button)`
+  background-color: ${({ theme }) => theme.lightRed};
+  box-shadow: none;
+  color: ${({ theme }) => theme.red};
+  font-weight: 500;
+  font-size: 18px;
+  margin-top: 1rem;
+  &:active {
+    background-color: ${({ theme }) => theme.lightRed};
+    &:hover {
+      background-color: ${({ theme }) => theme.lightRed};
+    }
+  }
+  &:hover {
+    background-color: ${({ theme }) => theme.lightRed};
   }
 `;
 
@@ -170,4 +208,4 @@ const StyledTextField = materialStyled(TextField)({
   marginTop: "0.5rem",
 });
 
-export default EditSemesterModal;
+export default OpenRegistrationModal;

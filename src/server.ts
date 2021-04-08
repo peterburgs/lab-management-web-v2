@@ -74,8 +74,8 @@ const server = () => {
             _id: "registration-1",
             batch: 1,
             startDate: new Date(),
-            endDate: add(new Date(), { minutes: 1 }),
-            isOpening: false,
+            endDate: add(new Date(), { minutes: 30 }),
+            isOpening: true,
             updatedAt: new Date(),
             createdAt: new Date(),
             semester: "semester-1",
@@ -151,15 +151,31 @@ const server = () => {
             isHidden: false,
             theoryRoom: "A1-101",
           },
+          {
+            _id: "teaching-2",
+            user: "user-1",
+            course: "course-2",
+            group: 1,
+            dayOfWeek: 1,
+            startPeriod: 1,
+            endPeriod: 3,
+            numberOfStudents: 30,
+            numberOfPracticalWeeks: 7,
+            registration: "registration-1",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+            theoryRoom: "A1-101",
+          },
         ],
         users: [
           {
             _id: "user-1",
-            email: "thinhle2199@gmail.com",
+            email: "17110076@student.hcmute.edu.vn",
             fullName: "Le Duc Thinh",
             createdAt: new Date(),
             updatedAt: new Date(),
-            roles: ["ADMIN"],
+            roles: ["ADMIN", "LECTURER"],
             isHidden: false,
           },
         ],
@@ -198,7 +214,6 @@ const server = () => {
         return {
           semester: schema.create("semester", attrs),
           message: "Create semester successfully",
-          count: 1,
         };
       });
       this.put(
@@ -213,7 +228,6 @@ const server = () => {
             return {
               semester,
               message: "Update semester successfully",
-              count: 1,
             };
           }
 
@@ -223,7 +237,6 @@ const server = () => {
             {
               semester: null,
               message: "Object sent did not match",
-              count: 0,
             }
           );
         }
@@ -278,14 +291,36 @@ const server = () => {
         attrs.createdAt = new Date();
         attrs.updatedAt = new Date();
 
-        const result = schema.create("registration", attrs);
-
         return {
-          registrations: [{ ...result.attrs }],
+          registration: schema.create("registration", attrs),
           message: "Create registration successfully",
-          count: 1,
         };
       });
+      this.put(
+        "/registrations/:registrationid",
+        (schema: AppSchema, request) => {
+          let attrs = JSON.parse(request.requestBody);
+          const registration = schema.findBy("registration", {
+            _id: request.params.registrationid,
+          });
+          if (registration) {
+            registration.update({ ...attrs });
+            return {
+              registration,
+              message: "Update registration successfully",
+            };
+          }
+
+          return new Response(
+            422,
+            { some: "header" },
+            {
+              semester: null,
+              message: "Object sent did not match",
+            }
+          );
+        }
+      );
       this.get(
         "/registrable-courses",
         (schema: AppSchema, request) => {
@@ -322,12 +357,12 @@ const server = () => {
           attrs.createdAt = new Date();
           attrs.updatedAt = new Date();
 
-          const result = schema.create("registrableCourse", attrs);
-
           return {
-            registrableCourses: [{ ...result.attrs }],
+            registrableCourse: schema.create(
+              "registrableCourse",
+              attrs
+            ),
             message: "Create registrable course successfully",
-            count: 1,
           };
         }
       );
@@ -356,12 +391,9 @@ const server = () => {
         attrs.createdAt = new Date();
         attrs.updatedAt = new Date();
 
-        const result = schema.create("course", attrs);
-
         return {
-          courses: [{ ...result.attrs }],
+          course: schema.create("course", attrs),
           message: "Create course successfully",
-          count: 1,
         };
       });
       this.get("/users", (schema: AppSchema, request) => {
@@ -381,6 +413,38 @@ const server = () => {
             users: [],
             message: "Cannot find any users",
             count: 0,
+          }
+        );
+      });
+      this.get("/auth", (schema: AppSchema, request) => {
+        let email = "17110076@student.hcmute.edu.vn";
+        let role = request.queryParams.role;
+        let token = request.requestHeaders.Authorization.split(
+          " "
+        )[1];
+        console.log(token);
+
+        const users = schema.where("user", {
+          email: email,
+        });
+        if (users.models.length > 0) {
+          if (users.models[0].roles.indexOf(role) !== -1)
+            return {
+              verifiedUser: users.models[0],
+              avatarUrl:
+                "https://lh4.googleusercontent.com/-8dPdj1_5_8I/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucliLTUwmZKoDHXKqKQztraa2HWHWg/s96-c/photo.jpg",
+              verifiedRole: role,
+              verifiedToken: token,
+            };
+        }
+        return new Response(
+          401,
+          { some: "header" },
+          {
+            verifiedUser: null,
+            avatarUrl: null,
+            verifiedRole: null,
+            verifiedToken: null,
           }
         );
       });

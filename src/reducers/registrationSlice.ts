@@ -6,20 +6,25 @@ import _ from "lodash";
 interface RegistrationState {
   status: "idle" | "pending" | "succeeded" | "failed";
   registrations: Registration[];
-  count?: number;
+  count: number;
   message?: string;
 }
 
-interface ResponseData {
+interface GetResponseData {
   registrations: Registration[];
   count: number;
   message: string;
 }
 
+interface PostPutResponseData {
+  registration: Registration;
+  message: string;
+}
+
 export const fetchAllRegistrationsBySemesterId = createAsyncThunk<
-  ResponseData,
+  GetResponseData,
   string,
-  { rejectValue: ResponseData }
+  { rejectValue: GetResponseData }
 >(
   "registrations/fetchAllRegistrationsBySemesterId",
   async (semesterId, thunkApi) => {
@@ -27,28 +32,49 @@ export const fetchAllRegistrationsBySemesterId = createAsyncThunk<
       const { data } = await api.get("/registrations", {
         params: { semesterid: semesterId },
       });
-      return data as ResponseData;
+      return data as GetResponseData;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as ResponseData
+        err.response.data as GetResponseData
       );
     }
   }
 );
 
 export const openRegistration = createAsyncThunk<
-  ResponseData,
+  PostPutResponseData,
   Registration,
-  { rejectValue: ResponseData }
+  { rejectValue: PostPutResponseData }
 >(
   "registrations/openRegistration",
   async (registration, thunkApi) => {
     try {
       const { data } = await api.post("/registrations", registration);
-      return data as ResponseData;
+      return data as PostPutResponseData;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as ResponseData
+        err.response.data as PostPutResponseData
+      );
+    }
+  }
+);
+
+export const editRegistration = createAsyncThunk<
+  PostPutResponseData,
+  Registration,
+  { rejectValue: PostPutResponseData }
+>(
+  "registrations/editRegistration",
+  async (registration, thunkApi) => {
+    try {
+      const { data } = await api.put(
+        `/registrations/${registration._id}`,
+        registration
+      );
+      return data as PostPutResponseData;
+    } catch (err) {
+      return thunkApi.rejectWithValue(
+        err.response.data as PostPutResponseData
       );
     }
   }
@@ -57,6 +83,7 @@ export const openRegistration = createAsyncThunk<
 const initialState = {
   status: "idle",
   registrations: [],
+  count: 0,
 } as RegistrationState;
 
 export const registrationSlice = createSlice({
@@ -103,9 +130,18 @@ export const registrationSlice = createSlice({
     builder.addCase(openRegistration.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.registrations = state.registrations.concat(
-        action.payload.registrations
+        action.payload.registration
       );
-      state.count = action.payload.count;
+      state.count = state.count + 1;
+      state.message = action.payload.message;
+    });
+    builder.addCase(editRegistration.fulfilled, (state, action) => {
+      const currentIndex = state.registrations.findIndex(
+        (reg) => reg._id === action.payload.registration._id
+      );
+      state.registrations[currentIndex] = _.cloneDeep(
+        action.payload.registration
+      );
       state.message = action.payload.message;
     });
   },

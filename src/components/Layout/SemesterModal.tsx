@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../../types/modal";
 import { Semester } from "../../react-app-env";
+import { useAppSelector } from "../../store";
 
 interface SemesterModalProps extends ModalProps {
   semester: Semester;
@@ -11,6 +12,8 @@ interface SemesterModalProps extends ModalProps {
 }
 
 const SemesterModal = (props: SemesterModalProps) => {
+  const role = useAppSelector((state) => state.auth.verifiedRole);
+
   return (
     <>
       <Modal {...props}>
@@ -21,17 +24,21 @@ const SemesterModal = (props: SemesterModalProps) => {
             {new Date(props.semester.startDate).toDateString()}
           </span>
           <span>Number of weeks: {props.semester.numberOfWeeks}</span>
-          <EditButton
-            onClick={() => props.setShowEditSemesterModal(true)}
-          >
-            Edit
-          </EditButton>
+          {role && role === "ADMIN" ? (
+            <EditButton
+              onClick={() => props.setShowEditSemesterModal(true)}
+            >
+              Edit
+            </EditButton>
+          ) : null}
         </SemesterInfo>
-        <CloseRegistrationButton
-          onClick={() => props.setShowCloseSemesterModal(true)}
-        >
-          Close Semester
-        </CloseRegistrationButton>
+        {role && role === "ADMIN" ? (
+          <CloseRegistrationButton
+            onClick={() => props.setShowCloseSemesterModal(true)}
+          >
+            Close Semester
+          </CloseRegistrationButton>
+        ) : null}
       </Modal>
     </>
   );

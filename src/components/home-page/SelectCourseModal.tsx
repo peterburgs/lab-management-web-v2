@@ -2,7 +2,7 @@ import React, { MouseEventHandler, useEffect, useState } from "react";
 import styled from "styled-components";
 import { ModalProps } from "../../../types/modal";
 import Modal from "../common/Modal";
-import SearchBar from "../layout/SearchBar";
+import SearchBar from "../common/SearchBar";
 import CheckboxList, { CheckboxItem } from "../common/CheckboxList";
 import { Course } from "../../react-app-env";
 
@@ -46,19 +46,19 @@ const SelectCourseModal = ({
       setShowModal={setShowModal}
       showModal={showModal}
       name={name}
-      style={{ overlay: { zIndex: 1000 } }}
+      style={{
+        overlay: { zIndex: 1000, overflowY: "auto", height: "100vh" },
+      }}
     >
       <SearchBar
         setSearchText={setSearchCourseText}
         placeholder="Enter course name"
       />
-      <CheckboxListContainer>
-        <CheckboxList
-          selectedItems={selectedCourses}
-          onSelectItem={handleSelectCourse}
-          items={searchResultCourses}
-        />
-      </CheckboxListContainer>
+      <CheckboxList
+        selectedItems={selectedCourses}
+        onSelectItem={handleSelectCourse}
+        items={searchResultCourses}
+      />
     </Modal>
   );
 };

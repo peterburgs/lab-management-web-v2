@@ -6,27 +6,27 @@ import _ from "lodash";
 interface UserState {
   status: "idle" | "pending" | "succeeded" | "failed";
   users: User[];
-  count?: number;
+  count: number;
   message?: string;
 }
 
-interface ResponseData {
+interface GetResponseData {
   users: User[];
   count: number;
   message: string;
 }
 
 export const fetchAllUsers = createAsyncThunk<
-  ResponseData,
+  GetResponseData,
   undefined,
-  { rejectValue: ResponseData }
+  { rejectValue: GetResponseData }
 >("users/fetchAllUsers", async (_, thunkApi) => {
   try {
     const { data } = await api.get("/users");
-    return data as ResponseData;
+    return data as GetResponseData;
   } catch (err) {
     return thunkApi.rejectWithValue(
-      err.response.data as ResponseData
+      err.response.data as GetResponseData
     );
   }
 });
@@ -34,6 +34,7 @@ export const fetchAllUsers = createAsyncThunk<
 const initialState = {
   status: "idle",
   users: [],
+  count: 0,
 } as UserState;
 
 export const UserSlice = createSlice({

@@ -9,6 +9,7 @@ import { ReactComponent as RequestIcon } from "../../assets/images/request-icon.
 
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
+import { useAppSelector } from "../../store";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -16,6 +17,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
+  const role = useAppSelector((state) => state.auth.verifiedRole);
+
   return (
     <StyledSidebar>
       <Header>
@@ -29,29 +32,34 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           name="Registration"
           icon={<DashboardIcon />}
         />
-        <NavItem
-          isCollapsed={isCollapsed}
-          path="/courses"
-          name="Courses"
-          icon={<CourseIcon />}
-        />
-        <NavItem
-          isCollapsed={isCollapsed}
-          path="/labs"
-          name="Labs"
-          icon={<LabIcon />}
-        />
+        {role && role === "ADMIN" ? (
+          <>
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/courses"
+              name="Courses"
+              icon={<CourseIcon />}
+            />
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/labs"
+              name="Labs"
+              icon={<LabIcon />}
+            />
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/requests"
+              name="Requests"
+              icon={<RequestIcon />}
+            />
+          </>
+        ) : null}
+
         <NavItem
           isCollapsed={isCollapsed}
           path="/schedule"
           name="Schedule"
           icon={<ScheduleIcon />}
-        />
-        <NavItem
-          isCollapsed={isCollapsed}
-          path="/requests"
-          name="Requests"
-          icon={<RequestIcon />}
         />
       </NavItemContainer>
     </StyledSidebar>

@@ -6,20 +6,20 @@ import _ from "lodash";
 interface TeachingState {
   status: "idle" | "pending" | "succeeded" | "failed";
   teachings: Teaching[];
-  count?: number;
+  count: number;
   message?: string;
 }
 
-interface ResponseData {
+interface GetResponseData {
   teachings: Teaching[];
   count: number;
   message: string;
 }
 
 export const fetchAllTeachingsByRegistrationId = createAsyncThunk<
-  ResponseData,
+  GetResponseData,
   string,
-  { rejectValue: ResponseData }
+  { rejectValue: GetResponseData }
 >(
   "teachings/fetchAllTeachingsByRegistrationId",
   async (registrationId, thunkApi) => {
@@ -27,10 +27,10 @@ export const fetchAllTeachingsByRegistrationId = createAsyncThunk<
       const { data } = await api.get("/teachings", {
         params: { registrationid: registrationId },
       });
-      return data as ResponseData;
+      return data as GetResponseData;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as ResponseData
+        err.response.data as GetResponseData
       );
     }
   }
@@ -39,6 +39,7 @@ export const fetchAllTeachingsByRegistrationId = createAsyncThunk<
 const initialState: TeachingState = {
   teachings: [],
   status: "idle",
+  count: 0,
 };
 
 export const teachingSlice = createSlice({

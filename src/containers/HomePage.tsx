@@ -13,20 +13,18 @@ import {
   Registration,
   Course,
   User,
-  Semester,
 } from "../react-app-env";
 import useFetchTeachings from "../hooks/teaching/useFetchTeachings";
 import { Column } from "react-table";
 import RegistrationStatus from "../components/home-page/RegistrationStatus";
-import useFetchRegistrations from "../hooks/registration/useFetchRegistrations";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import StartSemesterModal from "../components/home-page/StartSemesterModal";
 import useFetchCourses from "../hooks/course/useFetchCourses";
 import useFetchUsers from "../hooks/user/useFetchUsers";
-import useFetchSemester from "../hooks/semester/useFetchSemester";
 import OpenRegistrationModal from "../components/home-page/OpenRegistrationModal";
 import SelectCourseModal from "../components/home-page/SelectCourseModal";
 import { CheckboxItem } from "../components/common/CheckboxList";
+import { useAppSelector } from "../store";
 
 type TeachingTable = {
   courseId: string;
@@ -85,10 +83,15 @@ const HomePage = () => {
   );
 
   // hooks
-  // * Call API
-  const [semester, semesterStatus] = useFetchSemester();
-  const [registrations, registrationStatus] = useFetchRegistrations(
-    (semester as Semester)?._id
+  const semesterStatus = useAppSelector(
+    (state) => state.semester.status
+  );
+
+  const registrations = useAppSelector(
+    (state) => state.registrations.registrations
+  );
+  const registrationStatus = useAppSelector(
+    (state) => state.registrations.status
   );
   const [teachings, teachingStatus] = useFetchTeachings(
     registrations as Registration[],
@@ -281,6 +284,21 @@ const HomePage = () => {
                     ))}
                   </Select>
                 </FormControl>
+                <RegistrationDuration>
+                  (
+                  {new Date(
+                    registrations.find(
+                      (reg) => reg.batch === batch
+                    )!.startDate
+                  ).toDateString()}{" "}
+                  -{" "}
+                  {new Date(
+                    registrations.find(
+                      (reg) => reg.batch === batch
+                    )!.endDate
+                  ).toDateString()}
+                  )
+                </RegistrationDuration>
               </Filter>
 
               <Action>
@@ -368,7 +386,6 @@ const RegistrationText = styled.div`
   display: flex;
   align-items: center;
   margin-right: 7px;
-  padding-bottom: 7px;
 `;
 
 const TableContainer = styled.div`
@@ -395,6 +412,12 @@ const Toolbar = styled.div`
 
 const Filter = styled.div`
   display: flex;
+  align-items: flex-end;
+`;
+
+const RegistrationDuration = styled.span`
+  font-size: 14px;
+  margin-left: 7px;
 `;
 
 const Action = styled.div`

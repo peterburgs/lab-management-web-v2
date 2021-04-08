@@ -15,7 +15,7 @@ const RegistrationStatus = ({
     <StyledRegistrationStatus isOpening={registration.isOpening}>
       {registration.isOpening ? (
         <>
-          <span>Open - Auto close in </span>
+          <Text>Open - Auto close in </Text>
           <Countdown
             date={registration.endDate}
             renderer={({ days, hours, minutes, seconds }) => (
@@ -26,9 +26,14 @@ const RegistrationStatus = ({
               </TimeRemainContainer>
             )}
           />
+          <Overlay>
+            <CloseRegistrationButton>
+              Close now
+            </CloseRegistrationButton>
+          </Overlay>
         </>
       ) : (
-        <span>Closed</span>
+        <Text>Closed</Text>
       )}
     </StyledRegistrationStatus>
   );
@@ -38,15 +43,8 @@ interface StyledRegistrationStatusProps {
   isOpening: boolean;
 }
 
-const StyledRegistrationStatus = styled.div<StyledRegistrationStatusProps>`
-  border-radius: 4px;
-  padding: 4px;
-  text-transform: uppercase;
-  background-color: ${({ isOpening, theme }) =>
-    isOpening ? theme.green : theme.red};
+const Text = styled.div`
   color: white;
-  margin-top: 1rem;
-  text-align: center;
 `;
 
 const TimeRemainContainer = styled.div`
@@ -55,6 +53,65 @@ const TimeRemainContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 0.4rem;
+  color: white;
+`;
+
+const Overlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: ${({ theme }) => theme.lightRed};
+  opacity: 0.9;
+  overflow: hidden;
+  width: 100%;
+  height: 0;
+  transition: 0.5s ease;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const CloseRegistrationButton = styled.button`
+  background-color: ${({ theme }) => theme.red};
+  margin: 0;
+  padding: 0.5rem 2rem;
+  max-height: 1.5rem;
+  border-radius: 7px;
+  color: ${({ theme }) => theme.red};
+  align-items: center;
+  justify-content: center;
+  border: ${({ theme }) => `1px solid ${theme.red}`};
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  position: relative;
+  outline: none;
+  font-size: 14px;
+  transition: background 0.2s ease 0s, color 0.2s ease 0s;
+  color: white;
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+
+const StyledRegistrationStatus = styled.div<StyledRegistrationStatusProps>`
+  border-radius: 4px;
+  padding: 4px;
+  text-transform: uppercase;
+  background-color: ${({ isOpening, theme }) =>
+    isOpening ? theme.green : theme.red};
+  margin-top: 1rem;
+  text-align: center;
+  position: relative;
+
+  &:hover {
+    ${Overlay} {
+      height: 100%;
+    }
+  }
 `;
 
 export default RegistrationStatus;

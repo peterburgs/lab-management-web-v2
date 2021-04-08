@@ -52,7 +52,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
         data.semester = semester._id;
         setStatus("pending");
         const actionResult = await dispatch(openRegistration(data));
-        const regResult = actionResult.payload?.registrations[0];
+        const regResult = actionResult.payload?.registration;
         if (regResult) {
           if (isAllCoursesApplied) {
             const registrableCourses = courses.map((course) => {

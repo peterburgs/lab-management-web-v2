@@ -10,16 +10,21 @@ interface RegistrableCourseState {
   message?: string;
 }
 
-interface ResponseData {
+interface GetResponseData {
   registrableCourses: RegistrableCourse[];
   count: number;
   message: string;
 }
 
+interface PostPutResponseData {
+  registrableCourse: RegistrableCourse;
+  message: string;
+}
+
 export const fetchAllRegistrableCoursesByRegistrationId = createAsyncThunk<
-  ResponseData,
+  GetResponseData,
   string,
-  { rejectValue: ResponseData }
+  { rejectValue: GetResponseData }
 >(
   "registrableCourses/fetchAllRegistrableCoursesByRegistrationId",
   async (registrationId, thunkApi) => {
@@ -27,19 +32,19 @@ export const fetchAllRegistrableCoursesByRegistrationId = createAsyncThunk<
       const { data } = await api.get("/registrableCourses", {
         params: { registrationid: registrationId },
       });
-      return data as ResponseData;
+      return data as GetResponseData;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as ResponseData
+        err.response.data as GetResponseData
       );
     }
   }
 );
 
 export const newRegistrableCourse = createAsyncThunk<
-  ResponseData,
+  PostPutResponseData,
   RegistrableCourse,
-  { rejectValue: ResponseData }
+  { rejectValue: PostPutResponseData }
 >(
   "registrableCourses/newRegistrableCourse",
   async (registrableCourse, thunkApi) => {
@@ -48,10 +53,10 @@ export const newRegistrableCourse = createAsyncThunk<
         "/registrable-courses",
         registrableCourse
       );
-      return data as ResponseData;
+      return data as PostPutResponseData;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as ResponseData
+        err.response.data as PostPutResponseData
       );
     }
   }
@@ -101,9 +106,8 @@ export const RegistrableCourseSlice = createSlice({
       (state, action) => {
         state.status = "succeeded";
         state.registrableCourses = state.registrableCourses.concat(
-          action.payload.registrableCourses
+          action.payload.registrableCourse
         );
-        state.count = action.payload.count;
         state.message = action.payload.message;
       }
     );

@@ -1,6 +1,7 @@
 import { Tooltip } from "@material-ui/core";
 import React from "react";
 import styled from "styled-components";
+import { useAppSelector } from "../../store";
 
 interface AvatarProps {
   onFocus?: () => void;
@@ -9,6 +10,8 @@ interface AvatarProps {
 }
 
 const Avatar = ({ onFocus, onBlur, onClick }: AvatarProps) => {
+  const avatarUrl = useAppSelector((state) => state.auth.avatarUrl)!;
+
   return (
     <Tooltip title="User menu">
       <StyledAvatarButton
@@ -16,10 +19,7 @@ const Avatar = ({ onFocus, onBlur, onClick }: AvatarProps) => {
         onBlur={onBlur}
         onClick={onClick}
       >
-        <img
-          src="https://lh3.googleusercontent.com/ogw/ADGmqu8ZheC6aMQHlzfcT3QuhG0ufB5hBxyNcbg1bLR_=s32-c-mo"
-          alt="avatar"
-        />
+        <img src={avatarUrl} alt="avatar" />
       </StyledAvatarButton>
     </Tooltip>
   );
@@ -38,6 +38,8 @@ const StyledAvatarButton = styled.button`
 
   img {
     border-radius: 1rem;
+    width: 32px;
+    height: 32px;
   }
 `;
 

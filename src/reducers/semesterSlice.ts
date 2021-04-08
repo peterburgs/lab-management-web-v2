@@ -6,63 +6,68 @@ import _ from "lodash";
 interface SemesterState {
   status: "idle" | "pending" | "succeeded" | "failed";
   semester: Semester | null;
-  count?: number;
+  count: number;
   message?: string;
 }
 
-interface ResponseData {
+interface GetResponseData {
   semester: Semester | null;
   count: number;
   message: string;
 }
 
+interface PostPutResponseData {
+  semester: Semester | null;
+  message: string;
+}
+
 export const fetchOpenSemester = createAsyncThunk<
-  ResponseData,
+  GetResponseData,
   undefined,
-  { rejectValue: ResponseData }
+  { rejectValue: GetResponseData }
 >("semester/fetchOpenSemester", async (_, thunkApi) => {
   try {
     const { data } = await api.get("/semester", {
       params: { isopening: true },
     });
-    return data as ResponseData;
+    return data as GetResponseData;
   } catch (err) {
     return thunkApi.rejectWithValue(
-      err.response.data as ResponseData
+      err.response.data as GetResponseData
     );
   }
 });
 
 export const startSemester = createAsyncThunk<
-  ResponseData,
+  PostPutResponseData,
   Semester,
-  { rejectValue: ResponseData }
+  { rejectValue: PostPutResponseData }
 >("semester/startSemester", async (semester, thunkApi) => {
   try {
     console.log(semester);
     const { data } = await api.post("/semester", semester);
-    return data as ResponseData;
+    return data as PostPutResponseData;
   } catch (err) {
     return thunkApi.rejectWithValue(
-      err.response.data as ResponseData
+      err.response.data as PostPutResponseData
     );
   }
 });
 
 export const editSemester = createAsyncThunk<
-  ResponseData,
+  PostPutResponseData,
   Semester,
-  { rejectValue: ResponseData }
+  { rejectValue: PostPutResponseData }
 >("semester/editSemester", async (semester, thunkApi) => {
   try {
     const { data } = await api.put(
       `/semester/${semester._id}`,
       semester
     );
-    return data as ResponseData;
+    return data as PostPutResponseData;
   } catch (err) {
     return thunkApi.rejectWithValue(
-      err.response.data as ResponseData
+      err.response.data as PostPutResponseData
     );
   }
 });
@@ -70,6 +75,7 @@ export const editSemester = createAsyncThunk<
 const initialState: SemesterState = {
   status: "idle",
   semester: null,
+  count: 0,
 };
 
 export const semesterSlice = createSlice({
@@ -97,7 +103,6 @@ export const semesterSlice = createSlice({
     builder.addCase(startSemester.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.semester = _.cloneDeep(action.payload.semester);
-      state.count = action.payload.count;
       state.message = action.payload.message;
     });
     builder.addCase(editSemester.fulfilled, (state, action) => {
@@ -109,7 +114,6 @@ export const semesterSlice = createSlice({
       } else {
         state.status = "succeeded";
         state.semester = _.cloneDeep(action.payload.semester);
-        state.count = action.payload.count;
         state.message = action.payload.message;
       }
     });

@@ -8,18 +8,6 @@ import React, {
 import Sidebar from "../components/layout/Sidebar";
 import TopNavBar from "../components/layout/TopNavBar";
 import styled, { css } from "styled-components";
-import { Close } from "@material-ui/icons";
-import { Snackbar, Alert, Slide } from "@material-ui/core";
-import { useAppDispatch, useAppSelector } from "../store";
-import {
-  setShowSuccessSnackBar,
-  setShowErrorSnackBar,
-} from "../reducers/notificationSlice";
-import { TransitionProps } from "@material-ui/core/transitions";
-
-function SlideTransition(props: TransitionProps) {
-  return <Slide {...props} direction="left" />;
-}
 
 interface LayoutProps {
   children: ReactNode;
@@ -34,20 +22,9 @@ const Layout = ({
   isCollapsed,
   setCollapsed,
 }: LayoutProps) => {
-  const dispatch = useAppDispatch();
   const prevWindowWidth = useRef(window.innerWidth);
   const [isShowNotifyPanel, setIsShowNotifyPanel] = useState(false);
   const [isShowAvatarPanel, setIsShowAvatarPanel] = useState(false);
-
-  const showSuccessSnackBar = useAppSelector(
-    (state) => state.notifications.showSuccessSnackBar
-  );
-  const showErrorSnackBar = useAppSelector(
-    (state) => state.notifications.showErrorSnackBar
-  );
-  const snackBarContent = useAppSelector(
-    (state) => state.notifications.snackBarContent
-  );
 
   const handleSidebarToggleOnWindowResize = useCallback(() => {
     if (window.innerWidth > 1220) {
@@ -71,74 +48,39 @@ const Layout = ({
     setIsShowNotifyPanel(false);
   };
 
-  const handleCloseSnackBar = () => {
-    dispatch(setShowSuccessSnackBar(false));
-    dispatch(setShowErrorSnackBar(false));
-  };
-
   return (
-    <>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        open={showSuccessSnackBar}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackBar}
-        TransitionComponent={SlideTransition}
+    <Container>
+      <SidebarContainer
+        isCollapsed={isCollapsed}
+        onClick={handleClosePanel}
       >
-        <Alert onClose={handleCloseSnackBar} severity="success">
-          {snackBarContent}
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        open={showErrorSnackBar}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackBar}
-        TransitionComponent={SlideTransition}
+        <Sidebar
+          isCollapsed={isCollapsed}
+          onToggle={handleSidebarToggle}
+        />
+      </SidebarContainer>
+      <TopNavContainer>
+        <TopNavBar
+          handleClosePanel={handleClosePanel}
+          isShowNotifyPanel={isShowNotifyPanel}
+          isShowAvatarPanel={isShowAvatarPanel}
+          setIsShowNotifyPanel={() => {
+            setIsShowNotifyPanel((current) => !current);
+            setIsShowAvatarPanel(false);
+          }}
+          setIsShowAvatarPanel={() => {
+            setIsShowNotifyPanel(false);
+            setIsShowAvatarPanel((current) => !current);
+          }}
+        />
+      </TopNavContainer>
+      <ContentContainer
+        isCollapsed={isCollapsed}
+        onClick={handleClosePanel}
       >
-        <Alert onClose={handleCloseSnackBar} severity="warning">
-          {snackBarContent}
-        </Alert>
-      </Snackbar>
-      <Container>
-        <SidebarContainer
-          isCollapsed={isCollapsed}
-          onClick={handleClosePanel}
-        >
-          <Sidebar
-            isCollapsed={isCollapsed}
-            onToggle={handleSidebarToggle}
-          />
-        </SidebarContainer>
-        <TopNavContainer>
-          <TopNavBar
-            handleClosePanel={handleClosePanel}
-            isShowNotifyPanel={isShowNotifyPanel}
-            isShowAvatarPanel={isShowAvatarPanel}
-            setIsShowNotifyPanel={() => {
-              setIsShowNotifyPanel((current) => !current);
-              setIsShowAvatarPanel(false);
-            }}
-            setIsShowAvatarPanel={() => {
-              setIsShowNotifyPanel(false);
-              setIsShowAvatarPanel((current) => !current);
-            }}
-          />
-        </TopNavContainer>
-        <ContentContainer
-          isCollapsed={isCollapsed}
-          onClick={handleClosePanel}
-        >
-          {children}
-        </ContentContainer>
-      </Container>
-    </>
+        {children}
+      </ContentContainer>
+    </Container>
   );
 };
 

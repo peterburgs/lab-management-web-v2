@@ -21,7 +21,10 @@ const Modal = ({
   return (
     <StyledModal
       isOpen={showModal}
-      style={{ overlay: { zIndex: 5 }, ...style }}
+      style={{
+        overlay: { zIndex: 5, overflowY: "auto", height: "100vh" },
+        ...style,
+      }}
     >
       <Header>{name}</Header>
       <CloseIconButton onClick={() => setShowModal(false)}>
@@ -35,8 +38,6 @@ const Modal = ({
 const StyledModal = styled(ReactModal)`
   position: relative;
   max-width: 700px;
-  max-height: 636px;
-  overflow-y: hidden;
   width: 95%;
   margin: auto;
   top: 70px;

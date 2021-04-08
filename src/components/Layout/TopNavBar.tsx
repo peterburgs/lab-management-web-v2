@@ -4,14 +4,24 @@ import AvatarButton from "./AvatarButton";
 import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
-import SearchBar from "./SearchBar";
+import SearchBar from "../common/SearchBar";
 import { Hidden, Skeleton } from "@material-ui/core";
 import { Semester, Registration } from "../../react-app-env";
 import SemesterModal from "./SemesterModal";
-import { useAppSelector } from "../../store";
 import Countdown from "react-countdown";
 import EditSemesterModal from "./EditSemesterModal";
 import CloseSemesterModal from "./CloseSemesterModal";
+import useFetchRegistrations from "../../hooks/registration/useFetchRegistrations";
+import useFetchSemester from "../../hooks/semester/useFetchSemester";
+import { editRegistration } from "../../reducers/registrationSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
+import {
+  setShowSuccessSnackBar,
+  setShowErrorSnackBar,
+  setSnackBarContent,
+} from "../../reducers/notificationSlice";
+import _ from "lodash";
+import { useAppDispatch } from "../../store";
 
 interface TopNavBarProps {
   isShowNotifyPanel: boolean;
@@ -36,17 +46,16 @@ const TopNavBar = ({
     showCloseSemesterModal,
     setShowCloseSemesterModal,
   ] = useState(false);
+  const [
+    closeRegistrationStatus,
+    setCloseRegistrationStatus,
+  ] = useState("idle");
+  const dispatch = useAppDispatch();
 
-  const semesterStatus = useAppSelector(
-    (state) => state.semester.status
-  );
-  const semester = useAppSelector((state) => state.semester.semester);
-
-  const registrations = useAppSelector(
-    (state) => state.registrations.registrations
-  );
-  const registrationStatus = useAppSelector(
-    (state) => state.registrations.status
+  // * Call API
+  const [semester, semesterStatus] = useFetchSemester();
+  const [registrations, registrationStatus] = useFetchRegistrations(
+    (semester as Semester)?._id
   );
 
   const renderSemester = () => {
@@ -100,8 +109,36 @@ const TopNavBar = ({
     return null;
   };
 
-  const handleRegAutoClose = () => {
-    console.log("Hello");
+  const handleRegAutoClose = async () => {
+    const clonedRegistration = _.cloneDeep(
+      (registrations as Registration[]).find(
+        (reg) => reg.isOpening === true
+      )
+    );
+    if (clonedRegistration) {
+      try {
+        clonedRegistration.isOpening = false;
+        setCloseRegistrationStatus("pending");
+        const actionResult = await dispatch(
+          editRegistration(clonedRegistration)
+        );
+        unwrapResult(actionResult);
+        dispatch(setSnackBarContent("Registration closed"));
+        dispatch(setShowSuccessSnackBar(true));
+      } catch (err) {
+        console.log("Failed to close registration", err);
+        if (err.response) {
+          dispatch(setSnackBarContent(err.response.data.message));
+        } else {
+          dispatch(
+            setSnackBarContent("Failed to close registration")
+          );
+        }
+        dispatch(setShowErrorSnackBar(true));
+      } finally {
+        setCloseRegistrationStatus("idle");
+      }
+    }
   };
 
   const renderCountdown = () => {
@@ -161,13 +198,13 @@ const StyledTopNavBar = styled.div`
 
 const SearchBarContainer = styled.div`
   flex-grow: 1;
-  margin: 0 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 5rem;
 
   @media (max-width: 500px) {
-    margin-left: 0px;
+    margin: 0 0.5rem;
   }
 `;
 

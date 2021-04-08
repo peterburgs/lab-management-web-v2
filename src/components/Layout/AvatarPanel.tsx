@@ -1,18 +1,47 @@
 import React from "react";
 import styled from "styled-components";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { refreshState } from "../../reducers/authSlice";
+import {
+  setShowErrorSnackBar,
+  setShowSuccessSnackBar,
+  setSnackBarContent,
+} from "../../reducers/notificationSlice";
+import { useGoogleLogout } from "react-google-login";
 
 const AvatarPanel = () => {
+  const avatarUrl = useAppSelector((state) => state.auth.avatarUrl)!;
+  const verifiedUser = useAppSelector(
+    (state) => state.auth.verifiedUser
+  )!;
+
+  const dispatch = useAppDispatch();
+
+  const onLogoutSuccess = () => {
+    dispatch(refreshState());
+    dispatch(setShowSuccessSnackBar(true));
+    dispatch(setSnackBarContent("You are logged out"));
+  };
+
+  const onFailure = () => {
+    dispatch(setShowErrorSnackBar(true));
+    dispatch(setSnackBarContent("Something went wrong"));
+  };
+
+  const { signOut } = useGoogleLogout({
+    clientId: process.env.REACT_APP_CLIENT_ID!,
+    onLogoutSuccess,
+    onFailure,
+  });
+
   return (
     <StyledAvatarPanel>
       <AvatarContainer>
-        <img
-          src="https://lh3.googleusercontent.com/ogw/ADGmqu8ZheC6aMQHlzfcT3QuhG0ufB5hBxyNcbg1bLR_=s83-c-mo"
-          alt="avatar"
-        />
+        <img src={avatarUrl} alt="avatar" />
       </AvatarContainer>
-      <Username>Le Duc Thinh</Username>
-      <Email>thinhle2199@gmail.com</Email>
-      <LogoutButton>Logout</LogoutButton>
+      <Username>{verifiedUser.fullName}</Username>
+      <Email>{verifiedUser.email}</Email>
+      <LogoutButton onClick={signOut}>Logout</LogoutButton>
     </StyledAvatarPanel>
   );
 };
@@ -68,6 +97,8 @@ const AvatarContainer = styled.div`
 
   img {
     border-radius: 3rem;
+    width: 80px;
+    height: 80px;
   }
 `;
 

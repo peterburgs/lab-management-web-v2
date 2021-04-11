@@ -10,6 +10,7 @@ import NewCourseModal from "../components/course-page/NewCourseModal";
 import AddIcon from "@material-ui/icons/Add";
 
 type CourseTable = {
+  rowId: string;
   id: string;
   name: string;
   createdAt: string;
@@ -25,6 +26,7 @@ const prepareData = (
   if (courses.length > 0) {
     data = courses.map((course) => {
       return {
+        rowId: course._id,
         id: course._id,
         name: course.courseName,
         createdAt: new Date(course.createdAt).toDateString(),
@@ -47,6 +49,10 @@ const CoursePage = () => {
   const renderTable = () => {
     const columns: Array<Column<CourseTable>> = [
       {
+        Header: "Row ID",
+        accessor: "rowId" as const,
+      },
+      {
         Header: "ID",
         accessor: "id" as const,
       },
@@ -66,6 +72,7 @@ const CoursePage = () => {
           data={data}
           columns={columns}
           name="Course"
+          isAllowEditDelete={true}
         />
       );
     } else if (courseStatus === "failed") {
@@ -75,6 +82,7 @@ const CoursePage = () => {
           data={data}
           columns={columns}
           name="Course"
+          isAllowEditDelete={true}
         />
       );
     } else {

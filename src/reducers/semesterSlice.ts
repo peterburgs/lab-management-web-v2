@@ -130,7 +130,7 @@ export const semesterSlice = createSlice({
         state.status = "idle";
       } else {
         const currentIndex = state.semesters.findIndex(
-          (reg) => reg._id === action.payload.semester!._id
+          (item) => item._id === action.payload.semester!._id
         );
         state.semesters[currentIndex] = _.cloneDeep(
           action.payload.semester!

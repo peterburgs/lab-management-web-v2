@@ -23,6 +23,7 @@ import {
 } from "react-table";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
+import InfoIcon from "@material-ui/icons/Info";
 import { TableSortLabel } from "@material-ui/core";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
@@ -36,6 +37,8 @@ export interface TableProperties<T extends Record<string, unknown>>
   onDelete?: (instance: TableInstance<T>) => MouseEventHandler;
   onEdit?: (instance: TableInstance<T>) => MouseEventHandler;
   onClick?: (row: Row<T>) => void;
+  onClickEditBtn?: (id: string) => void;
+  isAllowEditDelete: boolean;
 }
 
 // Add alignment styling to header and cell
@@ -87,7 +90,11 @@ const Table = <T extends Record<string, unknown>>(
 
   // table instance contains every logics of the table such as sort, render, select event, etc.
   const tableInstance = useTable<T>(
-    { ...props, defaultColumn },
+    {
+      ...props,
+      defaultColumn,
+      initialState: { hiddenColumns: ["rowId"] },
+    },
     useResizeColumns,
     useFlexLayout,
     useSortBy,
@@ -180,13 +187,29 @@ const Table = <T extends Record<string, unknown>>(
                       </StyledTd>
                     );
                   })}
+
                   <ActionButtonContainer>
-                    <ActionButton>
-                      <EditIcon fontSize="small" />
-                    </ActionButton>
-                    <ActionButton>
-                      <DeleteIcon fontSize="small" />
-                    </ActionButton>
+                    {props.isAllowEditDelete ? (
+                      <>
+                        {" "}
+                        <ActionButton
+                          onClick={() =>
+                            props.onClickEditBtn!(
+                              row.original.rowId as string
+                            )
+                          }
+                        >
+                          <EditIcon fontSize="small" />
+                        </ActionButton>
+                        <ActionButton>
+                          <DeleteIcon fontSize="small" />
+                        </ActionButton>
+                      </>
+                    ) : (
+                      <ActionButton>
+                        <InfoIcon fontSize="small" />
+                      </ActionButton>
+                    )}
                   </ActionButtonContainer>
                 </StyledTBodyRow>
               );

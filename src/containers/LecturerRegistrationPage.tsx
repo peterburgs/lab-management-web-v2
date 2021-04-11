@@ -9,6 +9,8 @@ import { Column } from "react-table";
 import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import AddIcon from "@material-ui/icons/Add";
+import EditTeachingModal from "../components/lecturer-registration-page/EditTeachingModal";
+import PrivateRoute from "../containers/PrivateRoute";
 
 // import models
 import { Teaching, Course } from "../react-app-env";
@@ -17,9 +19,11 @@ import { Teaching, Course } from "../react-app-env";
 import { useAppSelector } from "../store";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
+import { useHistory } from "react-router";
 
 // Table type
 type TeachingTable = {
+  rowId: string;
   courseId: string;
   courseName: string;
   group: number;
@@ -40,6 +44,7 @@ const prepareData = (
   if (teachings.length > 0) {
     data = teachings.map((teaching) => {
       return {
+        rowId: teaching._id,
         courseId: teaching.course,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,
@@ -87,10 +92,15 @@ const LecturerRegistrationPage = () => {
     verifiedUser
   );
   const [courses, courseStatus] = useGetAllCourses();
+  const history = useHistory();
 
   // conditional renderer
   const renderTable = () => {
     const columns: Array<Column<TeachingTable>> = [
+      {
+        Header: "Row ID",
+        accessor: "rowId" as const,
+      },
       {
         Header: "Course ID",
         accessor: "courseId" as const,
@@ -128,6 +138,8 @@ const LecturerRegistrationPage = () => {
             data={data}
             columns={columns}
             name="Teaching"
+            onClickEditBtn={(id) => history.push(`/teachings/${id}`)}
+            isAllowEditDelete={true}
           />
         );
       } else if (teachingStatus === "failed") {
@@ -137,6 +149,7 @@ const LecturerRegistrationPage = () => {
             data={data}
             columns={columns}
             name="Teaching"
+            isAllowEditDelete={true}
           />
         );
       } else {
@@ -172,6 +185,7 @@ const LecturerRegistrationPage = () => {
           data={data}
           columns={columns}
           name="Teaching"
+          isAllowEditDelete={true}
         />
       );
     } else {
@@ -277,6 +291,18 @@ const LecturerRegistrationPage = () => {
 
   return (
     <>
+      <PrivateRoute
+        roles={["ADMIN", "LECTURER"]}
+        path="/teachings/:id"
+        exact={false}
+        component={
+          <EditTeachingModal
+            showModal={true}
+            setShowModal={() => history.goBack()}
+            name="Edit teaching"
+          />
+        }
+      />
       <NewTeachingModal
         showModal={showNewTeachingModal}
         setShowModal={setShowNewTeachingModal}

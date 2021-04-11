@@ -183,45 +183,9 @@ const App = () => {
               )}
               {/* Private routes */}
               <PrivateRoute
-                roles={["ADMIN", "LECTURER"]}
-                path="/"
-                exact
-                component={
-                  <Layout
-                    handleSidebarToggle={handleSidebarToggle}
-                    isCollapsed={isCollapsed}
-                    setCollapsed={setCollapsed}
-                  >
-                    <Suspense
-                      fallback={
-                        <LinearProgress
-                          style={{
-                            width: isCollapsed
-                              ? "calc(100vw - 67px)"
-                              : "calc(100vw - 240px)",
-                            position: "absolute",
-                            right: "0px",
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
-                          }}
-                        />
-                      }
-                    >
-                      {verifiedRole && verifiedRole === "ADMIN" ? (
-                        <RegistrationPage />
-                      ) : (
-                        <LecturerRegistrationPage />
-                      )}
-                    </Suspense>
-                  </Layout>
-                }
-              />
-              <PrivateRoute
                 roles={["ADMIN"]}
                 path="/courses"
-                exact
+                exact={false}
                 component={
                   <Layout
                     handleSidebarToggle={handleSidebarToggle}
@@ -252,7 +216,7 @@ const App = () => {
               />
               <PrivateRoute
                 path="/schedule"
-                exact
+                exact={false}
                 roles={["ADMIN", "LECTURER"]}
                 component={
                   <Layout
@@ -284,7 +248,7 @@ const App = () => {
               />
               <PrivateRoute
                 path="/labs"
-                exact
+                exact={false}
                 roles={["ADMIN"]}
                 component={
                   <Layout
@@ -316,7 +280,7 @@ const App = () => {
               />
               <PrivateRoute
                 path="/requests"
-                exact
+                exact={false}
                 roles={["ADMIN"]}
                 component={
                   <Layout
@@ -342,6 +306,42 @@ const App = () => {
                       }
                     >
                       <RequestPage />
+                    </Suspense>
+                  </Layout>
+                }
+              />
+              <PrivateRoute
+                roles={["ADMIN", "LECTURER"]}
+                path="/"
+                exact={false}
+                component={
+                  <Layout
+                    handleSidebarToggle={handleSidebarToggle}
+                    isCollapsed={isCollapsed}
+                    setCollapsed={setCollapsed}
+                  >
+                    <Suspense
+                      fallback={
+                        <LinearProgress
+                          style={{
+                            width: isCollapsed
+                              ? "calc(100vw - 67px)"
+                              : "calc(100vw - 240px)",
+                            position: "absolute",
+                            right: "0px",
+                            top:
+                              window.innerWidth < 1220
+                                ? "-80px"
+                                : "0px",
+                          }}
+                        />
+                      }
+                    >
+                      {verifiedRole && verifiedRole === "ADMIN" ? (
+                        <RegistrationPage />
+                      ) : (
+                        <LecturerRegistrationPage />
+                      )}
                     </Suspense>
                   </Layout>
                 }

@@ -33,6 +33,7 @@ import { useAppSelector } from "../store";
 
 // Table type
 type TeachingTable = {
+  rowId: string;
   courseId: string;
   courseName: string;
   group: number;
@@ -55,6 +56,7 @@ const prepareData = (
   if (teachings.length > 0) {
     data = teachings.map((teaching) => {
       return {
+        rowId: teaching._id,
         courseId: teaching.course,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,
@@ -132,6 +134,10 @@ const RegistrationPage = () => {
   const renderTable = () => {
     const columns: Array<Column<TeachingTable>> = [
       {
+        Header: "Row ID",
+        accessor: "rowId" as const,
+      },
+      {
         Header: "Course ID",
         accessor: "courseId" as const,
       },
@@ -172,6 +178,7 @@ const RegistrationPage = () => {
             data={data}
             columns={columns}
             name="Teaching"
+            isAllowEditDelete={false}
           />
         );
       } else if (teachingStatus === "failed") {
@@ -181,6 +188,7 @@ const RegistrationPage = () => {
             data={data}
             columns={columns}
             name="Teaching"
+            isAllowEditDelete={false}
           />
         );
       } else {
@@ -216,6 +224,7 @@ const RegistrationPage = () => {
           data={data}
           columns={columns}
           name="Teaching"
+          isAllowEditDelete={false}
         />
       );
     } else {

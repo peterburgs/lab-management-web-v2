@@ -193,6 +193,8 @@ const server = () => {
     },
     routes() {
       this.namespace = "api/v1";
+
+      // Teaching route
       this.get("/teachings", (schema: AppSchema, request) => {
         const teachings = schema.where("teaching", {
           ...request.queryParams,
@@ -224,6 +226,54 @@ const server = () => {
           teaching: schema.create("teaching", attrs),
           message: "Create teaching successfully",
         };
+      });
+      this.put(
+        "/teachings/:teachingid",
+        (schema: AppSchema, request) => {
+          let attrs = JSON.parse(request.requestBody);
+          const teaching = schema.findBy("teaching", {
+            _id: request.params.teachingid,
+          });
+          if (teaching) {
+            teaching.update({ ...attrs });
+            return {
+              teaching,
+              message: "Update registration successfully",
+            };
+          }
+
+          return new Response(
+            422,
+            { some: "header" },
+            {
+              teaching: null,
+              message: "Object sent did not match",
+            }
+          );
+        }
+      );
+
+      // Semester route
+      this.get("/semesters", (schema: AppSchema, request) => {
+        const semesters = schema.where("semester", {
+          ...request.queryParams,
+        });
+        if (semesters.models.length > 0) {
+          return {
+            semesters: semesters.models,
+            message: "Get semesters successfully",
+            count: semesters.models.length,
+          };
+        }
+        return new Response(
+          404,
+          { some: "header" },
+          {
+            semesters: [],
+            message: "Cannot find any semesters",
+            count: 0,
+          }
+        );
       });
       this.post("/semesters", (schema: AppSchema, request) => {
         let attrs = JSON.parse(request.requestBody);
@@ -261,27 +311,8 @@ const server = () => {
           );
         }
       );
-      this.get("/semesters", (schema: AppSchema, request) => {
-        const semesters = schema.where("semester", {
-          ...request.queryParams,
-        });
-        if (semesters.models.length > 0) {
-          return {
-            semesters: semesters.models,
-            message: "Get semesters successfully",
-            count: semesters.models.length,
-          };
-        }
-        return new Response(
-          404,
-          { some: "header" },
-          {
-            semesters: [],
-            message: "Cannot find any semesters",
-            count: 0,
-          }
-        );
-      });
+
+      // Registration route
       this.get("/registrations", (schema: AppSchema, request) => {
         const registrations = schema.where("registration", {
           ...request.queryParams,
@@ -333,12 +364,14 @@ const server = () => {
             422,
             { some: "header" },
             {
-              semester: null,
+              registration: null,
               message: "Object sent did not match",
             }
           );
         }
       );
+
+      // Registrable course route
       this.get(
         "/registrable-courses",
         (schema: AppSchema, request) => {
@@ -383,6 +416,8 @@ const server = () => {
           };
         }
       );
+
+      // Course route
       this.get("/courses", (schema: AppSchema, request) => {
         const courses = schema.where("course", {
           ...request.queryParams,
@@ -415,6 +450,8 @@ const server = () => {
           message: "Create course successfully",
         };
       });
+
+      // User route
       this.get("/users", (schema: AppSchema, request) => {
         const users = schema.all("user");
 
@@ -435,6 +472,8 @@ const server = () => {
           }
         );
       });
+
+      // Auth route
       this.get("/auth", (schema: AppSchema, request) => {
         let email = "17110076@student.hcmute.edu.vn";
         let role = request.queryParams.role;

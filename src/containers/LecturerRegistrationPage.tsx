@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 // import components
 import Table from "../components/common/Table";
@@ -16,7 +16,7 @@ import { Teaching, Course } from "../react-app-env";
 // import hooks
 import { useAppSelector } from "../store";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
-
+import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
 
 // Table type
 type TeachingTable = {
@@ -59,6 +59,9 @@ const prepareData = (
 
 const LecturerRegistrationPage = () => {
   // state
+  const [showNewTeachingModal, setShowNewTeachingModal] = useState(
+    false
+  );
 
   // call hooks
   const semesterStatus = useAppSelector(
@@ -240,7 +243,12 @@ const LecturerRegistrationPage = () => {
                   </RegistrationDuration>
                 </Filter>
                 <Action>
-                  <Button icon={<AddIcon />}>New teaching</Button>
+                  <Button
+                    onClick={() => setShowNewTeachingModal(true)}
+                    icon={<AddIcon />}
+                  >
+                    New teaching
+                  </Button>
                 </Action>
               </Toolbar>
               <RegistrationStatus registration={openRegistration} />
@@ -269,6 +277,11 @@ const LecturerRegistrationPage = () => {
 
   return (
     <>
+      <NewTeachingModal
+        showModal={showNewTeachingModal}
+        setShowModal={setShowNewTeachingModal}
+        name="New teaching"
+      />
       <StyledRegistrationPage>
         {renderContent()}
       </StyledRegistrationPage>

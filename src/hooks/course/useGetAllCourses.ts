@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { getCourses } from "../../reducers/courseSlice";
+import { getCourses, resetState } from "../../reducers/courseSlice";
 
 const useGetAllCourses = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +21,11 @@ const useGetAllCourses = () => {
         }
       })();
     }
+    return () => {
+      if (courseStatus === "failed" || courseStatus === "succeeded") {
+        dispatch(resetState());
+      }
+    };
   }, [courseStatus, dispatch]);
 
   return [courses, courseStatus];

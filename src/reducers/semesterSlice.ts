@@ -24,12 +24,12 @@ interface GETFilter {
 }
 
 interface POSTResponse {
-  semester: Semester;
+  semester: Semester | null;
   message: string;
 }
 
 interface PUTResponse {
-  semester: Semester;
+  semester: Semester | null;
   message: string;
 }
 
@@ -118,7 +118,7 @@ export const semesterSlice = createSlice({
     builder.addCase(startSemester.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.semesters = state.semesters.concat(
-        action.payload.semester
+        action.payload.semester!
       );
       state.message = action.payload.message;
     });
@@ -130,10 +130,10 @@ export const semesterSlice = createSlice({
         state.status = "idle";
       } else {
         const currentIndex = state.semesters.findIndex(
-          (reg) => reg._id === action.payload.semester._id
+          (reg) => reg._id === action.payload.semester!._id
         );
         state.semesters[currentIndex] = _.cloneDeep(
-          action.payload.semester
+          action.payload.semester!
         );
         state.message = action.payload.message;
       }

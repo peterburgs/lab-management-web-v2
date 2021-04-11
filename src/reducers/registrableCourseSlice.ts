@@ -22,7 +22,7 @@ interface GETFilter {
 }
 
 interface POSTResponse {
-  registrableCourse: RegistrableCourse;
+  registrableCourse: RegistrableCourse | null;
   message: string;
 }
 
@@ -34,7 +34,7 @@ export const getRegistrableCourses = createAsyncThunk<
   "registrableCourses/getRegistrableCourses",
   async (filter, thunkApi) => {
     try {
-      const { data } = await api.get("/registrableCourses", {
+      const { data } = await api.get("/registrable-courses", {
         params: { ...filter },
       });
       return data as GETResponse;
@@ -108,7 +108,7 @@ export const RegistrableCourseSlice = createSlice({
       (state, action) => {
         state.status = "succeeded";
         state.registrableCourses = state.registrableCourses.concat(
-          action.payload.registrableCourse
+          action.payload.registrableCourse!
         );
         state.message = action.payload.message;
       }

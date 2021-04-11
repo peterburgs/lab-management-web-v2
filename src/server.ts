@@ -74,7 +74,7 @@ const server = () => {
             _id: "registration-1",
             batch: 1,
             startDate: new Date(),
-            endDate: add(new Date(), { minutes: 1 }),
+            endDate: add(new Date(), { minutes: 30 }),
             isOpening: true,
             updatedAt: new Date(),
             createdAt: new Date(),
@@ -132,6 +132,16 @@ const server = () => {
             _id: "registrable-course-1",
             registration: "registration-1",
             course: "course-1",
+          },
+          {
+            _id: "registrable-course-2",
+            registration: "registration-1",
+            course: "course-2",
+          },
+          {
+            _id: "registrable-course-3",
+            registration: "registration-1",
+            course: "course-3",
           },
         ],
         teachings: [
@@ -203,6 +213,17 @@ const server = () => {
             count: 0,
           }
         );
+      });
+      this.post("/teachings", (schema: AppSchema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        attrs._id = "registration-3";
+        attrs.createdAt = new Date();
+        attrs.updatedAt = new Date();
+
+        return {
+          teaching: schema.create("teaching", attrs),
+          message: "Create teaching successfully",
+        };
       });
       this.post("/semesters", (schema: AppSchema, request) => {
         let attrs = JSON.parse(request.requestBody);

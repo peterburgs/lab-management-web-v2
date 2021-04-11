@@ -25,12 +25,12 @@ interface GETFilter {
 }
 
 interface POSTResponse {
-  registration: Registration;
+  registration: Registration | null;
   message: string;
 }
 
 interface PUTResponse {
-  registration: Registration;
+  registration: Registration | null;
   message: string;
 }
 
@@ -127,17 +127,17 @@ export const registrationSlice = createSlice({
     builder.addCase(openRegistration.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.registrations = state.registrations.concat(
-        action.payload.registration
+        action.payload.registration!
       );
       state.count = state.count + 1;
       state.message = action.payload.message;
     });
     builder.addCase(editRegistration.fulfilled, (state, action) => {
       const currentIndex = state.registrations.findIndex(
-        (reg) => reg._id === action.payload.registration._id
+        (reg) => reg._id === action.payload.registration!._id
       );
       state.registrations[currentIndex] = _.cloneDeep(
-        action.payload.registration
+        action.payload.registration!
       );
       state.message = action.payload.message;
     });

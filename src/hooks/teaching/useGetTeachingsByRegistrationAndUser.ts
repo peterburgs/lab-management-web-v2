@@ -37,6 +37,7 @@ const useGetTeachingsByRegistrationAndUser = (
     }
 
     return () => {
+      console.log("Potential fetch teachings");
       if (
         teachingStatus === "failed" ||
         teachingStatus === "succeeded"

@@ -22,6 +22,11 @@ interface GETFilter {
   registration?: string;
 }
 
+interface POSTResponse {
+  teaching: Teaching | null;
+  message: string;
+}
+
 export const getTeachings = createAsyncThunk<
   GETResponse,
   GETFilter,
@@ -37,6 +42,21 @@ export const getTeachings = createAsyncThunk<
     return data as GETResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as GETResponse);
+  }
+});
+
+export const newTeaching = createAsyncThunk<
+  POSTResponse,
+  Teaching,
+  { rejectValue: POSTResponse }
+>("teachings/newTeaching", async (teaching, thunkApi) => {
+  try {
+    const { data } = await api.post("/teachings", teaching);
+    return data as POSTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as POSTResponse
+    );
   }
 });
 
@@ -75,6 +95,13 @@ export const teachingSlice = createSlice({
         state.count = action.payload.count;
         state.message = action.payload.message;
       }
+    });
+    builder.addCase(newTeaching.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.teachings = state.teachings.concat(
+        action.payload.teaching!
+      );
+      state.message = action.payload.message;
     });
   },
 });

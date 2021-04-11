@@ -22,7 +22,7 @@ interface GETFilter {
 }
 
 interface POSTResponse {
-  course: Course;
+  course: Course | null;
   message: string;
 }
 
@@ -65,7 +65,14 @@ const initialState = {
 export const CourseSlice = createSlice({
   name: "courses",
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: (state) => {
+      state.count = 0;
+      state.message = "";
+      state.courses = [];
+      state.status = "idle";
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getCourses.pending, (state) => {
       state.status = "pending";
@@ -87,10 +94,12 @@ export const CourseSlice = createSlice({
     });
     builder.addCase(newCourse.fulfilled, (state, action) => {
       state.status = "succeeded";
-      state.courses = state.courses.concat(action.payload.course);
+      state.courses = state.courses.concat(action.payload.course!);
       state.message = action.payload.message;
     });
   },
 });
+
+export const { resetState } = CourseSlice.actions;
 
 export default CourseSlice.reducer;

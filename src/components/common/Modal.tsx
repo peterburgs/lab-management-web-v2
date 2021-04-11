@@ -22,7 +22,10 @@ const Modal = ({
     <StyledModal
       isOpen={showModal}
       style={{
-        overlay: { zIndex: 5, overflowY: "auto", height: "100vh" },
+        overlay: {
+          zIndex: 5,
+          overflowY: "auto",
+        },
         ...style,
       }}
     >
@@ -40,7 +43,8 @@ const StyledModal = styled(ReactModal)`
   max-width: 700px;
   width: 95%;
   margin: auto;
-  top: 70px;
+  margin-top: 70px;
+  margin-bottom: 70px;
   border: none;
   background: #fff;
   --webkit-overflow-scrolling: touch;

@@ -3,36 +3,30 @@ import styled from "styled-components";
 import { styled as materialStyled } from "@material-ui/core/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../../types/modal";
-import { useForm, Controller } from "react-hook-form";
-import {
-  TextField,
-  FormControlLabel,
-  Checkbox,
-} from "@material-ui/core";
-import Button from "../common/Button";
-import { DateTimePicker } from "@material-ui/lab";
-import { Course } from "../../react-app-env";
-import { newCourse } from "../../reducers/courseSlice";
-import { useAppDispatch, useAppSelector } from "../../store";
-import _ from "lodash";
+import { useForm } from "react-hook-form";
+import { TextField } from "@material-ui/core";
 import { unwrapResult } from "@reduxjs/toolkit";
+import Button from "../common/Button";
+
+// import models
+import { Course } from "../../react-app-env";
+// import reducers
+import { newCourse } from "../../reducers/courseSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
+// import hooks
+import { useAppDispatch } from "../../store";
 
 const NewCourseModal = (props: ModalProps) => {
-  const {
-    register,
-    handleSubmit,
-    errors,
-    control,
-  } = useForm<Course>();
+  const { register, handleSubmit, errors } = useForm<Course>();
 
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
 
+  // handle new course submit
   const onSubmit = async (data: Course) => {
     try {
       data.isHidden = false;
@@ -98,6 +92,7 @@ const NewCourseModal = (props: ModalProps) => {
   );
 };
 
+// Styling
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;

@@ -21,7 +21,7 @@ export const store = configureStore({
   reducer: {
     teachings: teachingReducer,
     registrations: registrationReducer,
-    semester: semesterReducer,
+    semesters: semesterReducer,
     courses: courseReducer,
     users: userReducer,
     notifications: notificationReducer,

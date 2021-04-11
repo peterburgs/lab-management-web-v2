@@ -74,7 +74,7 @@ const server = () => {
             _id: "registration-1",
             batch: 1,
             startDate: new Date(),
-            endDate: add(new Date(), { minutes: 30 }),
+            endDate: add(new Date(), { minutes: 1 }),
             isOpening: true,
             updatedAt: new Date(),
             createdAt: new Date(),
@@ -184,9 +184,8 @@ const server = () => {
     routes() {
       this.namespace = "api/v1";
       this.get("/teachings", (schema: AppSchema, request) => {
-        const registrationId = request.queryParams.registrationid;
         const teachings = schema.where("teaching", {
-          registration: registrationId,
+          ...request.queryParams,
         });
         if (teachings.models.length > 0) {
           return {
@@ -199,13 +198,13 @@ const server = () => {
           404,
           { some: "header" },
           {
-            registrations: [],
-            message: "Cannot find any registrations",
+            teachings: [],
+            message: "Cannot find any teachings",
             count: 0,
           }
         );
       });
-      this.post("/semester", (schema: AppSchema, request) => {
+      this.post("/semesters", (schema: AppSchema, request) => {
         let attrs = JSON.parse(request.requestBody);
         attrs._id = "semester-1";
         attrs.createdAt = new Date();
@@ -217,7 +216,7 @@ const server = () => {
         };
       });
       this.put(
-        "/semester/:semesterid",
+        "/semesters/:semesterid",
         (schema: AppSchema, request) => {
           let attrs = JSON.parse(request.requestBody);
           const semester = schema.findBy("semester", {
@@ -241,32 +240,30 @@ const server = () => {
           );
         }
       );
-      this.get("/semester", (schema: AppSchema, request) => {
-        let isOpening = request.queryParams.isopening;
-        const semester = schema.findBy("semester", {
-          isOpening: isOpening === "true",
+      this.get("/semesters", (schema: AppSchema, request) => {
+        const semesters = schema.where("semester", {
+          ...request.queryParams,
         });
-        if (semester) {
+        if (semesters.models.length > 0) {
           return {
-            semester,
-            message: "Get semester successfully",
-            count: 1,
+            semesters: semesters.models,
+            message: "Get semesters successfully",
+            count: semesters.models.length,
           };
         }
         return new Response(
           404,
           { some: "header" },
           {
-            semester: null,
-            message: "Cannot find semester",
+            semesters: [],
+            message: "Cannot find any semesters",
             count: 0,
           }
         );
       });
       this.get("/registrations", (schema: AppSchema, request) => {
-        let semesterId = request.queryParams.semesterid;
         const registrations = schema.where("registration", {
-          semester: semesterId,
+          ...request.queryParams,
         });
         if (registrations.models.length > 0) {
           return {
@@ -324,11 +321,10 @@ const server = () => {
       this.get(
         "/registrable-courses",
         (schema: AppSchema, request) => {
-          let registrationId = request.queryParams.registrationId;
           const registrableCourses = schema.where(
             "registrableCourse",
             {
-              registration: registrationId,
+              ...request.queryParams,
             }
           );
           if (registrableCourses.models.length > 0) {
@@ -367,7 +363,9 @@ const server = () => {
         }
       );
       this.get("/courses", (schema: AppSchema, request) => {
-        const courses = schema.all("course");
+        const courses = schema.where("course", {
+          ...request.queryParams,
+        });
 
         if (courses.models.length > 0) {
           return {

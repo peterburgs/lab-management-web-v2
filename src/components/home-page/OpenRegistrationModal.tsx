@@ -11,18 +11,23 @@ import {
 } from "@material-ui/core";
 import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
-import { Registration } from "../../react-app-env";
-import { openRegistration } from "../../reducers/registrationSlice";
-import { newRegistrableCourse } from "../../reducers/registrableCourseSlice";
-import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { CheckboxItem } from "../common/CheckboxList";
+
+// import models
+import { Registration } from "../../react-app-env";
+// import reducers
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
-import { CheckboxItem } from "../common/CheckboxList";
+import { openRegistration } from "../../reducers/registrationSlice";
+import { newRegistrableCourse } from "../../reducers/registrableCourseSlice";
+// import hooks
+import { useAppDispatch, useAppSelector } from "../../store";
 
+// component props
 interface OpenRegistrationModalProps extends ModalProps {
   setShowSelectCourseModal: (a: boolean) => void;
   selectedCourses: CheckboxItem[];
@@ -36,7 +41,9 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
   const registrations = useAppSelector(
     (state) => state.registrations.registrations
   );
-  const semester = useAppSelector((state) => state.semester.semester);
+  const semester = useAppSelector(
+    (state) => state.semesters.semesters[0]
+  );
   const [status, setStatus] = useState("idle");
   const [isAllCoursesApplied, setIsAllCoursesApplied] = useState(
     true
@@ -160,6 +167,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
   );
 };
 
+// Styling
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;

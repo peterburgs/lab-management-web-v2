@@ -1,31 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
+// import components
 import Table from "../components/common/Table";
-import {
-  FormControl,
-  Select,
-  MenuItem,
-  Skeleton,
-} from "@material-ui/core";
+import { Skeleton } from "@material-ui/core";
 import Button from "../components/common/Button";
-import {
-  Teaching,
-  Registration,
-  Course,
-  User,
-} from "../react-app-env";
-import useFetchTeachings from "../hooks/teaching/useFetchTeachings";
+import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";
 import { Column } from "react-table";
-import RegistrationStatus from "../components/home-page/RegistrationStatus";
+import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
-import StartSemesterModal from "../components/home-page/StartSemesterModal";
-import useFetchCourses from "../hooks/course/useFetchCourses";
-import useFetchUsers from "../hooks/user/useFetchUsers";
-import OpenRegistrationModal from "../components/home-page/OpenRegistrationModal";
-import SelectCourseModal from "../components/home-page/SelectCourseModal";
-import { CheckboxItem } from "../components/common/CheckboxList";
-import { useAppSelector } from "../store";
+import AddIcon from "@material-ui/icons/Add";
 
+// import models
+import { Teaching, Course } from "../react-app-env";
+
+// import hooks
+import { useAppSelector } from "../store";
+import useGetAllCourses from "../hooks/course/useGetAllCourses";
+
+
+// Table type
 type TeachingTable = {
   courseId: string;
   courseName: string;
@@ -33,13 +26,12 @@ type TeachingTable = {
   period: string;
   credit: number;
   numOfStudents: number;
-  lecturer: string;
 };
 
+// prepare data for the table
 const prepareData = (
   teachings: Teaching[],
-  courses: Course[],
-  users: User[]
+  courses: Course[]
 ): {
   data: TeachingTable[];
 } => {
@@ -56,8 +48,6 @@ const prepareData = (
         credit: courses.find((c) => c._id === teaching.course)!
           .numberOfCredits,
         numOfStudents: teaching.numberOfStudents,
-        lecturer: users.find((c) => c._id === teaching.user)!
-          .fullName,
       };
     });
   } else {
@@ -67,60 +57,35 @@ const prepareData = (
   return { data };
 };
 
-const HomePage = () => {
+const LecturerRegistrationPage = () => {
   // state
-  const [batch, setBatch] = useState(1);
-  const [
-    showStartSemesterModal,
-    setShowStartSemesterModal,
-  ] = useState(false);
-  const [
-    showOpenRegistrationModal,
-    setShowOpenRegistrationModal,
-  ] = useState(false);
-  const [showSelectCourseModal, setShowSelectCourseModal] = useState(
-    false
-  );
 
-  // hooks
+  // call hooks
   const semesterStatus = useAppSelector(
-    (state) => state.semester.status
+    (state) => state.semesters.status
   );
 
-  const registrations = useAppSelector(
-    (state) => state.registrations.registrations
+  const openRegistration = useAppSelector((state) =>
+    state.registrations.registrations.find(
+      (reg) => reg.isOpening === true
+    )
   );
   const registrationStatus = useAppSelector(
     (state) => state.registrations.status
   );
-  const [teachings, teachingStatus] = useFetchTeachings(
-    registrations as Registration[],
-    batch
+  const verifiedUser = useAppSelector(
+    (state) => state.auth.verifiedUser
   );
-  const [courses, courseStatus] = useFetchCourses();
-  const [users, userStatus] = useFetchUsers();
+  const [
+    teachings,
+    teachingStatus,
+  ] = useFetchTeachingsByOpenRegistrationAndUser(
+    openRegistration,
+    verifiedUser
+  );
+  const [courses, courseStatus] = useGetAllCourses();
 
-  const [selectedCourses, setSelectedCourses] = useState<
-    CheckboxItem[]
-  >([]);
-
-  const handleSelectCourse = (value: CheckboxItem) => () => {
-    const currentIndex = selectedCourses.findIndex(
-      (course) => course._id === value._id
-    );
-    const newSelectedCourses = [...selectedCourses];
-
-    if (currentIndex === -1) {
-      newSelectedCourses.push(value);
-    } else {
-      newSelectedCourses.splice(currentIndex, 1);
-    }
-
-    console.log(newSelectedCourses);
-
-    setSelectedCourses(newSelectedCourses);
-  };
-
+  // conditional renderer
   const renderTable = () => {
     const columns: Array<Column<TeachingTable>> = [
       {
@@ -147,16 +112,12 @@ const HomePage = () => {
         Header: "Number of students",
         accessor: "numOfStudents" as const,
       },
-      {
-        Header: "Lecturer",
-        accessor: "lecturer" as const,
-      },
     ];
-    if (courseStatus === "succeeded" && userStatus === "succeeded") {
+
+    if (courseStatus === "succeeded") {
       const { data } = prepareData(
         teachings as Teaching[],
-        courses as Course[],
-        users as User[]
+        courses as Course[]
       );
       if (teachingStatus === "succeeded") {
         return (
@@ -201,7 +162,7 @@ const HomePage = () => {
           </SkeletonContainer>
         );
       }
-    } else if (courseStatus === "failed" || userStatus === "failed") {
+    } else if (courseStatus === "failed") {
       const data: TeachingTable[] = [];
       return (
         <Table<TeachingTable>
@@ -254,87 +215,53 @@ const HomePage = () => {
           <NotFoundContainer>
             <NothingImage />
             <span>There is no registration</span>
-            <Button
-              onClick={() => setShowOpenRegistrationModal(true)}
-            >
-              Open registration
-            </Button>
           </NotFoundContainer>
         );
       }
       if (registrationStatus === "succeeded") {
-        return (
-          <>
-            <Toolbar>
-              <Filter>
-                <RegistrationText>
-                  Registration batch
-                </RegistrationText>
-                <FormControl>
-                  <Select
-                    value={batch}
-                    onChange={(e) =>
-                      setBatch(e.target.value as number)
-                    }
-                  >
-                    {(registrations as Registration[]).map((reg) => (
-                      <MenuItem value={reg.batch} key={reg._id}>
-                        {reg.batch}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <RegistrationDuration>
-                  (
-                  {new Date(
-                    registrations.find(
-                      (reg) => reg.batch === batch
-                    )!.startDate
-                  ).toDateString()}{" "}
-                  -{" "}
-                  {new Date(
-                    registrations.find(
-                      (reg) => reg.batch === batch
-                    )!.endDate
-                  ).toDateString()}
-                  )
-                </RegistrationDuration>
-              </Filter>
+        if (openRegistration) {
+          return (
+            <>
+              <Toolbar>
+                <Filter>
+                  <RegistrationText>
+                    Registration batch {openRegistration.batch}
+                  </RegistrationText>
+                  <RegistrationDuration>
+                    (
+                    {new Date(
+                      openRegistration.startDate
+                    ).toDateString()}{" "}
+                    -{" "}
+                    {new Date(
+                      openRegistration.endDate
+                    ).toDateString()}
+                    )
+                  </RegistrationDuration>
+                </Filter>
+                <Action>
+                  <Button icon={<AddIcon />}>New teaching</Button>
+                </Action>
+              </Toolbar>
+              <RegistrationStatus registration={openRegistration} />
 
-              <Action>
-                <Button
-                  onClick={() => setShowOpenRegistrationModal(true)}
-                  disabled={
-                    (registrations as Registration[]).findIndex(
-                      (reg) => reg.isOpening === true
-                    ) !== -1
-                  }
-                >
-                  Open registration
-                </Button>
-                <Button>Generate schedule</Button>
-              </Action>
-            </Toolbar>
-            <RegistrationStatus
-              registration={
-                (registrations as Registration[]).find(
-                  (reg) => reg.batch === batch
-                )!
-              }
-            />
-
-            <TableContainer>{renderTable()}</TableContainer>
-          </>
-        );
+              <TableContainer>{renderTable()}</TableContainer>
+            </>
+          );
+        } else {
+          return (
+            <NotFoundContainer>
+              <NothingImage />
+              <span>There is no opening registration yet</span>
+            </NotFoundContainer>
+          );
+        }
       }
     } else if (semesterStatus === "failed") {
       return (
         <NotFoundContainer>
           <NothingImage />
           <span>There is no semester</span>
-          <Button onClick={() => setShowStartSemesterModal(true)}>
-            Start semester
-          </Button>
         </NotFoundContainer>
       );
     }
@@ -342,32 +269,15 @@ const HomePage = () => {
 
   return (
     <>
-      <StartSemesterModal
-        name="Start semester"
-        showModal={showStartSemesterModal}
-        setShowModal={setShowStartSemesterModal}
-      />
-      <SelectCourseModal
-        name="Select course"
-        selectedCourses={selectedCourses}
-        courses={courses as Course[]}
-        handleSelectCourse={handleSelectCourse}
-        showModal={showSelectCourseModal}
-        setShowModal={setShowSelectCourseModal}
-      />
-      <OpenRegistrationModal
-        name="Open registration"
-        showModal={showOpenRegistrationModal}
-        setShowModal={setShowOpenRegistrationModal}
-        setShowSelectCourseModal={setShowSelectCourseModal}
-        selectedCourses={selectedCourses}
-      />
-      <StyledHomePage>{renderContent()}</StyledHomePage>
+      <StyledRegistrationPage>
+        {renderContent()}
+      </StyledRegistrationPage>
     </>
   );
 };
 
-const StyledHomePage = styled.div`
+// Styling
+const StyledRegistrationPage = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -378,14 +288,6 @@ const SkeletonContainer = styled.div`
   grid-template-columns: 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   grid-row-gap: 1rem;
-`;
-
-const RegistrationText = styled.div`
-  font-size: 15px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  margin-right: 7px;
 `;
 
 const TableContainer = styled.div`
@@ -420,10 +322,18 @@ const RegistrationDuration = styled.span`
   margin-left: 7px;
 `;
 
+const RegistrationText = styled.div`
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  margin-right: 7px;
+`;
+
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   font-size: 0.875rem;
   margin-left: 1rem;
 
@@ -468,4 +378,4 @@ const NotFoundContainer = styled.div`
   }
 `;
 
-export default HomePage;
+export default LecturerRegistrationPage;

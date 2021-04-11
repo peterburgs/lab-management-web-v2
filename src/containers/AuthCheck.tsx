@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router";
 import { useAppDispatch } from "../store";
-import { refreshState, verify } from "../reducers/authSlice";
+import { resetState, verify } from "../reducers/authSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 import {
   setShowErrorSnackBar,
@@ -28,7 +28,9 @@ const AuthCheck = () => {
           unwrapResult(verifyResult);
         } catch (err) {
           history.replace("login");
-          dispatch(refreshState());
+          localStorage.removeItem("token");
+          localStorage.removeItem("role");
+          localStorage.removeItem("exp");
           dispatch(setShowErrorSnackBar(true));
           dispatch(setSnackBarContent("Something went wrong!"));
         }

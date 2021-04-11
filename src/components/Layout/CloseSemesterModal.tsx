@@ -4,29 +4,37 @@ import Modal from "../common/Modal";
 import { ModalProps } from "../../../types/modal";
 import { useForm } from "react-hook-form";
 import Button from "../common/Button";
-import { Semester } from "../../react-app-env";
-import { useAppDispatch, useAppSelector } from "../../store";
-import { editSemester } from "../../reducers/semesterSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
+import _ from "lodash";
+
+// import model
+import { Semester } from "../../react-app-env";
+// import reducers
 import {
   setShowSuccessSnackBar,
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
-import _ from "lodash";
+import { editSemester } from "../../reducers/semesterSlice";
 import { resetState as resetRegistrationState } from "../../reducers/registrationSlice";
 import { resetState as resetTeachingState } from "../../reducers/teachingSlice";
+// import hooks
+import { useAppDispatch, useAppSelector } from "../../store";
 
+// component props
 interface CloseSemesterModalProps extends ModalProps {
   setShowSemesterModal: (a: boolean) => void;
 }
 
 const CloseSemesterModal = (props: CloseSemesterModalProps) => {
   const [status, setStatus] = useState("idle");
-  const semester = useAppSelector((state) => state.semester.semester);
+  const semester = useAppSelector(
+    (state) => state.semesters.semesters[0]
+  );
   const dispatch = useAppDispatch();
   const { handleSubmit } = useForm<Semester>();
 
+  // handle close semester submit
   const onSubmit = async () => {
     if (semester) {
       try {
@@ -73,6 +81,7 @@ const CloseSemesterModal = (props: CloseSemesterModalProps) => {
   );
 };
 
+// Styling
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;

@@ -58,12 +58,11 @@ const Login = () => {
         })
       );
       unwrapResult(verifyResult);
-      setLoading(false);
+
       dispatch(setShowSuccessSnackBar(true));
       dispatch(setSnackBarContent("Welcome back!"));
       history.replace("/");
     } catch (err) {
-      setLoading(false);
       dispatch(setShowErrorSnackBar(true));
       dispatch(setSnackBarContent("Permission denied"));
     }

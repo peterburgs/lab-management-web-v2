@@ -5,119 +5,142 @@ import _ from "lodash";
 
 interface SemesterState {
   status: "idle" | "pending" | "succeeded" | "failed";
-  semester: Semester | null;
+  semesters: Semester[];
   count: number;
   message?: string;
 }
 
-interface GetResponseData {
-  semester: Semester | null;
+interface GETResponse {
+  semesters: Semester[];
   count: number;
   message: string;
 }
 
-interface PostPutResponseData {
-  semester: Semester | null;
+interface GETFilter {
+  semesterName?: string;
+  startDate?: Date;
+  numberOfWeeks?: number;
+  isOpening?: boolean;
+}
+
+interface POSTResponse {
+  semester: Semester;
   message: string;
 }
 
-export const fetchOpenSemester = createAsyncThunk<
-  GetResponseData,
-  undefined,
-  { rejectValue: GetResponseData }
->("semester/fetchOpenSemester", async (_, thunkApi) => {
+interface PUTResponse {
+  semester: Semester;
+  message: string;
+}
+
+export const getSemesters = createAsyncThunk<
+  GETResponse,
+  GETFilter,
+  { rejectValue: GETResponse }
+>("semesters/getSemesters", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/semester", {
-      params: { isopening: true },
+    const { data } = await api.get("/semesters", {
+      params: { ...filter },
     });
-    return data as GetResponseData;
+    return data as GETResponse;
   } catch (err) {
-    return thunkApi.rejectWithValue(
-      err.response.data as GetResponseData
-    );
+    return thunkApi.rejectWithValue(err.response.data as GETResponse);
   }
 });
 
 export const startSemester = createAsyncThunk<
-  PostPutResponseData,
+  POSTResponse,
   Semester,
-  { rejectValue: PostPutResponseData }
->("semester/startSemester", async (semester, thunkApi) => {
+  { rejectValue: POSTResponse }
+>("semesters/startSemester", async (semester, thunkApi) => {
   try {
     console.log(semester);
-    const { data } = await api.post("/semester", semester);
-    return data as PostPutResponseData;
+    const { data } = await api.post("/semesters", semester);
+    return data as POSTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(
-      err.response.data as PostPutResponseData
+      err.response.data as POSTResponse
     );
   }
 });
 
 export const editSemester = createAsyncThunk<
-  PostPutResponseData,
+  PUTResponse,
   Semester,
-  { rejectValue: PostPutResponseData }
->("semester/editSemester", async (semester, thunkApi) => {
+  { rejectValue: PUTResponse }
+>("semesters/editSemester", async (semester, thunkApi) => {
   try {
     const { data } = await api.put(
-      `/semester/${semester._id}`,
+      `/semesters/${semester._id}`,
       semester
     );
-    return data as PostPutResponseData;
+    return data as PUTResponse;
   } catch (err) {
-    return thunkApi.rejectWithValue(
-      err.response.data as PostPutResponseData
-    );
+    return thunkApi.rejectWithValue(err.response.data as PUTResponse);
   }
 });
 
 const initialState: SemesterState = {
   status: "idle",
-  semester: null,
+  semesters: [],
   count: 0,
 };
 
 export const semesterSlice = createSlice({
   name: "semester",
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: (state) => {
+      state.count = 0;
+      state.message = "";
+      state.semesters = [];
+      state.status = "idle";
+    },
+  },
   extraReducers: (builder) => {
-    builder.addCase(fetchOpenSemester.pending, (state, action) => {
+    builder.addCase(getSemesters.pending, (state, action) => {
       state.status = "pending";
     });
-    builder.addCase(fetchOpenSemester.fulfilled, (state, action) => {
+    builder.addCase(getSemesters.fulfilled, (state, action) => {
       state.status = "succeeded";
-      state.semester = _.cloneDeep(action.payload.semester);
+      state.semesters = _.cloneDeep(action.payload.semesters);
       state.count = action.payload.count;
       state.message = action.payload.message;
     });
-    builder.addCase(fetchOpenSemester.rejected, (state, action) => {
+    builder.addCase(getSemesters.rejected, (state, action) => {
       state.status = "failed";
       if (action.payload) {
-        state.semester = null;
+        state.semesters = [];
         state.count = action.payload.count;
         state.message = action.payload.message;
       }
     });
     builder.addCase(startSemester.fulfilled, (state, action) => {
       state.status = "succeeded";
-      state.semester = _.cloneDeep(action.payload.semester);
+      state.semesters = state.semesters.concat(
+        action.payload.semester
+      );
       state.message = action.payload.message;
     });
     builder.addCase(editSemester.fulfilled, (state, action) => {
       if (action.payload.semester?.isOpening === false) {
-        state.semester = null;
+        state.semesters = [];
         state.count = 0;
         state.message = "";
         state.status = "idle";
       } else {
-        state.status = "succeeded";
-        state.semester = _.cloneDeep(action.payload.semester);
+        const currentIndex = state.semesters.findIndex(
+          (reg) => reg._id === action.payload.semester._id
+        );
+        state.semesters[currentIndex] = _.cloneDeep(
+          action.payload.semester
+        );
         state.message = action.payload.message;
       }
     });
   },
 });
+
+export const { resetState } = semesterSlice.actions;
 
 export default semesterSlice.reducer;

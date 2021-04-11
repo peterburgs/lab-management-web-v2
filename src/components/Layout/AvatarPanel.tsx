@@ -1,12 +1,18 @@
 import React from "react";
 import styled from "styled-components";
-import { useAppDispatch, useAppSelector } from "../../store";
-import { refreshState } from "../../reducers/authSlice";
+
+// import reducers
+import { resetState as resetAuthState } from "../../reducers/authSlice";
+import { resetState as resetRegistrationState } from "../../reducers/registrationSlice";
+import { resetState as resetSemesterState } from "../../reducers/semesterSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
+
+// import hooks
+import { useAppDispatch, useAppSelector } from "../../store";
 import { useGoogleLogout } from "react-google-login";
 
 const AvatarPanel = () => {
@@ -18,7 +24,12 @@ const AvatarPanel = () => {
   const dispatch = useAppDispatch();
 
   const onLogoutSuccess = () => {
-    dispatch(refreshState());
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("exp");
+    dispatch(resetAuthState());
+    dispatch(resetRegistrationState());
+    dispatch(resetSemesterState());
     dispatch(setShowSuccessSnackBar(true));
     dispatch(setSnackBarContent("You are logged out"));
   };

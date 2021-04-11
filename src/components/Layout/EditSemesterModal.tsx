@@ -11,16 +11,21 @@ import {
 } from "@material-ui/core";
 import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
-import { Semester } from "../../react-app-env";
-import { editSemester } from "../../reducers/semesterSlice";
-import { useAppDispatch, useAppSelector } from "../../store";
 import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
+
+// import models
+import { Semester } from "../../react-app-env";
+// import reducers
+import { editSemester } from "../../reducers/semesterSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
+// import hooks
+import { useAppDispatch, useAppSelector } from "../../store";
+
 
 const EditSemesterModal = (props: ModalProps) => {
   const {
@@ -31,7 +36,7 @@ const EditSemesterModal = (props: ModalProps) => {
   } = useForm<Semester>();
 
   const dispatch = useAppDispatch();
-  const semester = useAppSelector((state) => state.semester.semester);
+  const semester = useAppSelector((state) => state.semesters.semesters[0]);
   const [status, setStatus] = useState("idle");
   const [isEditNumberOfWeeks, setIsEditNumberOfWeeks] = useState(
     false
@@ -136,6 +141,7 @@ const EditSemesterModal = (props: ModalProps) => {
   );
 };
 
+// Styling
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;

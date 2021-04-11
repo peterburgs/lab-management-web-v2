@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { fetchAllRegistrationsBySemesterId } from "../../reducers/registrationSlice";
+import { getRegistrations } from "../../reducers/registrationSlice";
 
-const useFetchRegistrations = (semesterId: string | undefined) => {
+const useGetRegistrationBySemester = (
+  semester: string | undefined
+) => {
   const dispatch = useAppDispatch();
   const registrations = useAppSelector(
     (state) => state.registrations.registrations
@@ -13,11 +15,11 @@ const useFetchRegistrations = (semesterId: string | undefined) => {
   );
 
   useEffect(() => {
-    if (registrationStatus === "idle" && semesterId) {
+    if (registrationStatus === "idle" && semester) {
       (async () => {
         try {
           const actionResult = await dispatch(
-            fetchAllRegistrationsBySemesterId(semesterId)
+            getRegistrations({ semester })
           );
           unwrapResult(actionResult);
         } catch (err) {
@@ -25,9 +27,9 @@ const useFetchRegistrations = (semesterId: string | undefined) => {
         }
       })();
     }
-  }, [registrationStatus, dispatch, semesterId]);
+  }, [registrationStatus, dispatch, semester]);
 
   return [registrations, registrationStatus];
 };
 
-export default useFetchRegistrations;
+export default useGetRegistrationBySemester;

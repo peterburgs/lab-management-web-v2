@@ -10,43 +10,48 @@ interface CourseState {
   message?: string;
 }
 
-interface GetResponseData {
+interface GETResponse {
   courses: Course[];
   count: number;
   message: string;
 }
 
-interface PostPutResponseData {
+interface GETFilter {
+  courseName?: string;
+  numberOfCredits?: number;
+}
+
+interface POSTResponse {
   course: Course;
   message: string;
 }
 
-export const fetchAllCourses = createAsyncThunk<
-  GetResponseData,
-  undefined,
-  { rejectValue: GetResponseData }
->("courses/fetchAllCourses", async (_, thunkApi) => {
+export const getCourses = createAsyncThunk<
+  GETResponse,
+  GETFilter,
+  { rejectValue: GETResponse }
+>("courses/getCourses", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/courses");
-    return data as GetResponseData;
+    const { data } = await api.get("/courses", {
+      params: { ...filter },
+    });
+    return data as GETResponse;
   } catch (err) {
-    return thunkApi.rejectWithValue(
-      err.response.data as GetResponseData
-    );
+    return thunkApi.rejectWithValue(err.response.data as GETResponse);
   }
 });
 
 export const newCourse = createAsyncThunk<
-  PostPutResponseData,
+  POSTResponse,
   Course,
-  { rejectValue: PostPutResponseData }
+  { rejectValue: POSTResponse }
 >("courses/newCourse", async (course, thunkApi) => {
   try {
     const { data } = await api.post("/courses", course);
-    return data as PostPutResponseData;
+    return data as POSTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(
-      err.response.data as PostPutResponseData
+      err.response.data as POSTResponse
     );
   }
 });
@@ -62,16 +67,16 @@ export const CourseSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchAllCourses.pending, (state) => {
+    builder.addCase(getCourses.pending, (state) => {
       state.status = "pending";
     });
-    builder.addCase(fetchAllCourses.fulfilled, (state, action) => {
+    builder.addCase(getCourses.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.courses = _.cloneDeep(action.payload.courses);
       state.count = action.payload.count;
       state.message = action.payload.message;
     });
-    builder.addCase(fetchAllCourses.rejected, (state, action) => {
+    builder.addCase(getCourses.rejected, (state, action) => {
       state.status = "failed";
       if (action.payload) {
         state.message = action.payload.message;

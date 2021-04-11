@@ -18,7 +18,7 @@ interface AuthState {
   isSessionTimeout: boolean;
 }
 
-interface GetResponseData {
+interface GETResponse {
   verifiedUser: User;
   avatarUrl: string;
   verifiedToken: string;
@@ -26,13 +26,13 @@ interface GetResponseData {
 }
 
 export const verify = createAsyncThunk<
-  GetResponseData,
+  GETResponse,
   {
     token: string;
     role: string;
     expirationDate: string;
   },
-  { rejectValue: GetResponseData; dispatch: AppDispatch }
+  { rejectValue: GETResponse; dispatch: AppDispatch }
 >(
   "auth/verify",
   async ({ token, role, expirationDate }, thunkApi) => {
@@ -47,10 +47,10 @@ export const verify = createAsyncThunk<
       setTimeout(() => {
         thunkApi.dispatch(setIsSessionTimeout(true));
       }, new Date(Number(expirationDate)).getTime() - new Date().getTime());
-      return data as GetResponseData;
+      return data as GETResponse;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as GetResponseData
+        err.response.data as GETResponse
       );
     }
   }
@@ -72,15 +72,12 @@ export const AuthSlice = createSlice({
     setIsSessionTimeout: (state, action: PayloadAction<boolean>) => {
       state.isSessionTimeout = action.payload;
     },
-    refreshState: (state) => {
+    resetState: (state) => {
       state.verifiedUser = null;
       state.verifiedToken = null;
       state.verifiedRole = null;
       state.avatarUrl = null;
       state.isSessionTimeout = false;
-      localStorage.removeItem("token");
-      localStorage.removeItem("role");
-      localStorage.removeItem("exp");
     },
   },
   extraReducers: (builder) => {
@@ -106,7 +103,7 @@ export const AuthSlice = createSlice({
 
 export const {
   setIsSessionTimeout,
-  refreshState,
+  resetState,
 } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

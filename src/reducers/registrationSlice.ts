@@ -10,59 +10,67 @@ interface RegistrationState {
   message?: string;
 }
 
-interface GetResponseData {
+interface GETResponse {
   registrations: Registration[];
   count: number;
   message: string;
 }
 
-interface PostPutResponseData {
+interface GETFilter {
+  batch?: number;
+  startDate?: Date;
+  endDate?: Date;
+  isOpening?: boolean;
+  semester?: string;
+}
+
+interface POSTResponse {
   registration: Registration;
   message: string;
 }
 
-export const fetchAllRegistrationsBySemesterId = createAsyncThunk<
-  GetResponseData,
-  string,
-  { rejectValue: GetResponseData }
->(
-  "registrations/fetchAllRegistrationsBySemesterId",
-  async (semesterId, thunkApi) => {
-    try {
-      const { data } = await api.get("/registrations", {
-        params: { semesterid: semesterId },
-      });
-      return data as GetResponseData;
-    } catch (err) {
-      return thunkApi.rejectWithValue(
-        err.response.data as GetResponseData
-      );
-    }
+interface PUTResponse {
+  registration: Registration;
+  message: string;
+}
+
+export const getRegistrations = createAsyncThunk<
+  GETResponse,
+  GETFilter,
+  { rejectValue: GETResponse }
+>("registrations/getRegistrations", async (filter, thunkApi) => {
+  try {
+    const { data } = await api.get("/registrations", {
+      params: { ...filter },
+    });
+    return data as GETResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(err.response.data as GETResponse);
   }
-);
+});
 
 export const openRegistration = createAsyncThunk<
-  PostPutResponseData,
+  POSTResponse,
   Registration,
-  { rejectValue: PostPutResponseData }
+  { rejectValue: POSTResponse }
 >(
   "registrations/openRegistration",
   async (registration, thunkApi) => {
     try {
       const { data } = await api.post("/registrations", registration);
-      return data as PostPutResponseData;
+      return data as POSTResponse;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as PostPutResponseData
+        err.response.data as POSTResponse
       );
     }
   }
 );
 
 export const editRegistration = createAsyncThunk<
-  PostPutResponseData,
+  PUTResponse,
   Registration,
-  { rejectValue: PostPutResponseData }
+  { rejectValue: PUTResponse }
 >(
   "registrations/editRegistration",
   async (registration, thunkApi) => {
@@ -71,10 +79,10 @@ export const editRegistration = createAsyncThunk<
         `/registrations/${registration._id}`,
         registration
       );
-      return data as PostPutResponseData;
+      return data as PUTResponse;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as PostPutResponseData
+        err.response.data as PUTResponse
       );
     }
   }
@@ -98,35 +106,24 @@ export const registrationSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(
-      fetchAllRegistrationsBySemesterId.pending,
-      (state) => {
-        state.status = "pending";
-      }
-    );
-    builder.addCase(
-      fetchAllRegistrationsBySemesterId.fulfilled,
-      (state, action) => {
-        state.status = "succeeded";
-        state.registrations = _.cloneDeep(
-          action.payload.registrations
-        );
+    builder.addCase(getRegistrations.pending, (state) => {
+      state.status = "pending";
+    });
+    builder.addCase(getRegistrations.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.registrations = _.cloneDeep(action.payload.registrations);
+      state.count = action.payload.count;
+      state.message = action.payload.message;
+    });
+    builder.addCase(getRegistrations.rejected, (state, action) => {
+      state.status = "failed";
+      if (action.payload) {
+        state.message = action.payload.message;
+        state.registrations = [];
         state.count = action.payload.count;
         state.message = action.payload.message;
       }
-    );
-    builder.addCase(
-      fetchAllRegistrationsBySemesterId.rejected,
-      (state, action) => {
-        state.status = "failed";
-        if (action.payload) {
-          state.message = action.payload.message;
-          state.registrations = [];
-          state.count = action.payload.count;
-          state.message = action.payload.message;
-        }
-      }
-    );
+    });
     builder.addCase(openRegistration.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.registrations = state.registrations.concat(

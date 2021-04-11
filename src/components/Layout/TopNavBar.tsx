@@ -11,18 +11,22 @@ import SemesterModal from "./SemesterModal";
 import Countdown from "react-countdown";
 import EditSemesterModal from "./EditSemesterModal";
 import CloseSemesterModal from "./CloseSemesterModal";
-import useFetchRegistrations from "../../hooks/registration/useFetchRegistrations";
-import useFetchSemester from "../../hooks/semester/useFetchSemester";
-import { editRegistration } from "../../reducers/registrationSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
+import _ from "lodash";
+
+// import reducers
 import {
   setShowSuccessSnackBar,
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
-import _ from "lodash";
+import { editRegistration } from "../../reducers/registrationSlice";
+// import hooks
+import useGetRegistrationBySemester from "../../hooks/registration/useGetRegistrationBySemester";
+import useGetOpenSemester from "../../hooks/semester/useGetOpenSemester";
 import { useAppDispatch } from "../../store";
 
+// component props
 interface TopNavBarProps {
   isShowNotifyPanel: boolean;
   setIsShowNotifyPanel: () => void;
@@ -38,6 +42,7 @@ const TopNavBar = ({
   setIsShowAvatarPanel,
   handleClosePanel,
 }: TopNavBarProps) => {
+  // useState
   const [showSemesterModal, setShowSemesterModal] = useState(false);
   const [showEditSemesterModal, setShowEditSemesterModal] = useState(
     false
@@ -52,12 +57,14 @@ const TopNavBar = ({
   ] = useState("idle");
   const dispatch = useAppDispatch();
 
-  // * Call API
-  const [semester, semesterStatus] = useFetchSemester();
-  const [registrations, registrationStatus] = useFetchRegistrations(
-    (semester as Semester)?._id
-  );
+  // * Call hooks
+  const [semester, semesterStatus] = useGetOpenSemester();
+  const [
+    registrations,
+    registrationStatus,
+  ] = useGetRegistrationBySemester((semester as Semester)?._id);
 
+  // conditional renderer
   const renderSemester = () => {
     if (semesterStatus === "pending") {
       return (
@@ -109,6 +116,7 @@ const TopNavBar = ({
     return null;
   };
 
+  // handle close registration automatically
   const handleRegAutoClose = async () => {
     const clonedRegistration = _.cloneDeep(
       (registrations as Registration[]).find(
@@ -168,7 +176,7 @@ const TopNavBar = ({
       <StyledTopNavBar>
         <SemesterContainer>{renderSemester()}</SemesterContainer>
         <SearchBarContainer onClick={handleClosePanel}>
-          {registrationStatus === "succeeded" ? <SearchBar /> : null}
+          <SearchBar />
         </SearchBarContainer>
 
         <UserSectionContainer>

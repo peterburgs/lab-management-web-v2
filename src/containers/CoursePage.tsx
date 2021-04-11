@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Course } from "../react-app-env";
-import useFetchCourses from "../hooks/course/useFetchCourses";
+import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import { Column } from "react-table";
 import Table from "../components/common/Table";
 import Button from "../components/common/Button";
@@ -42,7 +42,7 @@ const CoursePage = () => {
   const [showNewCourseModal, setShowNewCourseModal] = useState(false);
 
   // * Call API
-  const [courses, courseStatus] = useFetchCourses();
+  const [courses, courseStatus] = useGetAllCourses();
 
   const renderTable = () => {
     const columns: Array<Column<CourseTable>> = [

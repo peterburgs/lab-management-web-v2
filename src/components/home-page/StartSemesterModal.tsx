@@ -7,17 +7,19 @@ import { useForm, Controller } from "react-hook-form";
 import { TextField } from "@material-ui/core";
 import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
-import { Semester } from "../../react-app-env";
-import { useAppDispatch } from "../../store";
-import {
-  startSemester,
-} from "../../reducers/semesterSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
+
+// import models
+import { Semester } from "../../react-app-env";
+// import reducers
+import { startSemester } from "../../reducers/semesterSlice";
 import {
   setShowSuccessSnackBar,
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
+// import hooks
+import { useAppDispatch } from "../../store";
 
 const StartSemesterModal = (props: ModalProps) => {
   const [status, setStatus] = useState("idle");

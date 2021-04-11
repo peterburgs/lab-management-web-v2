@@ -1,10 +1,14 @@
 import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { fetchAllTeachingsByRegistrationId } from "../../reducers/teachingSlice";
+import {
+  getTeachings,
+  resetState,
+} from "../../reducers/teachingSlice";
 import { Registration } from "../../react-app-env";
+import { useLocation } from "react-router";
 
-const useFetchTeachings = (
+const useGetTeachingsByRegistrationBatch = (
   registrations: Registration[],
   batch: number
 ) => {
@@ -24,13 +28,13 @@ const useFetchTeachings = (
       (batchRef.current !== batch && registrations.length > 0)
     ) {
       batchRef.current = batch;
-      const registrationId = registrations.find(
+      const registration = registrations.find(
         (reg) => reg.batch === batch
       )!._id;
       (async () => {
         try {
           const actionResult = await dispatch(
-            fetchAllTeachingsByRegistrationId(registrationId)
+            getTeachings({ registration })
           );
           unwrapResult(actionResult);
         } catch (err) {
@@ -38,11 +42,17 @@ const useFetchTeachings = (
         }
       })();
     }
-
-    return () => {};
+    return () => {
+      if (
+        teachingStatus === "failed" ||
+        teachingStatus === "succeeded"
+      ) {
+        dispatch(resetState());
+      }
+    };
   }, [teachingStatus, dispatch, batch, registrations]);
 
   return [teachings, teachingStatus];
 };
 
-export default useFetchTeachings;
+export default useGetTeachingsByRegistrationBatch;

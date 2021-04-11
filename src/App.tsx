@@ -10,32 +10,43 @@ import {
   Alert,
   Slide,
 } from "@material-ui/core";
-// or @material-ui/lab/Adapter{Dayjs,Luxon,Moment} or any valid date-io adapter
 import AdapterDateFns from "@material-ui/lab/AdapterDateFns";
 import LocalizationProvider from "@material-ui/lab/LocalizationProvider";
 import { LinearProgress } from "@material-ui/core";
 import styled from "styled-components";
 import Login from "./containers/Login";
 import PrivateRoute from "./containers/PrivateRoute";
-import { useAppDispatch, useAppSelector } from "./store";
+import { TransitionProps } from "@material-ui/core/transitions";
+import AuthCheck from "./containers/AuthCheck";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorPage from "./containers/ErrorPage";
+
+// import reducers
+import { resetState as resetAuthState } from "./reducers/authSlice";
+import { resetState as resetRegistrationState } from "./reducers/registrationSlice";
+import { resetState as resetSemesterState } from "./reducers/semesterSlice";
 import {
   setShowSuccessSnackBar,
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "./reducers/notificationSlice";
-import { TransitionProps } from "@material-ui/core/transitions";
-import AuthCheck from "./containers/AuthCheck";
-import { useGoogleLogout } from "react-google-login";
-import { refreshState } from "./reducers/authSlice";
-import { ErrorBoundary } from "react-error-boundary";
-import ErrorPage from "./containers/ErrorPage";
-import LecturerRegistration from "./containers/LecturerRegistration";
 
+// import hooks
+import { useGoogleLogout } from "react-google-login";
+import { useAppDispatch, useAppSelector } from "./store";
+
+// snackbar animation helper
 function SlideTransition(props: TransitionProps) {
   return <Slide {...props} direction="up" />;
 }
 
-const HomePage = React.lazy(() => import("./containers/HomePage"));
+// lazy load pages
+const RegistrationPage = React.lazy(
+  () => import("./containers/RegistrationPage")
+);
+const LecturerRegistrationPage = React.lazy(
+  () => import("./containers/LecturerRegistrationPage")
+);
 const CoursePage = React.lazy(
   () => import("./containers/CoursePage")
 );
@@ -47,6 +58,7 @@ const RequestPage = React.lazy(
   () => import("./containers/RequestPage")
 );
 
+// material-ui theme
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -60,10 +72,12 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
+  // useState
   const [isCollapsed, setIsCollapsed] = useState(
     window.innerWidth > 1220 ? false : true
   );
 
+  // call hooks
   const showSuccessSnackBar = useAppSelector(
     (state) => state.notifications.showSuccessSnackBar
   );
@@ -82,7 +96,9 @@ const App = () => {
   const verifiedRole = useAppSelector(
     (state) => state.auth.verifiedRole
   );
+  const dispatch = useAppDispatch();
 
+  // event handling
   const handleSidebarToggle = () => {
     setIsCollapsed((isCollapsed) => !isCollapsed);
   };
@@ -91,15 +107,18 @@ const App = () => {
     setIsCollapsed(a);
   };
 
-  const dispatch = useAppDispatch();
-
   const handleCloseSnackBar = () => {
     dispatch(setShowSuccessSnackBar(false));
     dispatch(setShowErrorSnackBar(false));
   };
 
   const onLogoutSuccess = () => {
-    dispatch(refreshState());
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("exp");
+    dispatch(resetAuthState());
+    dispatch(resetRegistrationState());
+    dispatch(resetSemesterState());
     dispatch(setShowSuccessSnackBar(true));
     dispatch(setSnackBarContent("Session timeout"));
   };
@@ -109,6 +128,7 @@ const App = () => {
     onLogoutSuccess,
   });
 
+  // useEffect
   useEffect(() => {
     if (isSessionTimeout) {
       signOut();
@@ -150,7 +170,7 @@ const App = () => {
             </Snackbar>
             <GlobalStyle />
             <Switch>
-              {console.log(isAuthenticated)}
+              {/* Auth routes */}
               {!isAuthenticated && (
                 <>
                   <Route path="/" render={() => <AuthCheck />} />
@@ -161,6 +181,7 @@ const App = () => {
                   />
                 </>
               )}
+              {/* Private routes */}
               <PrivateRoute
                 roles={["ADMIN", "LECTURER"]}
                 path="/"
@@ -189,9 +210,9 @@ const App = () => {
                       }
                     >
                       {verifiedRole && verifiedRole === "ADMIN" ? (
-                        <HomePage />
+                        <RegistrationPage />
                       ) : (
-                        <LecturerRegistration />
+                        <LecturerRegistrationPage />
                       )}
                     </Suspense>
                   </Layout>

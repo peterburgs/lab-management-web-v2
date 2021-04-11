@@ -10,41 +10,46 @@ interface RegistrableCourseState {
   message?: string;
 }
 
-interface GetResponseData {
+interface GETResponse {
   registrableCourses: RegistrableCourse[];
   count: number;
   message: string;
 }
 
-interface PostPutResponseData {
+interface GETFilter {
+  registration?: string;
+  course?: string;
+}
+
+interface POSTResponse {
   registrableCourse: RegistrableCourse;
   message: string;
 }
 
-export const fetchAllRegistrableCoursesByRegistrationId = createAsyncThunk<
-  GetResponseData,
-  string,
-  { rejectValue: GetResponseData }
+export const getRegistrableCourses = createAsyncThunk<
+  GETResponse,
+  GETFilter,
+  { rejectValue: GETResponse }
 >(
-  "registrableCourses/fetchAllRegistrableCoursesByRegistrationId",
-  async (registrationId, thunkApi) => {
+  "registrableCourses/getRegistrableCourses",
+  async (filter, thunkApi) => {
     try {
       const { data } = await api.get("/registrableCourses", {
-        params: { registrationid: registrationId },
+        params: { ...filter },
       });
-      return data as GetResponseData;
+      return data as GETResponse;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as GetResponseData
+        err.response.data as GETResponse
       );
     }
   }
 );
 
 export const newRegistrableCourse = createAsyncThunk<
-  PostPutResponseData,
+  POSTResponse,
   RegistrableCourse,
-  { rejectValue: PostPutResponseData }
+  { rejectValue: POSTResponse }
 >(
   "registrableCourses/newRegistrableCourse",
   async (registrableCourse, thunkApi) => {
@@ -53,10 +58,10 @@ export const newRegistrableCourse = createAsyncThunk<
         "/registrable-courses",
         registrableCourse
       );
-      return data as PostPutResponseData;
+      return data as POSTResponse;
     } catch (err) {
       return thunkApi.rejectWithValue(
-        err.response.data as PostPutResponseData
+        err.response.data as POSTResponse
       );
     }
   }
@@ -72,14 +77,11 @@ export const RegistrableCourseSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    builder.addCase(getRegistrableCourses.pending, (state) => {
+      state.status = "pending";
+    });
     builder.addCase(
-      fetchAllRegistrableCoursesByRegistrationId.pending,
-      (state) => {
-        state.status = "pending";
-      }
-    );
-    builder.addCase(
-      fetchAllRegistrableCoursesByRegistrationId.fulfilled,
+      getRegistrableCourses.fulfilled,
       (state, action) => {
         state.status = "succeeded";
         state.registrableCourses = _.cloneDeep(
@@ -90,7 +92,7 @@ export const RegistrableCourseSlice = createSlice({
       }
     );
     builder.addCase(
-      fetchAllRegistrableCoursesByRegistrationId.rejected,
+      getRegistrableCourses.rejected,
       (state, action) => {
         state.status = "failed";
         if (action.payload) {

@@ -1,20 +1,24 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { fetchOpenSemester } from "../../reducers/semesterSlice";
+import { getSemesters } from "../../reducers/semesterSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 
-const useFetchSemester = () => {
+const useGetOpenSemester = () => {
   const dispatch = useAppDispatch();
-  const semester = useAppSelector((state) => state.semester.semester);
+  const semester = useAppSelector(
+    (state) => state.semesters.semesters[0]
+  );
   const semesterStatus = useAppSelector(
-    (state) => state.semester.status
+    (state) => state.semesters.status
   );
 
   useEffect(() => {
     if (semesterStatus === "idle") {
       (async () => {
         try {
-          const actionResult = await dispatch(fetchOpenSemester());
+          const actionResult = await dispatch(
+            getSemesters({ isOpening: true })
+          );
           unwrapResult(actionResult);
         } catch (err) {
           console.log(err);
@@ -26,4 +30,4 @@ const useFetchSemester = () => {
   return [semester, semesterStatus];
 };
 
-export default useFetchSemester;
+export default useGetOpenSemester;

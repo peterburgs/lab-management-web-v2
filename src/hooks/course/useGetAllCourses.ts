@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { fetchAllCourses } from "../../reducers/courseSlice";
+import { getCourses } from "../../reducers/courseSlice";
 
-const useFetchCourses = () => {
+const useGetAllCourses = () => {
   const dispatch = useAppDispatch();
   const courses = useAppSelector((state) => state.courses.courses);
   const courseStatus = useAppSelector(
@@ -14,7 +14,7 @@ const useFetchCourses = () => {
     if (courseStatus === "idle") {
       (async () => {
         try {
-          const actionResult = await dispatch(fetchAllCourses());
+          const actionResult = await dispatch(getCourses({}));
           unwrapResult(actionResult);
         } catch (err) {
           console.log(err);
@@ -26,4 +26,4 @@ const useFetchCourses = () => {
   return [courses, courseStatus];
 };
 
-export default useFetchCourses;
+export default useGetAllCourses;

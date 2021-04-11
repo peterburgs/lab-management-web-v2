@@ -2,7 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { Registration } from "../../react-app-env";
 import Countdown from "react-countdown";
-import Button from "../common/Button";
+import Button from "./Button";
+import { useAppSelector } from "../../store";
 
 interface RegistrationStatusProps {
   registration: Registration;
@@ -11,6 +12,8 @@ interface RegistrationStatusProps {
 const RegistrationStatus = ({
   registration,
 }: RegistrationStatusProps) => {
+  const role = useAppSelector((state) => state.auth.verifiedRole);
+
   return (
     <StyledRegistrationStatus isOpening={registration.isOpening}>
       {registration.isOpening ? (
@@ -26,11 +29,13 @@ const RegistrationStatus = ({
               </TimeRemainContainer>
             )}
           />
-          <Overlay>
-            <CloseRegistrationButton>
-              Close now
-            </CloseRegistrationButton>
-          </Overlay>
+          {role === "ADMIN" && (
+            <Overlay>
+              <CloseRegistrationButton>
+                Close now
+              </CloseRegistrationButton>
+            </Overlay>
+          )}
         </>
       ) : (
         <Text>Closed</Text>

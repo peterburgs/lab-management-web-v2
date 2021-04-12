@@ -7,10 +7,12 @@ import { useAppSelector } from "../../store";
 
 interface RegistrationStatusProps {
   registration: Registration;
+  onCloseBtnClick?: () => void;
 }
 
 const RegistrationStatus = ({
   registration,
+  onCloseBtnClick,
 }: RegistrationStatusProps) => {
   const role = useAppSelector((state) => state.auth.verifiedRole);
 
@@ -31,7 +33,7 @@ const RegistrationStatus = ({
           />
           {role === "ADMIN" && (
             <Overlay>
-              <CloseRegistrationButton>
+              <CloseRegistrationButton onClick={onCloseBtnClick}>
                 Close now
               </CloseRegistrationButton>
             </Overlay>

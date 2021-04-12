@@ -13,8 +13,8 @@ export type Semester = {
 
 export type Teaching = {
   _id: string;
-  user: string;
-  course: string;
+  user: string | User;
+  course: string | Course;
   group: number;
   dayOfWeek: number;
   startPeriod: number;
@@ -22,7 +22,7 @@ export type Teaching = {
   numberOfStudents: number;
   theoryRoom: string;
   numberOfPracticalWeeks: number;
-  registration: string;
+  registration: string | Registration;
   updatedAt: Date;
   createdAt: Date;
   isHidden: boolean;
@@ -34,7 +34,7 @@ export type Registration = {
   startDate: Date;
   endDate: Date;
   isOpening: boolean;
-  semester: string;
+  semester: string | Semester;
   updatedAt: Date;
   createdAt: Date;
   isHidden: boolean;
@@ -51,8 +51,8 @@ export type Course = {
 
 export type RegistrableCourse = {
   _id?: string;
-  registration: string;
-  course: string;
+  registration: string | Registration;
+  course: string | Course;
 };
 
 export type User = {
@@ -60,6 +60,28 @@ export type User = {
   email: string;
   fullName: string;
   roles: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  isHidden: boolean;
+};
+
+export type Lab = {
+  _id: string;
+  labName: string;
+  capacity: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isHidden: boolean;
+};
+
+export type LabUsage = {
+  _id: string;
+  lab: string | Lab;
+  teaching: string | Teaching;
+  weekNo: string;
+  dayOfWeek: number;
+  startPeriod: Date;
+  endPeriod: Date;
   createdAt: Date;
   updatedAt: Date;
   isHidden: boolean;

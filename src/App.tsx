@@ -25,6 +25,7 @@ import ErrorPage from "./containers/ErrorPage";
 import { resetState as resetAuthState } from "./reducers/authSlice";
 import { resetState as resetRegistrationState } from "./reducers/registrationSlice";
 import { resetState as resetSemesterState } from "./reducers/semesterSlice";
+import { resetState as resetSearchState } from "./reducers/searchSlice";
 import {
   setShowSuccessSnackBar,
   setShowErrorSnackBar,
@@ -119,6 +120,7 @@ const App = () => {
     dispatch(resetAuthState());
     dispatch(resetRegistrationState());
     dispatch(resetSemesterState());
+    dispatch(resetSearchState());
     dispatch(setShowSuccessSnackBar(true));
     dispatch(setSnackBarContent("Session timeout"));
   };
@@ -130,6 +132,7 @@ const App = () => {
 
   // useEffect
   useEffect(() => {
+    // handle session timeout
     if (isSessionTimeout) {
       signOut();
     }

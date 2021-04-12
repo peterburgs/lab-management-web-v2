@@ -88,26 +88,10 @@ const CoursePage = () => {
     } else {
       return (
         <SkeletonContainer>
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
+          <Skeleton variant="rectangular" height={40} />
+          <Skeleton variant="rectangular" height={40} />
+          <Skeleton variant="rectangular" height={40} />
+          <Skeleton variant="rectangular" height={40} />
         </SkeletonContainer>
       );
     }

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { resetState as resetAuthState } from "../../reducers/authSlice";
 import { resetState as resetRegistrationState } from "../../reducers/registrationSlice";
 import { resetState as resetSemesterState } from "../../reducers/semesterSlice";
+import { resetState as resetSearchState } from "../../reducers/searchSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
@@ -30,6 +31,7 @@ const AvatarPanel = () => {
     dispatch(resetAuthState());
     dispatch(resetRegistrationState());
     dispatch(resetSemesterState());
+    dispatch(resetSearchState());
     dispatch(setShowSuccessSnackBar(true));
     dispatch(setSnackBarContent("You are logged out"));
   };

@@ -24,7 +24,6 @@ import { editRegistration } from "../../reducers/registrationSlice";
 import {
   setPlaceholder,
   setTeachingSearch,
-  setLecturerTeachingSearch,
 } from "../../reducers/searchSlice";
 // import hooks
 import useGetRegistrationBySemester from "../../hooks/registration/useGetRegistrationBySemester";
@@ -72,7 +71,6 @@ const TopNavBar = ({
   const searchPlaceholder = useAppSelector(
     (state) => state.search.placeholder
   );
-  const role = useAppSelector((state) => state.auth.verifiedRole);
   const location = useLocation();
 
   // event handler
@@ -80,11 +78,7 @@ const TopNavBar = ({
     console.log(searchText);
     switch (location.pathname.split("/")[1]) {
       case "":
-        if (role === "ADMIN") {
-          dispatch(setTeachingSearch(searchText));
-        } else {
-          dispatch(setLecturerTeachingSearch(searchText));
-        }
+        dispatch(setTeachingSearch(searchText));
         break;
       case "schedule":
         console.log("Test");
@@ -216,10 +210,19 @@ const TopNavBar = ({
       <StyledTopNavBar>
         <SemesterContainer>{renderSemester()}</SemesterContainer>
         <SearchBarContainer onClick={handleClosePanel}>
-          <SearchBar
-            placeholder={searchPlaceholder}
-            setSearchText={handleSearch}
-          />
+          {location.pathname !== "/" ? (
+            <SearchBar
+              placeholder={searchPlaceholder}
+              setSearchText={handleSearch}
+            />
+          ) : (
+            registrations.length > 0 && (
+              <SearchBar
+                placeholder={searchPlaceholder}
+                setSearchText={handleSearch}
+              />
+            )
+          )}
         </SearchBarContainer>
 
         <UserSectionContainer>

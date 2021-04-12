@@ -30,6 +30,8 @@ import useGetTeachingsByRegistrationBatch from "../hooks/teaching/useGetTeaching
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import useFetchUsers from "../hooks/user/useFetchUsers";
 import { useAppSelector } from "../store";
+import CloseRegistrationModal from "../components/registration-page/CloseRegistration";
+import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
 
 // Table type
 type TeachingTable = {
@@ -57,7 +59,7 @@ const prepareData = (
     data = teachings.map((teaching) => {
       return {
         rowId: teaching._id,
-        courseId: teaching.course,
+        courseId: teaching.course as string,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,
         group: teaching.group,
@@ -90,6 +92,14 @@ const RegistrationPage = () => {
   const [showSelectCourseModal, setShowSelectCourseModal] = useState(
     false
   );
+  const [
+    showCloseRegistrationModal,
+    setShowCloseRegistrationModal,
+  ] = useState(false);
+  const [
+    showGenerateScheduleModal,
+    setShowGenerateScheduleModal,
+  ] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState<
     CheckboxItem[]
   >([]);
@@ -114,6 +124,9 @@ const RegistrationPage = () => {
   );
   const [courses, courseStatus] = useGetAllCourses();
   const [users, userStatus] = useFetchUsers();
+  const teachingSearchText = useAppSelector(
+    (state) => state.search.teachingSearchText
+  );
 
   // event handling
   const handleSelectCourse = (value: CheckboxItem) => () => {
@@ -168,7 +181,16 @@ const RegistrationPage = () => {
     ];
     if (courseStatus === "succeeded" && userStatus === "succeeded") {
       const { data } = prepareData(
-        teachings as Teaching[],
+        (teachings as Teaching[]).filter((item) => {
+          console.log(teachingSearchText);
+          if (teachingSearchText === "") return true;
+          return (
+            (item.course as string).includes(teachingSearchText) ||
+            (courses as Course[])
+              .find((course) => course._id === item.course)
+              ?.courseName.includes(teachingSearchText)
+          );
+        }),
         courses as Course[],
         users as User[]
       );
@@ -329,10 +351,17 @@ const RegistrationPage = () => {
                 >
                   Open registration
                 </Button>
-                <Button>Generate schedule</Button>
+                <Button
+                  onClick={() => setShowGenerateScheduleModal(true)}
+                >
+                  Generate schedule
+                </Button>
               </Action>
             </Toolbar>
             <RegistrationStatus
+              onCloseBtnClick={() =>
+                setShowCloseRegistrationModal(true)
+              }
               registration={
                 (registrations as Registration[]).find(
                   (reg) => reg.batch === batch
@@ -378,6 +407,16 @@ const RegistrationPage = () => {
         setShowModal={setShowOpenRegistrationModal}
         setShowSelectCourseModal={setShowSelectCourseModal}
         selectedCourses={selectedCourses}
+      />
+      <CloseRegistrationModal
+        showModal={showCloseRegistrationModal}
+        setShowModal={setShowCloseRegistrationModal}
+        name="Confirm close registration"
+      />
+      <GenerateScheduleModal
+        showModal={showGenerateScheduleModal}
+        setShowModal={setShowGenerateScheduleModal}
+        name="Generate schedule"
       />
       <StyledRegistrationPage>
         {renderContent()}

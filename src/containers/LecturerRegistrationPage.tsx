@@ -46,7 +46,7 @@ const prepareData = (
     data = teachings.map((teaching) => {
       return {
         rowId: teaching._id,
-        courseId: teaching.course,
+        courseId: teaching.course as string,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,
         group: teaching.group,
@@ -102,7 +102,7 @@ const LecturerRegistrationPage = () => {
   );
   const [courses, courseStatus] = useGetAllCourses();
   const teachingSearchText = useAppSelector(
-    (state) => state.search.lecturerTeachingSearchText
+    (state) => state.search.teachingSearchText
   );
   const history = useHistory();
 
@@ -145,7 +145,7 @@ const LecturerRegistrationPage = () => {
           console.log(teachingSearchText);
           if (teachingSearchText === "") return true;
           return (
-            item.course.includes(teachingSearchText) ||
+            (item.course as string).includes(teachingSearchText) ||
             (courses as Course[])
               .find((course) => course._id === item.course)
               ?.courseName.includes(teachingSearchText)

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 // import components
 import Table from "../components/common/Table";
@@ -20,6 +20,7 @@ import { useAppSelector } from "../store";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
 import { useHistory } from "react-router";
+import DeleteTeachingModal from "../components/lecturer-registration-page/DeleteTeachingModal";
 
 // Table type
 type TeachingTable = {
@@ -67,6 +68,14 @@ const LecturerRegistrationPage = () => {
   const [showNewTeachingModal, setShowNewTeachingModal] = useState(
     false
   );
+  const [
+    showDeleteTeachingModal,
+    setShowDeleteTeachingModal,
+  ] = useState(false);
+  const [
+    teachingIdToDelete,
+    setTeachingIdToDelete,
+  ] = useState<string>(null!);
 
   // call hooks
   const semesterStatus = useAppSelector(
@@ -92,6 +101,9 @@ const LecturerRegistrationPage = () => {
     verifiedUser
   );
   const [courses, courseStatus] = useGetAllCourses();
+  const teachingSearchText = useAppSelector(
+    (state) => state.search.lecturerTeachingSearchText
+  );
   const history = useHistory();
 
   // conditional renderer
@@ -129,7 +141,16 @@ const LecturerRegistrationPage = () => {
 
     if (courseStatus === "succeeded") {
       const { data } = prepareData(
-        teachings as Teaching[],
+        (teachings as Teaching[]).filter((item) => {
+          console.log(teachingSearchText);
+          if (teachingSearchText === "") return true;
+          return (
+            item.course.includes(teachingSearchText) ||
+            (courses as Course[])
+              .find((course) => course._id === item.course)
+              ?.courseName.includes(teachingSearchText)
+          );
+        }),
         courses as Course[]
       );
       if (teachingStatus === "succeeded") {
@@ -139,6 +160,10 @@ const LecturerRegistrationPage = () => {
             columns={columns}
             name="Teaching"
             onClickEditBtn={(id) => history.push(`/teachings/${id}`)}
+            onClickDeleteBtn={(id) => {
+              setShowDeleteTeachingModal(true);
+              setTeachingIdToDelete(id);
+            }}
             isAllowEditDelete={true}
           />
         );
@@ -149,6 +174,11 @@ const LecturerRegistrationPage = () => {
             data={data}
             columns={columns}
             name="Teaching"
+            onClickEditBtn={(id) => history.push(`/teachings/${id}`)}
+            onClickDeleteBtn={(id) => {
+              setShowDeleteTeachingModal(true);
+              setTeachingIdToDelete(id);
+            }}
             isAllowEditDelete={true}
           />
         );
@@ -185,6 +215,11 @@ const LecturerRegistrationPage = () => {
           data={data}
           columns={columns}
           name="Teaching"
+          onClickEditBtn={(id) => history.push(`/teachings/${id}`)}
+          onClickDeleteBtn={(id) => {
+            setShowDeleteTeachingModal(true);
+            setTeachingIdToDelete(id);
+          }}
           isAllowEditDelete={true}
         />
       );
@@ -307,6 +342,12 @@ const LecturerRegistrationPage = () => {
         showModal={showNewTeachingModal}
         setShowModal={setShowNewTeachingModal}
         name="New teaching"
+      />
+      <DeleteTeachingModal
+        showModal={showDeleteTeachingModal}
+        setShowModal={setShowDeleteTeachingModal}
+        name="Confirm delete teaching"
+        teachingId={teachingIdToDelete}
       />
       <StyledRegistrationPage>
         {renderContent()}

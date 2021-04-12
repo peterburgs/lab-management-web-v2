@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import AvatarButton from "./AvatarButton";
 import AvatarPanel from "./AvatarPanel";
@@ -21,10 +21,16 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 import { editRegistration } from "../../reducers/registrationSlice";
+import {
+  setPlaceholder,
+  setTeachingSearch,
+  setLecturerTeachingSearch,
+} from "../../reducers/searchSlice";
 // import hooks
 import useGetRegistrationBySemester from "../../hooks/registration/useGetRegistrationBySemester";
 import useGetOpenSemester from "../../hooks/semester/useGetOpenSemester";
-import { useAppDispatch } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { useLocation } from "react-router";
 
 // component props
 interface TopNavBarProps {
@@ -63,6 +69,40 @@ const TopNavBar = ({
     registrations,
     registrationStatus,
   ] = useGetRegistrationBySemester((semester as Semester)?._id);
+  const searchPlaceholder = useAppSelector(
+    (state) => state.search.placeholder
+  );
+  const role = useAppSelector((state) => state.auth.verifiedRole);
+  const location = useLocation();
+
+  // event handler
+  const handleSearch = (searchText: string) => {
+    console.log(searchText);
+    switch (location.pathname.split("/")[1]) {
+      case "":
+        if (role === "ADMIN") {
+          dispatch(setTeachingSearch(searchText));
+        } else {
+          dispatch(setLecturerTeachingSearch(searchText));
+        }
+        break;
+      case "schedule":
+        console.log("Test");
+        break;
+    }
+  };
+
+  // useEffect
+  useEffect(() => {
+    switch (location.pathname.split("/")[1]) {
+      case "":
+        dispatch(setPlaceholder("Enter course name or id to search"));
+        break;
+      case "schedule":
+        dispatch(setPlaceholder("Enter lab name to search"));
+        break;
+    }
+  }, [location, dispatch]);
 
   // conditional renderer
   const renderSemester = () => {
@@ -176,7 +216,10 @@ const TopNavBar = ({
       <StyledTopNavBar>
         <SemesterContainer>{renderSemester()}</SemesterContainer>
         <SearchBarContainer onClick={handleClosePanel}>
-          <SearchBar />
+          <SearchBar
+            placeholder={searchPlaceholder}
+            setSearchText={handleSearch}
+          />
         </SearchBarContainer>
 
         <UserSectionContainer>

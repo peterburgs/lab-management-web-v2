@@ -38,6 +38,7 @@ export interface TableProperties<T extends Record<string, unknown>>
   onEdit?: (instance: TableInstance<T>) => MouseEventHandler;
   onClick?: (row: Row<T>) => void;
   onClickEditBtn?: (id: string) => void;
+  onClickDeleteBtn?: (id: string) => void;
   isAllowEditDelete: boolean;
 }
 
@@ -201,7 +202,13 @@ const Table = <T extends Record<string, unknown>>(
                         >
                           <EditIcon fontSize="small" />
                         </ActionButton>
-                        <ActionButton>
+                        <ActionButton
+                          onClick={() =>
+                            props.onClickDeleteBtn!(
+                              row.original.rowId as string
+                            )
+                          }
+                        >
                           <DeleteIcon fontSize="small" />
                         </ActionButton>
                       </>

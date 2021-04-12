@@ -198,6 +198,7 @@ const server = () => {
       this.get("/teachings", (schema: AppSchema, request) => {
         const teachings = schema.where("teaching", {
           ...request.queryParams,
+          isHidden: false,
         });
         if (teachings.models.length > 0) {
           return {
@@ -238,7 +239,7 @@ const server = () => {
             teaching.update({ ...attrs });
             return {
               teaching,
-              message: "Update registration successfully",
+              message: "Update teaching successfully",
             };
           }
 
@@ -248,6 +249,30 @@ const server = () => {
             {
               teaching: null,
               message: "Object sent did not match",
+            }
+          );
+        }
+      );
+      this.delete(
+        "/teachings/:teachingid",
+        (schema: AppSchema, request) => {
+          const teaching = schema.findBy("teaching", {
+            _id: request.params.teachingid,
+          });
+          if (teaching) {
+            teaching.update({ isHidden: true });
+            return {
+              teaching,
+              message: "Delete teaching successfully",
+            };
+          }
+
+          return new Response(
+            500,
+            { some: "header" },
+            {
+              teaching: null,
+              message: "Something went wrong",
             }
           );
         }

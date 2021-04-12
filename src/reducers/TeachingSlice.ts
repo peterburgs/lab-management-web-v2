@@ -32,6 +32,11 @@ interface PUTResponse {
   message: string;
 }
 
+interface DELETEResponse {
+  teaching: Teaching | null;
+  message: string;
+}
+
 export const getTeachings = createAsyncThunk<
   GETResponse,
   GETFilter,
@@ -78,6 +83,21 @@ export const editTeaching = createAsyncThunk<
     return data as PUTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as PUTResponse);
+  }
+});
+
+export const deleteTeaching = createAsyncThunk<
+  DELETEResponse,
+  string,
+  { rejectValue: DELETEResponse }
+>("teachings/deleteTeaching", async (teachingId, thunkApi) => {
+  try {
+    const { data } = await api.delete(`/teachings/${teachingId}`);
+    return data as DELETEResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as DELETEResponse
+    );
   }
 });
 
@@ -130,6 +150,12 @@ export const teachingSlice = createSlice({
       );
       state.teachings[currentIndex] = _.cloneDeep(
         action.payload.teaching!
+      );
+      state.message = action.payload.message;
+    });
+    builder.addCase(deleteTeaching.fulfilled, (state, action) => {
+      state.teachings = state.teachings.filter(
+        (item) => item._id !== action.payload.teaching!._id
       );
       state.message = action.payload.message;
     });

@@ -11,6 +11,7 @@ import userReducer from "../reducers/userSlice";
 import notificationReducer from "../reducers/notificationSlice";
 import registrableCourseReducer from "../reducers/registrableCourseSlice";
 import authReducer from "../reducers/authSlice";
+import searchReducer from "../reducers/searchSlice";
 import {
   useDispatch,
   useSelector,
@@ -27,6 +28,7 @@ export const store = configureStore({
     notifications: notificationReducer,
     registrableCourses: registrableCourseReducer,
     auth: authReducer,
+    search: searchReducer,
   },
   devTools: process.env.NODE_ENV === "development",
 });

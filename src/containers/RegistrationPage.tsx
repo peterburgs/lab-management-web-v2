@@ -12,9 +12,9 @@ import Button from "../components/common/Button";
 import { Column } from "react-table";
 import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
-import StartSemesterModal from "../components/home-page/StartSemesterModal";
-import OpenRegistrationModal from "../components/home-page/OpenRegistrationModal";
-import SelectCourseModal from "../components/home-page/SelectCourseModal";
+import StartSemesterModal from "../components/registration-page/StartSemesterModal";
+import OpenRegistrationModal from "../components/registration-page/OpenRegistrationModal";
+import SelectCourseModal from "../components/registration-page/SelectCourseModal";
 import { CheckboxItem } from "../components/common/CheckboxList";
 
 // Import models

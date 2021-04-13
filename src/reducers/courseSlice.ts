@@ -26,6 +26,16 @@ interface POSTResponse {
   message: string;
 }
 
+interface PUTResponse {
+  course: Course | null;
+  message: string;
+}
+
+interface DELETEResponse {
+  course: Course | null;
+  message: string;
+}
+
 export const getCourses = createAsyncThunk<
   GETResponse,
   GETFilter,
@@ -52,6 +62,34 @@ export const newCourse = createAsyncThunk<
   } catch (err) {
     return thunkApi.rejectWithValue(
       err.response.data as POSTResponse
+    );
+  }
+});
+
+export const editCourse = createAsyncThunk<
+  PUTResponse,
+  Course,
+  { rejectValue: PUTResponse }
+>("courses/editCourse", async (course, thunkApi) => {
+  try {
+    const { data } = await api.put(`/courses/${course._id}`, course);
+    return data as PUTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(err.response.data as PUTResponse);
+  }
+});
+
+export const deleteCourse = createAsyncThunk<
+  DELETEResponse,
+  string,
+  { rejectValue: DELETEResponse }
+>("courses/deleteCourse", async (courseId, thunkApi) => {
+  try {
+    const { data } = await api.delete(`/courses/${courseId}`);
+    return data as DELETEResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as DELETEResponse
     );
   }
 });
@@ -95,6 +133,21 @@ export const CourseSlice = createSlice({
     builder.addCase(newCourse.fulfilled, (state, action) => {
       state.status = "succeeded";
       state.courses = state.courses.concat(action.payload.course!);
+      state.message = action.payload.message;
+    });
+    builder.addCase(editCourse.fulfilled, (state, action) => {
+      const currentIndex = state.courses.findIndex(
+        (item) => item._id === action.payload.course!._id
+      );
+      state.courses[currentIndex] = _.cloneDeep(
+        action.payload.course!
+      );
+      state.message = action.payload.message;
+    });
+    builder.addCase(deleteCourse.fulfilled, (state, action) => {
+      state.courses = state.courses.filter(
+        (item) => item._id !== action.payload.course!._id
+      );
       state.message = action.payload.message;
     });
   },

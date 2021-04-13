@@ -2,12 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface SearchState {
   teachingSearchText: string;
-  placeholder: string;
+  courseSearchText: string;
+  userSearchText: string;
 }
 
 const initialState: SearchState = {
   teachingSearchText: "",
-  placeholder: "Search",
+  courseSearchText: "",
+  userSearchText: "",
 };
 
 export const SearchSlice = createSlice({
@@ -16,20 +18,26 @@ export const SearchSlice = createSlice({
   reducers: {
     resetState: (state) => {
       state.teachingSearchText = "";
+      state.courseSearchText = "";
+      state.userSearchText = "";
     },
     setTeachingSearch: (state, action: PayloadAction<string>) => {
       state.teachingSearchText = action.payload;
     },
-    setPlaceholder: (state, action: PayloadAction<string>) => {
-      state.placeholder = action.payload;
+    setCourseSearch: (state, action: PayloadAction<string>) => {
+      state.courseSearchText = action.payload;
+    },
+    setUserSearch: (state, action: PayloadAction<string>) => {
+      state.userSearchText = action.payload;
     },
   },
 });
 
 export const {
-  setPlaceholder,
   setTeachingSearch,
-  resetState
+  setCourseSearch,
+  setUserSearch,
+  resetState,
 } = SearchSlice.actions;
 
 export default SearchSlice.reducer;

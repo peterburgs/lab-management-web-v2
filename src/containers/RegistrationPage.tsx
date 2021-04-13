@@ -28,7 +28,7 @@ import {
 // Import hooks
 import useGetTeachingsByRegistrationBatch from "../hooks/teaching/useGetTeachingsByRegistrationBatch";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
-import useFetchUsers from "../hooks/user/useFetchUsers";
+import useGetAllUsers from "../hooks/user/useGetAllUsers";
 import { useAppSelector } from "../store";
 import CloseRegistrationModal from "../components/registration-page/CloseRegistration";
 import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
@@ -123,7 +123,7 @@ const RegistrationPage = () => {
     batch
   );
   const [courses, courseStatus] = useGetAllCourses();
-  const [users, userStatus] = useFetchUsers();
+  const [users, userStatus] = useGetAllUsers();
   const teachingSearchText = useAppSelector(
     (state) => state.search.teachingSearchText
   );
@@ -188,7 +188,8 @@ const RegistrationPage = () => {
             (item.course as string).includes(teachingSearchText) ||
             (courses as Course[])
               .find((course) => course._id === item.course)
-              ?.courseName.includes(teachingSearchText)
+              ?.courseName.toLowerCase()
+              .includes(teachingSearchText.toLowerCase())
           );
         }),
         courses as Course[],

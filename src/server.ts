@@ -126,6 +126,110 @@ const server = () => {
             updatedAt: new Date(),
             isHidden: false,
           },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
+          {
+            _id: "course-3",
+            courseName: "Capstone Project",
+            numberOfCredits: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+          },
         ],
         registrableCourses: [
           {
@@ -183,6 +287,15 @@ const server = () => {
             _id: "user-1",
             email: "17110076@student.hcmute.edu.vn",
             fullName: "Le Duc Thinh",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            roles: ["ADMIN", "LECTURER"],
+            isHidden: false,
+          },
+          {
+            _id: "user-2",
+            email: "17110003@student.hcmute.edu.vn",
+            fullName: "Trinh Minh Anh",
             createdAt: new Date(),
             updatedAt: new Date(),
             roles: ["ADMIN", "LECTURER"],
@@ -446,6 +559,7 @@ const server = () => {
       this.get("/courses", (schema: AppSchema, request) => {
         const courses = schema.where("course", {
           ...request.queryParams,
+          isHidden: false,
         });
 
         if (courses.models.length > 0) {
@@ -475,10 +589,59 @@ const server = () => {
           message: "Create course successfully",
         };
       });
+      this.put("/courses/:courseid", (schema: AppSchema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        const course = schema.findBy("course", {
+          _id: request.params.courseid,
+        });
+        if (course) {
+          course.update({ ...attrs });
+          return {
+            course,
+            message: "Update course successfully",
+          };
+        }
+
+        return new Response(
+          422,
+          { some: "header" },
+          {
+            course: null,
+            message: "Object sent did not match",
+          }
+        );
+      });
+      this.delete(
+        "/courses/:courseid",
+        (schema: AppSchema, request) => {
+          const course = schema.findBy("course", {
+            _id: request.params.courseid,
+          });
+          if (course) {
+            course.update({ isHidden: true });
+            return {
+              course,
+              message: "Delete course successfully",
+            };
+          }
+
+          return new Response(
+            500,
+            { some: "header" },
+            {
+              course: null,
+              message: "Something went wrong",
+            }
+          );
+        }
+      );
 
       // User route
       this.get("/users", (schema: AppSchema, request) => {
-        const users = schema.all("user");
+        const users = schema.where("user", {
+          ...request.queryParams,
+          isHidden: false,
+        });
 
         if (users.models.length > 0) {
           return {
@@ -492,20 +655,72 @@ const server = () => {
           { some: "header" },
           {
             users: [],
-            message: "Cannot find any users",
+            message: "Cannot find any user",
             count: 0,
+          }
+        );
+      });
+      this.post("/users", (schema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        attrs.createdAt = new Date();
+        attrs.updatedAt = new Date();
+
+        return {
+          user: schema.create("user", attrs),
+          message: "Create user successfully",
+        };
+      });
+      this.put("/users/:userid", (schema: AppSchema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        const user = schema.findBy("user", {
+          _id: request.params.userid,
+        });
+        if (user) {
+          user.update({ ...attrs });
+          return {
+            user,
+            message: "Update user successfully",
+          };
+        }
+
+        return new Response(
+          422,
+          { some: "header" },
+          {
+            user: null,
+            message: "Object sent did not match",
+          }
+        );
+      });
+      this.delete("/users/:userid", (schema: AppSchema, request) => {
+        const user = schema.findBy("user", {
+          _id: request.params.userid,
+        });
+        if (user) {
+          user.update({ isHidden: true });
+          return {
+            user,
+            message: "Delete user successfully",
+          };
+        }
+
+        return new Response(
+          500,
+          { some: "header" },
+          {
+            course: null,
+            message: "Something went wrong",
           }
         );
       });
 
       // Auth route
       this.get("/auth", (schema: AppSchema, request) => {
-        let email = "17110076@student.hcmute.edu.vn";
+        let email = "17110076@student.hcmute.edu.vn"; // get from token
         let role = request.queryParams.role;
         let token = request.requestHeaders.Authorization.split(
           " "
         )[1];
-        console.log(token);
 
         const users = schema.where("user", {
           email: email,

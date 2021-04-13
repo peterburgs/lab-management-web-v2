@@ -35,6 +35,7 @@ import {
 // import hooks
 import { useGoogleLogout } from "react-google-login";
 import { useAppDispatch, useAppSelector } from "./store";
+import UserPage from "./containers/UserPage";
 
 // snackbar animation helper
 function SlideTransition(props: TransitionProps) {
@@ -218,6 +219,38 @@ const App = () => {
                 }
               />
               <PrivateRoute
+                roles={["ADMIN"]}
+                path="/users"
+                exact={false}
+                component={
+                  <Layout
+                    handleSidebarToggle={handleSidebarToggle}
+                    isCollapsed={isCollapsed}
+                    setCollapsed={setCollapsed}
+                  >
+                    <Suspense
+                      fallback={
+                        <LinearProgress
+                          style={{
+                            width: isCollapsed
+                              ? "calc(100vw - 67px)"
+                              : "calc(100vw - 240px)",
+                            position: "absolute",
+                            right: 0,
+                            top:
+                              window.innerWidth < 1220
+                                ? "-80px"
+                                : "0px",
+                          }}
+                        />
+                      }
+                    >
+                      <UserPage />
+                    </Suspense>
+                  </Layout>
+                }
+              />
+              <PrivateRoute
                 path="/schedule"
                 exact={false}
                 roles={["ADMIN", "LECTURER"]}
@@ -315,7 +348,7 @@ const App = () => {
               />
               <PrivateRoute
                 roles={["ADMIN", "LECTURER"]}
-                path="/"
+                path="/registration"
                 exact={false}
                 component={
                   <Layout
@@ -349,7 +382,7 @@ const App = () => {
                   </Layout>
                 }
               />
-              <Redirect to="/" />
+              <Redirect to="/registration" />
             </Switch>
           </StyledApp>
         </ErrorBoundary>

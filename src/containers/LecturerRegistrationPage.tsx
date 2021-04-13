@@ -81,7 +81,6 @@ const LecturerRegistrationPage = () => {
   const semesterStatus = useAppSelector(
     (state) => state.semesters.status
   );
-
   const openRegistration = useAppSelector((state) =>
     state.registrations.registrations.find(
       (reg) => reg.isOpening === true
@@ -148,7 +147,8 @@ const LecturerRegistrationPage = () => {
             (item.course as string).includes(teachingSearchText) ||
             (courses as Course[])
               .find((course) => course._id === item.course)
-              ?.courseName.includes(teachingSearchText)
+              ?.courseName.toLowerCase()
+              .includes(teachingSearchText.toLowerCase())
           );
         }),
         courses as Course[]
@@ -159,7 +159,9 @@ const LecturerRegistrationPage = () => {
             data={data}
             columns={columns}
             name="Teaching"
-            onClickEditBtn={(id) => history.push(`/teachings/${id}`)}
+            onClickEditBtn={(id) =>
+              history.push(`/registration/teachings/${id}`)
+            }
             onClickDeleteBtn={(id) => {
               setShowDeleteTeachingModal(true);
               setTeachingIdToDelete(id);
@@ -174,7 +176,9 @@ const LecturerRegistrationPage = () => {
             data={data}
             columns={columns}
             name="Teaching"
-            onClickEditBtn={(id) => history.push(`/teachings/${id}`)}
+            onClickEditBtn={(id) =>
+              history.push(`/registration/teachings/${id}`)
+            }
             onClickDeleteBtn={(id) => {
               setShowDeleteTeachingModal(true);
               setTeachingIdToDelete(id);
@@ -215,7 +219,9 @@ const LecturerRegistrationPage = () => {
           data={data}
           columns={columns}
           name="Teaching"
-          onClickEditBtn={(id) => history.push(`/teachings/${id}`)}
+          onClickEditBtn={(id) =>
+            history.push(`/registration/teachings/${id}`)
+          }
           onClickDeleteBtn={(id) => {
             setShowDeleteTeachingModal(true);
             setTeachingIdToDelete(id);
@@ -328,7 +334,7 @@ const LecturerRegistrationPage = () => {
     <>
       <PrivateRoute
         roles={["ADMIN", "LECTURER"]}
-        path="/teachings/:id"
+        path="/registration/teachings/:id"
         exact={false}
         component={
           <EditTeachingModal

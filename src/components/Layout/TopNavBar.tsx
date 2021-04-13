@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import AvatarButton from "./AvatarButton";
 import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
-import SearchBar from "../common/SearchBar";
 import { Hidden, Skeleton } from "@material-ui/core";
 import { Semester, Registration } from "../../react-app-env";
 import SemesterModal from "./SemesterModal";
@@ -21,15 +20,12 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 import { editRegistration } from "../../reducers/registrationSlice";
-import {
-  setPlaceholder,
-  setTeachingSearch,
-} from "../../reducers/searchSlice";
 // import hooks
 import useGetRegistrationBySemester from "../../hooks/registration/useGetRegistrationBySemester";
 import useGetOpenSemester from "../../hooks/semester/useGetOpenSemester";
-import { useAppDispatch, useAppSelector } from "../../store";
+import { useAppDispatch } from "../../store";
 import { useLocation } from "react-router";
+import AppSearchBar from "./AppSearchBar";
 
 // component props
 interface TopNavBarProps {
@@ -68,35 +64,42 @@ const TopNavBar = ({
     registrations,
     registrationStatus,
   ] = useGetRegistrationBySemester((semester as Semester)?._id);
-  const searchPlaceholder = useAppSelector(
-    (state) => state.search.placeholder
-  );
   const location = useLocation();
 
   // event handler
-  const handleSearch = (searchText: string) => {
-    console.log(searchText);
-    switch (location.pathname.split("/")[1]) {
-      case "":
-        dispatch(setTeachingSearch(searchText));
-        break;
-      case "schedule":
-        console.log("Test");
-        break;
+
+  // handle close registration automatically
+  const handleRegAutoClose = async () => {
+    const clonedRegistration = _.cloneDeep(
+      (registrations as Registration[]).find(
+        (reg) => reg.isOpening === true
+      )
+    );
+    if (clonedRegistration) {
+      try {
+        clonedRegistration.isOpening = false;
+        setCloseRegistrationStatus("pending");
+        const actionResult = await dispatch(
+          editRegistration(clonedRegistration)
+        );
+        unwrapResult(actionResult);
+        dispatch(setSnackBarContent("Registration closed"));
+        dispatch(setShowSuccessSnackBar(true));
+      } catch (err) {
+        console.log("Failed to close registration", err);
+        if (err.response) {
+          dispatch(setSnackBarContent(err.response.data.message));
+        } else {
+          dispatch(
+            setSnackBarContent("Failed to close registration")
+          );
+        }
+        dispatch(setShowErrorSnackBar(true));
+      } finally {
+        setCloseRegistrationStatus("idle");
+      }
     }
   };
-
-  // useEffect
-  useEffect(() => {
-    switch (location.pathname.split("/")[1]) {
-      case "":
-        dispatch(setPlaceholder("Enter course name or id to search"));
-        break;
-      case "schedule":
-        dispatch(setPlaceholder("Enter lab name to search"));
-        break;
-    }
-  }, [location, dispatch]);
 
   // conditional renderer
   const renderSemester = () => {
@@ -150,39 +153,6 @@ const TopNavBar = ({
     return null;
   };
 
-  // handle close registration automatically
-  const handleRegAutoClose = async () => {
-    const clonedRegistration = _.cloneDeep(
-      (registrations as Registration[]).find(
-        (reg) => reg.isOpening === true
-      )
-    );
-    if (clonedRegistration) {
-      try {
-        clonedRegistration.isOpening = false;
-        setCloseRegistrationStatus("pending");
-        const actionResult = await dispatch(
-          editRegistration(clonedRegistration)
-        );
-        unwrapResult(actionResult);
-        dispatch(setSnackBarContent("Registration closed"));
-        dispatch(setShowSuccessSnackBar(true));
-      } catch (err) {
-        console.log("Failed to close registration", err);
-        if (err.response) {
-          dispatch(setSnackBarContent(err.response.data.message));
-        } else {
-          dispatch(
-            setSnackBarContent("Failed to close registration")
-          );
-        }
-        dispatch(setShowErrorSnackBar(true));
-      } finally {
-        setCloseRegistrationStatus("idle");
-      }
-    }
-  };
-
   const renderCountdown = () => {
     if (registrationStatus === "succeeded") {
       const openingReg = (registrations as Registration[]).find(
@@ -211,17 +181,9 @@ const TopNavBar = ({
         <SemesterContainer>{renderSemester()}</SemesterContainer>
         <SearchBarContainer onClick={handleClosePanel}>
           {location.pathname !== "/" ? (
-            <SearchBar
-              placeholder={searchPlaceholder}
-              setSearchText={handleSearch}
-            />
+            <AppSearchBar />
           ) : (
-            registrations.length > 0 && (
-              <SearchBar
-                placeholder={searchPlaceholder}
-                setSearchText={handleSearch}
-              />
-            )
+            registrations.length > 0 && <AppSearchBar />
           )}
         </SearchBarContainer>
 

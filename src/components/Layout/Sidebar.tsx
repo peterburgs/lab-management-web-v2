@@ -6,6 +6,7 @@ import { ReactComponent as CourseIcon } from "../../assets/images/course-icon.sv
 import { ReactComponent as ScheduleIcon } from "../../assets/images/schedule-icon.svg";
 import { ReactComponent as LabIcon } from "../../assets/images/lab-icon.svg";
 import { ReactComponent as RequestIcon } from "../../assets/images/request-icon.svg";
+import { ReactComponent as UserIcon } from "../../assets/images/user-icon.svg";
 
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
@@ -28,7 +29,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       <NavItemContainer>
         <NavItem
           isCollapsed={isCollapsed}
-          path="/"
+          path="/registration"
           name="Registration"
           icon={<DashboardIcon />}
         />
@@ -51,6 +52,12 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
               path="/requests"
               name="Requests"
               icon={<RequestIcon />}
+            />
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/users"
+              name="Users"
+              icon={<UserIcon />}
             />
           </>
         ) : null}

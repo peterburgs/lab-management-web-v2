@@ -4,45 +4,45 @@ import { Column } from "react-table";
 import Table from "../components/common/Table";
 import Button from "../components/common/Button";
 import { Skeleton } from "@material-ui/core";
-import NewCourseModal from "../components/course-page/NewCourseModal";
+import NewUserModal from "../components/user-page/NewUserModal";
 import AddIcon from "@material-ui/icons/Add";
-import EditCourseModal from "../components/course-page/EditCourseModal";
+import EditUserModal from "../components/user-page/EditUserModal";
 import PrivateRoute from "./PrivateRoute";
-import DeleteCourseModal from "../components/course-page/DeleteCourseModal";
+import DeleteUserModal from "../components/user-page/DeleteUserModal";
 
 // import models
-import { Course } from "../react-app-env";
+import { User } from "../react-app-env";
 
 // import reducers
 
 // import hooks
-import useGetAllCourses from "../hooks/course/useGetAllCourses";
+import useGetAllUsers from "../hooks/user/useGetAllUsers";
 import { useAppSelector } from "../store";
 import { useHistory } from "react-router";
 
-type CourseTable = {
+type UserTable = {
   rowId: string;
   id: string;
-  name: string;
-  numberOfCredits: number;
+  fullName: string;
+  email: string;
   createdAt: string;
 };
 
 const prepareData = (
-  courses: Course[]
+  users: User[]
 ): {
-  data: CourseTable[];
+  data: UserTable[];
 } => {
-  let data: CourseTable[];
+  let data: UserTable[];
 
-  if (courses.length > 0) {
-    data = courses.map((course) => {
+  if (users.length > 0) {
+    data = users.map((user) => {
       return {
-        rowId: course._id,
-        id: course._id,
-        name: course.courseName,
-        numberOfCredits: course.numberOfCredits,
-        createdAt: new Date(course.createdAt).toDateString(),
+        rowId: user._id,
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        createdAt: new Date(user.createdAt).toDateString(),
       };
     });
   } else {
@@ -52,27 +52,25 @@ const prepareData = (
   return { data };
 };
 
-const CoursePage = () => {
+const UserPage = () => {
   // State
-  const [showNewCourseModal, setShowNewCourseModal] = useState(false);
-  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
+  const [showDeleteUserModal, setShowDeleteUserModal] = useState(
     false
   );
-  const [courseIdToDelete, setCourseIdToDelete] = useState<string>(
-    null!
-  );
+  const [userIdToDelete, setUserIdToDelete] = useState<string>(null!);
 
   // * Call API
-  const [courses, courseStatus] = useGetAllCourses();
+  const [users, userStatus] = useGetAllUsers();
 
   // call hooks
-  const courseSearchText = useAppSelector(
-    (state) => state.search.courseSearchText
+  const userSearchText = useAppSelector(
+    (state) => state.search.userSearchText
   );
   const history = useHistory();
 
   const renderTable = () => {
-    const columns: Array<Column<CourseTable>> = [
+    const columns: Array<Column<UserTable>> = [
       {
         Header: "Row ID",
         accessor: "rowId" as const,
@@ -82,53 +80,53 @@ const CoursePage = () => {
         accessor: "id" as const,
       },
       {
-        Header: "Course Name",
-        accessor: "name" as const,
+        Header: "Full Name",
+        accessor: "fullName" as const,
       },
       {
-        Header: "Number of credits",
-        accessor: "numberOfCredits" as const,
+        Header: "Email",
+        accessor: "email" as const,
       },
       {
         Header: "Created At",
         accessor: "createdAt" as const,
       },
     ];
-    if (courseStatus === "succeeded") {
+    if (userStatus === "succeeded") {
       const { data } = prepareData(
-        (courses as Course[]).filter(
+        (users as User[]).filter(
           (item) =>
-            item._id.includes(courseSearchText) ||
-            item.courseName
+            item._id.includes(userSearchText) ||
+            item.email
               .toLowerCase()
-              .includes(courseSearchText.toLowerCase())
+              .includes(userSearchText.toLowerCase())
         )
       );
       return (
-        <Table<CourseTable>
+        <Table<UserTable>
           data={data}
           columns={columns}
-          name="Course"
+          name="User"
           isAllowEditDelete={true}
-          onClickEditBtn={(id) => history.push(`/courses/${id}`)}
+          onClickEditBtn={(id) => history.push(`/users/${id}`)}
           onClickDeleteBtn={(id) => {
-            setShowDeleteCourseModal(true);
-            setCourseIdToDelete(id);
+            setShowDeleteUserModal(true);
+            setUserIdToDelete(id);
           }}
         />
       );
-    } else if (courseStatus === "failed") {
-      const data: CourseTable[] = [];
+    } else if (userStatus === "failed") {
+      const data: UserTable[] = [];
       return (
-        <Table<CourseTable>
+        <Table<UserTable>
           data={data}
           columns={columns}
-          name="Course"
+          name="User"
           isAllowEditDelete={true}
-          onClickEditBtn={(id) => history.push(`/courses/${id}`)}
+          onClickEditBtn={(id) => history.push(`/users/${id}`)}
           onClickDeleteBtn={(id) => {
-            setShowDeleteCourseModal(true);
-            setCourseIdToDelete(id);
+            setShowDeleteUserModal(true);
+            setUserIdToDelete(id);
           }}
         />
       );
@@ -148,45 +146,45 @@ const CoursePage = () => {
     <>
       <PrivateRoute
         roles={["ADMIN"]}
-        path="/courses/:id"
+        path="/users/:id"
         exact={false}
         component={
-          <EditCourseModal
+          <EditUserModal
             showModal={true}
             setShowModal={() => history.goBack()}
-            name="Edit teaching"
+            name="Edit user"
           />
         }
       />
-      <NewCourseModal
-        name="New course"
-        showModal={showNewCourseModal}
-        setShowModal={setShowNewCourseModal}
+      <NewUserModal
+        name="New user"
+        showModal={showNewUserModal}
+        setShowModal={setShowNewUserModal}
       />
-      <DeleteCourseModal
-        showModal={showDeleteCourseModal}
-        setShowModal={setShowDeleteCourseModal}
-        name="Confirm delete course"
-        courseId={courseIdToDelete}
+      <DeleteUserModal
+        showModal={showDeleteUserModal}
+        setShowModal={setShowDeleteUserModal}
+        name="Confirm delete user"
+        userId={userIdToDelete}
       />
-      <StyledCoursePage>
+      <StyledUserPage>
         <Toolbar>
           <Action>
             <Button
               icon={<AddIcon />}
-              onClick={() => setShowNewCourseModal(true)}
+              onClick={() => setShowNewUserModal(true)}
             >
-              New course
+              New user
             </Button>
           </Action>
         </Toolbar>
         <TableContainer>{renderTable()}</TableContainer>
-      </StyledCoursePage>
+      </StyledUserPage>
     </>
   );
 };
 
-const StyledCoursePage = styled.div`
+const StyledUserPage = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -239,4 +237,4 @@ const TableContainer = styled.div`
   overflow: hidden;
 `;
 
-export default CoursePage;
+export default UserPage;

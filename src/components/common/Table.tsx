@@ -184,7 +184,7 @@ const Table = <T extends Record<string, unknown>>(
                     return (
                       <StyledTd {...cell.getCellProps(cellProps)}>
                         {/* td */}
-                        {cell.render("Cell")}
+                        <StyledSpan>{cell.render("Cell")}</StyledSpan>
                       </StyledTd>
                     );
                   })}
@@ -234,6 +234,12 @@ const StyledTable = styled.div`
   height: 100%;
   width: 100%;
   border-spacing: 0;
+  overflow: hidden;
+`;
+
+const StyledSpan = styled.span`
+  text-overflow: ellipsis;
+  white-space: nowrap;
   overflow: hidden;
 `;
 
@@ -391,6 +397,9 @@ const StyledTd = styled.div`
 `;
 
 const StyledTableSortLabel = styled(TableSortLabel)`
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   svg {
     width: 16px;
     height: 16px;

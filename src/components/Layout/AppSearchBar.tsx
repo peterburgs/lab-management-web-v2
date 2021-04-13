@@ -1,25 +1,70 @@
-import React, { SyntheticEvent, useRef, useState } from "react";
+import React, {
+  SyntheticEvent,
+  useRef,
+  useState,
+  useEffect,
+} from "react";
 import styled, { css } from "styled-components";
 import { ReactComponent as SearchIcon } from "../../assets/images/search-icon.svg";
+import {
+  resetState as resetSearchState,
+  setCourseSearch,
+  setTeachingSearch,
+  setUserSearch,
+} from "../../reducers/searchSlice";
+import { useAppDispatch } from "../../store";
+import { useLocation } from "react-router";
 
-interface SearchBarProps {
-  setSearchText?: (a: string) => void;
-  placeholder?: string;
-}
-
-const SearchBar = ({
-  setSearchText,
-  placeholder,
-}: SearchBarProps) => {
+const AppSearchBar = () => {
+  // useState, useRef
   const [isFocused, setIsFocused] = useState(false);
+  const [placeholder, setPlaceholder] = useState("Search");
   const inputRef = useRef<HTMLInputElement>(null);
+  const location = useLocation();
+  const dispatch = useAppDispatch();
 
+  // event handler
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (inputRef.current && setSearchText) {
-      setSearchText(inputRef.current.value);
+    if (inputRef.current) {
+      switch (location.pathname.split("/")[1]) {
+        case "registration":
+          dispatch(setTeachingSearch(inputRef.current.value));
+          break;
+        case "courses":
+          dispatch(setCourseSearch(inputRef.current.value));
+          break;
+        case "users":
+          dispatch(setUserSearch(inputRef.current.value));
+          break;
+        case "schedule":
+          console.log("Test");
+          break;
+      }
     }
   };
+
+  // useEffect
+  useEffect(() => {
+    dispatch(resetSearchState());
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    switch (location.pathname.split("/")[1]) {
+      case "registration":
+        setPlaceholder("Enter course name or id to search");
+        break;
+      case "courses":
+        setPlaceholder("Enter course name or id to search");
+        break;
+      case "schedule":
+        setPlaceholder("Enter lab name to search");
+        break;
+      case "users":
+        setPlaceholder("Enter email or user ID to search");
+        break;
+    }
+  }, [location, inputRef, dispatch]);
 
   return (
     <StyledSearchBar isFocused={isFocused}>
@@ -51,9 +96,11 @@ const StyledSearchBar = styled.div<StyledSearchBarProps>`
   box-sizing: border-box;
   background: #f4f4f4;
   border-radius: 8px;
+
   &:hover {
     opacity: 0.7;
   }
+
   ${({ isFocused }) =>
     isFocused &&
     css`
@@ -110,4 +157,4 @@ const SearchInput = styled.input`
   }
 `;
 
-export default SearchBar;
+export default AppSearchBar;

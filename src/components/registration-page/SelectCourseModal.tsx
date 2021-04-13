@@ -36,7 +36,9 @@ const SelectCourseModal = ({
         .filter((item) =>
           searchCourseText === ""
             ? true
-            : item.name.includes(searchCourseText)
+            : item.name
+                .toLowerCase()
+                .includes(searchCourseText.toLowerCase())
         )
     );
   }, [courses, searchCourseText]);

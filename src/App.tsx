@@ -187,7 +187,7 @@ const App = () => {
               )}
               {/* Private routes */}
               <PrivateRoute
-                roles={["ADMIN"]}
+                roles={["ADMIN", "LECTURER"]}
                 path="/courses"
                 exact={false}
                 component={
@@ -285,7 +285,7 @@ const App = () => {
               <PrivateRoute
                 path="/labs"
                 exact={false}
-                roles={["ADMIN"]}
+                roles={["ADMIN", "LECTURER"]}
                 component={
                   <Layout
                     handleSidebarToggle={handleSidebarToggle}

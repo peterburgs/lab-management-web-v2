@@ -66,6 +66,7 @@ const LabPage = () => {
   const labSearchText = useAppSelector(
     (state) => state.search.labSearchText
   );
+  const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
   const dispatch = useAppDispatch();
 
@@ -109,7 +110,7 @@ const LabPage = () => {
           data={data}
           columns={columns}
           name="Lab"
-          isAllowEditDelete={true}
+          isAllowEditDelete={role === "ADMIN"}
           onClickEditBtn={(id) => history.push(`/labs/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteLabModal(true);
@@ -124,7 +125,7 @@ const LabPage = () => {
           data={data}
           columns={columns}
           name="Lab"
-          isAllowEditDelete={true}
+          isAllowEditDelete={role === "ADMIN"}
           onClickEditBtn={(id) => history.push(`/labs/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteLabModal(true);
@@ -171,7 +172,7 @@ const LabPage = () => {
       />
       <StyledLabPage>
         <Toolbar>
-          <Action>
+          <Action isAdmin={role === "ADMIN"}>
             <Tooltip title="Refresh table data">
               <IconButtonContainer>
                 <IconButton
@@ -180,12 +181,14 @@ const LabPage = () => {
                 />
               </IconButtonContainer>
             </Tooltip>
-            <Button
-              icon={<AddIcon />}
-              onClick={() => setShowNewLabModal(true)}
-            >
-              New lab
-            </Button>
+            {role === "ADMIN" && (
+              <Button
+                icon={<AddIcon />}
+                onClick={() => setShowNewLabModal(true)}
+              >
+                New lab
+              </Button>
+            )}
           </Action>
         </Toolbar>
         <TableContainer>{renderTable()}</TableContainer>
@@ -222,10 +225,15 @@ const Toolbar = styled.div`
   }
 `;
 
-const Action = styled.div`
+interface ActionProps {
+  isAdmin: boolean;
+}
+
+const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: ${({ isAdmin }) =>
+    isAdmin ? "1fr 1fr" : "1fr"};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {

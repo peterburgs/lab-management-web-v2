@@ -72,6 +72,7 @@ const CoursePage = () => {
   const courseSearchText = useAppSelector(
     (state) => state.search.courseSearchText
   );
+  const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
   const dispatch = useAppDispatch();
 
@@ -119,7 +120,7 @@ const CoursePage = () => {
           data={data}
           columns={columns}
           name="Course"
-          isAllowEditDelete={true}
+          isAllowEditDelete={role === "ADMIN"}
           onClickEditBtn={(id) => history.push(`/courses/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteCourseModal(true);
@@ -134,7 +135,7 @@ const CoursePage = () => {
           data={data}
           columns={columns}
           name="Course"
-          isAllowEditDelete={true}
+          isAllowEditDelete={role === "ADMIN"}
           onClickEditBtn={(id) => history.push(`/courses/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteCourseModal(true);
@@ -181,7 +182,7 @@ const CoursePage = () => {
       />
       <StyledCoursePage>
         <Toolbar>
-          <Action>
+          <Action isAdmin={role === "ADMIN"}>
             <Tooltip title="Refresh table data">
               <IconButtonContainer>
                 <IconButton
@@ -190,12 +191,14 @@ const CoursePage = () => {
                 />
               </IconButtonContainer>
             </Tooltip>
-            <Button
-              icon={<AddIcon />}
-              onClick={() => setShowNewCourseModal(true)}
-            >
-              New course
-            </Button>
+            {role === "ADMIN" && (
+              <Button
+                icon={<AddIcon />}
+                onClick={() => setShowNewCourseModal(true)}
+              >
+                New course
+              </Button>
+            )}
           </Action>
         </Toolbar>
         <TableContainer>{renderTable()}</TableContainer>
@@ -232,10 +235,15 @@ const Toolbar = styled.div`
   }
 `;
 
-const Action = styled.div`
+interface ActionProps {
+  isAdmin: boolean;
+}
+
+const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: ${({ isAdmin }) =>
+    isAdmin ? "1fr 1fr" : "1fr"};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {

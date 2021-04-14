@@ -70,6 +70,21 @@ export const newTeaching = createAsyncThunk<
   }
 });
 
+export const createBulkOfTeachings = createAsyncThunk<
+  { teachings: Teaching[]; message: string },
+  Teaching[],
+  { rejectValue: { teachings: Teaching[]; message: string } }
+>("teachings/createBulkOfTeachings", async (teachings, thunkApi) => {
+  try {
+    const { data } = await api.post("/teachings/bulk", teachings);
+    return data as { teachings: Teaching[]; message: string };
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as { teachings: Teaching[]; message: string }
+    );
+  }
+});
+
 export const editTeaching = createAsyncThunk<
   PUTResponse,
   Teaching,
@@ -144,6 +159,16 @@ export const teachingSlice = createSlice({
       );
       state.message = action.payload.message;
     });
+    builder.addCase(
+      createBulkOfTeachings.fulfilled,
+      (state, action) => {
+        state.status = "succeeded";
+        state.teachings = state.teachings.concat(
+          action.payload.teachings
+        );
+        state.message = action.payload.message;
+      }
+    );
     builder.addCase(editTeaching.fulfilled, (state, action) => {
       const currentIndex = state.teachings.findIndex(
         (item) => item._id === action.payload.teaching!._id

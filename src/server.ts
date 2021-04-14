@@ -94,16 +94,6 @@ const server = () => {
             createdAt: new Date(),
             semester: "semester-1",
           },
-          {
-            _id: "registration-3",
-            batch: 3,
-            startDate: new Date(),
-            endDate: new Date(),
-            isOpening: false,
-            updatedAt: new Date(),
-            createdAt: new Date(),
-            semester: "semester-1",
-          },
         ],
         courses: [
           {
@@ -258,13 +248,32 @@ const server = () => {
       });
       this.post("/teachings", (schema: AppSchema, request) => {
         let attrs = JSON.parse(request.requestBody);
-        attrs._id = "registration-3";
+        attrs._id = "teaching-3";
         attrs.createdAt = new Date();
         attrs.updatedAt = new Date();
 
         return {
           teaching: schema.create("teaching", attrs),
           message: "Create teaching successfully",
+        };
+      });
+      this.post("/teachings/bulk", (schema: AppSchema, request) => {
+        let teachings = JSON.parse(request.requestBody) as Teaching[];
+
+        teachings = teachings.map((teaching, index) => {
+          const data = {
+            ...teaching,
+            _id: `teaching-${teachings.length + index}`,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          schema.create("teaching", data);
+          return data;
+        });
+
+        return {
+          teachings,
+          message: "Create all teachings successfully",
         };
       });
       this.put(
@@ -400,7 +409,7 @@ const server = () => {
       });
       this.post("/registrations", (schema: AppSchema, request) => {
         let attrs = JSON.parse(request.requestBody);
-        attrs._id = "registration-4";
+        attrs._id = "registration-3";
         attrs.createdAt = new Date();
         attrs.updatedAt = new Date();
 

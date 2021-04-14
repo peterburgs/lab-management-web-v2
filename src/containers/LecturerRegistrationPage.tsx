@@ -11,6 +11,7 @@ import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import AddIcon from "@material-ui/icons/Add";
 import EditTeachingModal from "../components/lecturer-registration-page/EditTeachingModal";
 import PrivateRoute from "../containers/PrivateRoute";
+import ImportExportIcon from "@material-ui/icons/ImportExport";
 
 // import models
 import { Teaching, Course } from "../react-app-env";
@@ -21,6 +22,8 @@ import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
 import { useHistory } from "react-router";
 import DeleteTeachingModal from "../components/lecturer-registration-page/DeleteTeachingModal";
+import ImportPanel from "../components/lecturer-registration-page/ImportPanel";
+import ImportTeachingModal from "../components/lecturer-registration-page/ImportTeachingModal";
 
 // Table type
 type TeachingTable = {
@@ -76,6 +79,11 @@ const LecturerRegistrationPage = () => {
     teachingIdToDelete,
     setTeachingIdToDelete,
   ] = useState<string>(null!);
+  const [showImportPanel, setShowImportPanel] = useState(false);
+  const [
+    showImportTeachingModal,
+    setShowImportTeachingModal,
+  ] = useState(false);
 
   // call hooks
   const semesterStatus = useAppSelector(
@@ -141,7 +149,6 @@ const LecturerRegistrationPage = () => {
     if (courseStatus === "succeeded") {
       const { data } = prepareData(
         (teachings as Teaching[]).filter((item) => {
-          console.log(teachingSearchText);
           if (teachingSearchText === "") return true;
           return (
             (item.course as string).includes(teachingSearchText) ||
@@ -299,6 +306,23 @@ const LecturerRegistrationPage = () => {
                 </Filter>
                 <Action>
                   <Button
+                    onClick={() =>
+                      setShowImportPanel((current) => !current)
+                    }
+                    icon={<ImportExportIcon />}
+                  >
+                    Import teachings
+                  </Button>
+                  {showImportPanel && (
+                    <ImportPanelContainer>
+                      <ImportPanel
+                        setShowImportTeachingModal={
+                          setShowImportTeachingModal
+                        }
+                      />
+                    </ImportPanelContainer>
+                  )}
+                  <Button
                     onClick={() => setShowNewTeachingModal(true)}
                     icon={<AddIcon />}
                   >
@@ -354,6 +378,11 @@ const LecturerRegistrationPage = () => {
         setShowModal={setShowDeleteTeachingModal}
         name="Confirm delete teaching"
         teachingId={teachingIdToDelete}
+      />
+      <ImportTeachingModal
+        showModal={showImportTeachingModal}
+        setShowModal={setShowImportTeachingModal}
+        name="Import teachings"
       />
       <StyledRegistrationPage>
         {renderContent()}
@@ -419,7 +448,7 @@ const RegistrationText = styled.div`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   font-size: 0.875rem;
   margin-left: 1rem;
 
@@ -461,6 +490,18 @@ const NotFoundContainer = styled.div`
       max-width: 300px;
       height: auto;
     }
+  }
+`;
+
+const ImportPanelContainer = styled.div`
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  transform: translate(-210px, 155px);
+  z-index: 3;
+
+  @media (max-width: 1220px) {
+    transform: translate(-210px, 60px);
   }
 `;
 

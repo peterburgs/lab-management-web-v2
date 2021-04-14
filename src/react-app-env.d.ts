@@ -68,7 +68,7 @@ export type User = {
 export type Lab = {
   _id: string;
   labName: string;
-  capacity: string;
+  capacity: number;
   createdAt: Date;
   updatedAt: Date;
   isHidden: boolean;

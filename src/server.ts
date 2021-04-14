@@ -14,6 +14,7 @@ import {
   User,
   Course,
   RegistrableCourse,
+  Lab,
 } from "./react-app-env";
 import { add } from "date-fns";
 import _ from "lodash";
@@ -28,6 +29,7 @@ const CourseModel: ModelDefinition<Course> = Model.extend({});
 const RegistrableCourseModel: ModelDefinition<RegistrableCourse> = Model.extend(
   {}
 );
+const LabModel: ModelDefinition<Lab> = Model.extend({});
 
 type AppRegistry = Registry<
   {
@@ -37,6 +39,7 @@ type AppRegistry = Registry<
     user: typeof UserModel;
     course: typeof CourseModel;
     registrableCourse: typeof RegistrableCourseModel;
+    lab: typeof LabModel;
   },
   {}
 >;
@@ -51,6 +54,7 @@ const server = () => {
       course: Model,
       user: Model,
       registrableCourse: Model,
+      lab: Model,
     },
     serializers: {
       application: RestSerializer,
@@ -126,106 +130,28 @@ const server = () => {
             updatedAt: new Date(),
             isHidden: false,
           },
+        ],
+        labs: [
           {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
+            _id: "lab-1",
+            labName: "Lab 1",
+            capacity: 30,
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
           },
           {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
+            _id: "lab-2",
+            labName: "Lab 2",
+            capacity: 20,
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
           },
           {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            isHidden: false,
-          },
-          {
-            _id: "course-3",
-            courseName: "Capstone Project",
-            numberOfCredits: 10,
+            _id: "lab-3",
+            labName: "Lab 3",
+            capacity: 10,
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
@@ -635,6 +561,85 @@ const server = () => {
           );
         }
       );
+
+      // Lab route
+      this.get("/labs", (schema: AppSchema, request) => {
+        const labs = schema.where("lab", {
+          ...request.queryParams,
+          isHidden: false,
+        });
+
+        if (labs.models.length > 0) {
+          return {
+            labs: labs.models,
+            message: "Get labs successfully",
+            count: labs.models.length,
+          };
+        }
+        return new Response(
+          404,
+          { some: "header" },
+          {
+            labs: [],
+            message: "Cannot find any labs",
+            count: 0,
+          }
+        );
+      });
+      this.post("/labs", (schema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        attrs._id = "lab-4";
+        attrs.createdAt = new Date();
+        attrs.updatedAt = new Date();
+
+        return {
+          lab: schema.create("lab", attrs),
+          message: "Create lab successfully",
+        };
+      });
+      this.put("/labs/:labid", (schema: AppSchema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        const lab = schema.findBy("lab", {
+          _id: request.params.labid,
+        });
+        if (lab) {
+          lab.update({ ...attrs });
+          return {
+            lab,
+            message: "Update lab successfully",
+          };
+        }
+
+        return new Response(
+          422,
+          { some: "header" },
+          {
+            course: null,
+            message: "Object sent did not match",
+          }
+        );
+      });
+      this.delete("/labs/:labid", (schema: AppSchema, request) => {
+        const lab = schema.findBy("lab", {
+          _id: request.params.labid,
+        });
+        if (lab) {
+          lab.update({ isHidden: true });
+          return {
+            lab,
+            message: "Delete lab successfully",
+          };
+        }
+
+        return new Response(
+          500,
+          { some: "header" },
+          {
+            course: null,
+            message: "Something went wrong",
+          }
+        );
+      });
 
       // User route
       this.get("/users", (schema: AppSchema, request) => {

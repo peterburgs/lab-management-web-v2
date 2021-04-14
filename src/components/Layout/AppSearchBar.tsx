@@ -9,6 +9,7 @@ import { ReactComponent as SearchIcon } from "../../assets/images/search-icon.sv
 import {
   resetState as resetSearchState,
   setCourseSearch,
+  setLabSearch,
   setTeachingSearch,
   setUserSearch,
 } from "../../reducers/searchSlice";
@@ -37,6 +38,9 @@ const AppSearchBar = () => {
         case "users":
           dispatch(setUserSearch(inputRef.current.value));
           break;
+        case "labs":
+          dispatch(setLabSearch(inputRef.current.value));
+          break;
         case "schedule":
           console.log("Test");
           break;
@@ -62,6 +66,9 @@ const AppSearchBar = () => {
         break;
       case "users":
         setPlaceholder("Enter email or user ID to search");
+        break;
+      case "labs":
+        setPlaceholder("Enter lab name to search");
         break;
     }
   }, [location, inputRef, dispatch]);

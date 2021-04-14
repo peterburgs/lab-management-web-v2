@@ -4,12 +4,14 @@ interface SearchState {
   teachingSearchText: string;
   courseSearchText: string;
   userSearchText: string;
+  labSearchText: string;
 }
 
 const initialState: SearchState = {
   teachingSearchText: "",
   courseSearchText: "",
   userSearchText: "",
+  labSearchText: "",
 };
 
 export const SearchSlice = createSlice({
@@ -20,6 +22,7 @@ export const SearchSlice = createSlice({
       state.teachingSearchText = "";
       state.courseSearchText = "";
       state.userSearchText = "";
+      state.labSearchText = "";
     },
     setTeachingSearch: (state, action: PayloadAction<string>) => {
       state.teachingSearchText = action.payload;
@@ -30,6 +33,9 @@ export const SearchSlice = createSlice({
     setUserSearch: (state, action: PayloadAction<string>) => {
       state.userSearchText = action.payload;
     },
+    setLabSearch: (state, action: PayloadAction<string>) => {
+      state.labSearchText = action.payload;
+    },
   },
 });
 
@@ -37,6 +43,7 @@ export const {
   setTeachingSearch,
   setCourseSearch,
   setUserSearch,
+  setLabSearch,
   resetState,
 } = SearchSlice.actions;
 

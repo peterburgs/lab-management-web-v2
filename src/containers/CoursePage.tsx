@@ -154,7 +154,7 @@ const CoursePage = () => {
           <EditCourseModal
             showModal={true}
             setShowModal={() => history.goBack()}
-            name="Edit teaching"
+            name="Edit course"
           />
         }
       />

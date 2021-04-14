@@ -52,6 +52,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   margin: 0;
   padding: 0 2.5rem;
   min-height: 2.5rem;
+  max-height: 40px;
   border-radius: 7px;
   color: white;
   align-items: center;

@@ -7,8 +7,10 @@ import {
   Select,
   MenuItem,
   Skeleton,
+  Tooltip,
 } from "@material-ui/core";
 import Button from "../components/common/Button";
+import IconButton from "../components/common/IconButton";
 import { Column } from "react-table";
 import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
@@ -16,6 +18,7 @@ import StartSemesterModal from "../components/registration-page/StartSemesterMod
 import OpenRegistrationModal from "../components/registration-page/OpenRegistrationModal";
 import SelectCourseModal from "../components/registration-page/SelectCourseModal";
 import { CheckboxItem } from "../components/common/CheckboxList";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 // Import models
 import {
@@ -29,9 +32,10 @@ import {
 import useGetTeachingsByRegistrationBatch from "../hooks/teaching/useGetTeachingsByRegistrationBatch";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
-import { useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import CloseRegistrationModal from "../components/registration-page/CloseRegistration";
 import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
+import { resetState as resetTeachingState } from "../reducers/teachingSlice";
 
 // Table type
 type TeachingTable = {
@@ -127,6 +131,7 @@ const RegistrationPage = () => {
   const teachingSearchText = useAppSelector(
     (state) => state.search.teachingSearchText
   );
+  const dispatch = useAppDispatch();
 
   // event handling
   const handleSelectCourse = (value: CheckboxItem) => () => {
@@ -141,6 +146,10 @@ const RegistrationPage = () => {
       newSelectedCourses.splice(currentIndex, 1);
     }
     setSelectedCourses(newSelectedCourses);
+  };
+
+  const handleRefreshData = () => {
+    dispatch(resetTeachingState());
   };
 
   // conditional renderer
@@ -342,6 +351,14 @@ const RegistrationPage = () => {
               </Filter>
 
               <Action>
+                <Tooltip title="Refresh table data">
+                  <IconButtonContainer>
+                    <IconButton
+                      onClick={handleRefreshData}
+                      icon={<RefreshIcon fontSize="small" />}
+                    />
+                  </IconButtonContainer>
+                </Tooltip>
                 <Button
                   onClick={() => setShowOpenRegistrationModal(true)}
                   disabled={
@@ -359,6 +376,7 @@ const RegistrationPage = () => {
                 </Button>
               </Action>
             </Toolbar>
+
             <RegistrationStatus
               onCloseBtnClick={() =>
                 setShowCloseRegistrationModal(true)
@@ -483,7 +501,7 @@ const RegistrationDuration = styled.span`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   font-size: 0.875rem;
   margin-left: 1rem;
 
@@ -526,6 +544,13 @@ const NotFoundContainer = styled.div`
       height: auto;
     }
   }
+`;
+
+const IconButtonContainer = styled.div`
+  display: flex;
+  width: 40px;
+  box-sizing: border-box;
+  justify-self: end;
 `;
 
 export default RegistrationPage;

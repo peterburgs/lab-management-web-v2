@@ -183,7 +183,7 @@ const TopNavBar = ({
           {location.pathname !== "/" ? (
             <AppSearchBar />
           ) : (
-            registrations.length > 0 && <AppSearchBar />
+            registrations.length > 0 && semester && <AppSearchBar />
           )}
         </SearchBarContainer>
 

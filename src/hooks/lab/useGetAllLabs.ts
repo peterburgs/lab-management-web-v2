@@ -19,11 +19,6 @@ const useGetAllLabs = () => {
         }
       })();
     }
-    return () => {
-      if (labStatus === "failed" || labStatus === "succeeded") {
-        dispatch(resetState());
-      }
-    };
   }, [labStatus, dispatch]);
 
   return [labs, labStatus];

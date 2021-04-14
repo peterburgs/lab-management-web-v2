@@ -19,11 +19,6 @@ const useGetAllUsers = () => {
         }
       })();
     }
-    return () => {
-      if (userStatus === "failed" || userStatus === "succeeded") {
-        dispatch(resetState());
-      }
-    };
   }, [userStatus, dispatch]);
 
   return [users, userStatus];

@@ -9,15 +9,10 @@ import {
 import TimeTable from "../components/schedule-page/TimeTable";
 import Button from "../components/common/Button";
 
-enum ViewMode {
-  LAB_USAGE,
-  THEORY_ROOM_USAGE,
-}
-
 const SchedulePage = () => {
   const [shift, setShift] = useState(1);
   const [week, setWeek] = useState(1);
-  const [mode, setMode] = useState<ViewMode>(ViewMode.LAB_USAGE);
+  const [semester, setSemester] = useState<string>("semester-1");
 
   return (
     <StyledSchedulePage>
@@ -32,6 +27,7 @@ const SchedulePage = () => {
               onChange={(e) => setShift(e.target.value as number)}
               label="Shift"
             >
+              <MenuItem value={0}>All shift</MenuItem>
               <MenuItem value={1}>1</MenuItem>
               <MenuItem value={2}>2</MenuItem>
               <MenuItem value={3}>3</MenuItem>
@@ -52,19 +48,16 @@ const SchedulePage = () => {
             </Select>
           </FormControl>
           <FormControl>
-            <InputLabel id="mode-label">Mode</InputLabel>
+            <InputLabel id="semester-label">Semester</InputLabel>
             <Select
-              labelId="mode-label"
-              id="mode-select"
-              value={mode}
-              onChange={(e) => setMode(e.target.value as ViewMode)}
-              label="Mode"
+              labelId="semester-label"
+              id="semester-select"
+              value={semester}
+              onChange={(e) => setSemester(e.target.value)}
+              label="Semester"
             >
-              <MenuItem value={ViewMode.LAB_USAGE}>
-                Lab usage
-              </MenuItem>
-              <MenuItem value={ViewMode.THEORY_ROOM_USAGE}>
-                Theory room usage
+              <MenuItem value={"semester-1"}>
+                Semester 2020-2021
               </MenuItem>
             </Select>
           </FormControl>
@@ -127,5 +120,7 @@ const TableContainer = styled.div`
   width: 100%;
   overflow: hidden;
 `;
+
+
 
 export default SchedulePage;

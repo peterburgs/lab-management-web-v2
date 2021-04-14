@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { ClipLoader } from "react-spinners";
 
 interface ButtonProps {
-  children: ReactNode;
+  children?: ReactNode;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   icon?: ReactNode;
   className?: string;

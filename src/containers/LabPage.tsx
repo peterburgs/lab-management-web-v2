@@ -3,12 +3,14 @@ import styled from "styled-components";
 import { Column } from "react-table";
 import Table from "../components/common/Table";
 import Button from "../components/common/Button";
-import { Skeleton } from "@material-ui/core";
+import IconButton from "../components/common/IconButton";
+import { Skeleton, Tooltip } from "@material-ui/core";
 import NewLabModal from "../components/lab-page/NewLabModal";
 import EditLabModal from "../components/lab-page/EditLabModal";
 import DeleteLabModal from "../components/lab-page/DeleteLabModal";
 import PrivateRoute from "./PrivateRoute";
 import AddIcon from "@material-ui/icons/Add";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
 import { Lab } from "../react-app-env";
@@ -17,8 +19,9 @@ import { Lab } from "../react-app-env";
 
 // import hooks
 import useGetAllLabs from "../hooks/lab/useGetAllLabs";
-import { useAppSelector } from "../store";
+import { useAppSelector, useAppDispatch } from "../store";
 import { useHistory } from "react-router";
+import { resetState as resetLabState } from "../reducers/labSlice";
 
 type LabTable = {
   rowId: string;
@@ -64,6 +67,13 @@ const LabPage = () => {
     (state) => state.search.labSearchText
   );
   const history = useHistory();
+  const dispatch = useAppDispatch();
+
+  // event handling
+
+  const handleRefreshData = () => {
+    dispatch(resetLabState());
+  };
 
   const renderTable = () => {
     const columns: Array<Column<LabTable>> = [
@@ -162,6 +172,14 @@ const LabPage = () => {
       <StyledLabPage>
         <Toolbar>
           <Action>
+            <Tooltip title="Refresh table data">
+              <IconButtonContainer>
+                <IconButton
+                  onClick={handleRefreshData}
+                  icon={<RefreshIcon fontSize="small" />}
+                />
+              </IconButtonContainer>
+            </Tooltip>
             <Button
               icon={<AddIcon />}
               onClick={() => setShowNewLabModal(true)}
@@ -207,14 +225,14 @@ const Toolbar = styled.div`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   font-size: 0.875rem;
 
   @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-    row-gap: 0.5rem;
     width: 100%;
     margin: 0;
+    display: flex;
+    flex-direction: row;
 
     button {
       width: 100%;
@@ -227,6 +245,13 @@ const TableContainer = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
+`;
+
+const IconButtonContainer = styled.div`
+  display: flex;
+  width: 40px;
+  box-sizing: border-box;
+  justify-self: end;
 `;
 
 export default LabPage;

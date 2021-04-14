@@ -3,12 +3,14 @@ import styled from "styled-components";
 import { Column } from "react-table";
 import Table from "../components/common/Table";
 import Button from "../components/common/Button";
-import { Skeleton } from "@material-ui/core";
+import IconButton from "../components/common/IconButton";
+import { Skeleton, Tooltip } from "@material-ui/core";
 import NewCourseModal from "../components/course-page/NewCourseModal";
 import AddIcon from "@material-ui/icons/Add";
 import EditCourseModal from "../components/course-page/EditCourseModal";
 import PrivateRoute from "./PrivateRoute";
 import DeleteCourseModal from "../components/course-page/DeleteCourseModal";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
 import { Course } from "../react-app-env";
@@ -17,8 +19,9 @@ import { Course } from "../react-app-env";
 
 // import hooks
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
-import { useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { useHistory } from "react-router";
+import { resetState as resetCourseState } from "../reducers/courseSlice";
 
 type CourseTable = {
   rowId: string;
@@ -70,6 +73,13 @@ const CoursePage = () => {
     (state) => state.search.courseSearchText
   );
   const history = useHistory();
+  const dispatch = useAppDispatch();
+
+  // event handling
+
+  const handleRefreshData = () => {
+    dispatch(resetCourseState());
+  };
 
   const renderTable = () => {
     const columns: Array<Column<CourseTable>> = [
@@ -172,6 +182,14 @@ const CoursePage = () => {
       <StyledCoursePage>
         <Toolbar>
           <Action>
+            <Tooltip title="Refresh table data">
+              <IconButtonContainer>
+                <IconButton
+                  onClick={handleRefreshData}
+                  icon={<RefreshIcon fontSize="small" />}
+                />
+              </IconButtonContainer>
+            </Tooltip>
             <Button
               icon={<AddIcon />}
               onClick={() => setShowNewCourseModal(true)}
@@ -217,14 +235,14 @@ const Toolbar = styled.div`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   font-size: 0.875rem;
 
   @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-    row-gap: 0.5rem;
     width: 100%;
     margin: 0;
+    display: flex;
+    flex-direction: row;
 
     button {
       width: 100%;
@@ -237,6 +255,13 @@ const TableContainer = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
+`;
+
+const IconButtonContainer = styled.div`
+  display: flex;
+  width: 40px;
+  box-sizing: border-box;
+  justify-self: end;
 `;
 
 export default CoursePage;

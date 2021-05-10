@@ -5,8 +5,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import Sidebar from "../components/layout/Sidebar";
-import TopNavBar from "../components/layout/TopNavBar";
+import Sidebar from "../components/abs/Sidebar";
+import TopNavBar from "../components/abs/TopNavBar";
 import styled, { css } from "styled-components";
 
 interface LayoutProps {

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Registration, ROLES } from "../../types/react-app-env";
+import { Registration, ROLES } from "../../types/model";
 import Countdown from "react-countdown";
 import { useAppSelector } from "../../store";
 

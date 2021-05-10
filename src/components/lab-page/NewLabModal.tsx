@@ -9,7 +9,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
 
 // import models
-import { Lab } from "../../types/react-app-env";
+import { Lab } from "../../types/model";
 // import reducers
 import { newLab } from "../../reducers/labSlice";
 import {

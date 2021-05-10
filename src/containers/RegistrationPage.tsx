@@ -25,12 +25,7 @@ import CloseRegistrationModal from "../components/registration-page/CloseRegistr
 import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
 
 // Import models
-import {
-  Teaching,
-  Registration,
-  Course,
-  User,
-} from "../types/react-app-env";
+import { Teaching, Registration, Course, User } from "../types/model";
 
 // Import hooks
 import useGetTeachingsByRegistrationBatch from "../hooks/teaching/useGetTeachingsByRegistrationBatch";
@@ -324,6 +319,7 @@ const RegistrationPage = () => {
                 </RegistrationText>
                 <FormControl>
                   <Select
+                    variant="standard"
                     value={batch}
                     onChange={(e) =>
                       setBatch(e.target.value as number)

@@ -9,7 +9,7 @@ import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { Course } from "../../types/react-app-env";
+import { Course } from "../../types/model";
 // import reducers
 import { editCourse } from "../../reducers/courseSlice";
 import {

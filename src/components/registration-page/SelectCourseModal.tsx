@@ -3,7 +3,7 @@ import { ModalProps } from "../../types/modal";
 import Modal from "../common/Modal";
 import SearchBar from "../common/SearchBar";
 import CheckboxList, { CheckboxItem } from "../common/CheckboxList";
-import { Course } from "../../types/react-app-env";
+import { Course } from "../../types/model";
 
 interface SelectCourseModalProps extends ModalProps {
   selectedCourses: CheckboxItem[];

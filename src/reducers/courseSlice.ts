@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Course } from "../types/react-app-env";
+import { Course } from "../types/model";
 import { api } from "../api";
 import _ from "lodash";
 

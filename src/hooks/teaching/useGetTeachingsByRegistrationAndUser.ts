@@ -5,7 +5,7 @@ import {
   getTeachings,
   resetState,
 } from "../../reducers/teachingSlice";
-import { Registration, User } from "../../types/react-app-env";
+import { Registration, User } from "../../types/model";
 
 const useGetTeachingsByRegistrationAndUser = (
   registration: Registration | undefined,

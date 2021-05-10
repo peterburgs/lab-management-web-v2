@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { ROLES, User } from "../types/react-app-env";
+import { ROLES, User } from "../types/model";
 import { api } from "../api";
 import _ from "lodash";
 import { AppDispatch } from "../store";

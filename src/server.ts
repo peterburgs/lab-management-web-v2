@@ -16,7 +16,7 @@ import {
   RegistrableCourse,
   Lab,
   ROLES,
-} from "./types/react-app-env";
+} from "./types/model";
 import { add } from "date-fns";
 import _ from "lodash";
 
@@ -206,7 +206,7 @@ const server = () => {
             fullName: "Le Duc Thinh",
             createdAt: new Date(),
             updatedAt: new Date(),
-            roles: ["ADMIN", "LECTURER"],
+            roles: [0, 1],
             isHidden: false,
           },
           {
@@ -215,7 +215,7 @@ const server = () => {
             fullName: "Trinh Minh Anh",
             createdAt: new Date(),
             updatedAt: new Date(),
-            roles: ["ADMIN", "LECTURER"],
+            roles: [0, 1],
             isHidden: false,
           },
         ],
@@ -732,7 +732,7 @@ const server = () => {
       // Auth route
       this.get("/auth", (schema: AppSchema, request) => {
         let email = "17110076@student.hcmute.edu.vn"; // get from token
-        let role = request.queryParams.role;
+        let role = Number(request.queryParams.role);
         let token = request.requestHeaders.Authorization.split(
           " "
         )[1];
@@ -743,7 +743,7 @@ const server = () => {
         if (users.models.length > 0) {
           if (
             users.models[0].roles.indexOf(
-              role === "0" ? ROLES.ADMIN : ROLES.LECTURER
+              role === 0 ? ROLES.ADMIN : ROLES.LECTURER
             ) !== -1
           )
             return {

@@ -10,7 +10,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import CheckboxList, { CheckboxItem } from "../common/CheckboxList";
 
 // import models
-import { ROLES, User } from "../../types/react-app-env";
+import { ROLES, User } from "../../types/model";
 // import reducers
 import { editUser } from "../../reducers/userSlice";
 import {

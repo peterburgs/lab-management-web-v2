@@ -10,7 +10,7 @@ import { DateTimePicker } from "@material-ui/lab";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { Semester } from "../../types/react-app-env";
+import { Semester } from "../../types/model";
 // import reducers
 import { startSemester } from "../../reducers/semesterSlice";
 import {

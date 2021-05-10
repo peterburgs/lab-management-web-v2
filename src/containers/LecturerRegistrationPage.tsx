@@ -21,7 +21,7 @@ import ImportTeachingModal from "../components/lecturer-registration-page/Import
 
 
 // import models
-import { Teaching, Course, ROLES } from "../types/react-app-env";
+import { Teaching, Course, ROLES } from "../types/model";
 
 // import hooks
 import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";

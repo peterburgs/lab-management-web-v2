@@ -7,7 +7,7 @@ import {
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "../reducers/notificationSlice";
-import {ROLES} from '../types/react-app-env';
+import {ROLES} from '../types/model';
 
 const AuthCheck = () => {
   const history = useHistory();

@@ -5,7 +5,7 @@ import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
 import { Box, Skeleton} from "@material-ui/core";
-import { Semester, Registration } from "../../types/react-app-env";
+import { Semester, Registration } from "../../types/model";
 import SemesterModal from "./SemesterModal";
 import Countdown from "react-countdown";
 import EditSemesterModal from "./EditSemesterModal";

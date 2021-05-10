@@ -7,7 +7,7 @@ import Button from "../common/Button";
 import * as XLSX from "xlsx";
 
 // import models
-import { Teaching, RegistrableCourse } from "../../types/react-app-env";
+import { Teaching, RegistrableCourse } from "../../types/model";
 // import reducers
 import {
   createBulkOfTeachings,

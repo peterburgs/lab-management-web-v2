@@ -1,8 +1,6 @@
-/// <reference types="react-scripts" />
-
 export enum ROLES {
   ADMIN,
-  LECTURER
+  LECTURER,
 }
 
 export type Semester = {

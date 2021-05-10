@@ -9,7 +9,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
 
 // import models
-import { Course } from "../../types/react-app-env";
+import { Course } from "../../types/model";
 // import reducers
 import { newCourse } from "../../reducers/courseSlice";
 import {

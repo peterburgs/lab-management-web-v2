@@ -15,7 +15,7 @@ import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { Teaching, RegistrableCourse } from "../../types/react-app-env";
+import { Teaching, RegistrableCourse } from "../../types/model";
 // import reducers
 import { editTeaching } from "../../reducers/teachingSlice";
 import {

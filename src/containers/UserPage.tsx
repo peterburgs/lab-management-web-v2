@@ -13,7 +13,7 @@ import DeleteUserModal from "../components/user-page/DeleteUserModal";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
-import { ROLES, User } from "../types/react-app-env";
+import { ROLES, User } from "../types/model";
 
 // import reducers
 

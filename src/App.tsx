@@ -5,7 +5,7 @@ import Layout from "./containers/Layout";
 import ReactModal from "react-modal";
 import {
   ThemeProvider,
-  createMuiTheme,
+  createTheme,
   Snackbar,
   Alert,
   Slide,
@@ -20,7 +20,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import AuthCheck from "./containers/AuthCheck";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "./containers/ErrorPage";
-import { ROLES } from "./types/react-app-env";
+import { ROLES } from "./types/model";
 
 // import reducers
 import { resetState as resetAuthState } from "./reducers/authSlice";
@@ -62,7 +62,7 @@ const RequestPage = React.lazy(
 );
 
 // material-ui theme
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: "#0070f3",
@@ -374,7 +374,7 @@ const App = () => {
                         />
                       }
                     >
-                      {verifiedRole && verifiedRole === ROLES.ADMIN ? (
+                      {verifiedRole === ROLES.ADMIN ? (
                         <RegistrationPage />
                       ) : (
                         <LecturerRegistrationPage />

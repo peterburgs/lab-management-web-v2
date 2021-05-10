@@ -10,7 +10,7 @@ import Button from "../common/Button";
 import CheckboxList, { CheckboxItem } from "../common/CheckboxList";
 
 // import models
-import { User } from "../../types/react-app-env";
+import { User } from "../../types/model";
 // import reducers
 import { newUser } from "../../reducers/userSlice";
 import {

@@ -13,7 +13,7 @@ import DeleteCourseModal from "../components/course-page/DeleteCourseModal";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
-import { Course, ROLES } from "../types/react-app-env";
+import { Course, ROLES } from "../types/model";
 
 // import reducers
 

@@ -13,7 +13,7 @@ import AddIcon from "@material-ui/icons/Add";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
-import { Lab, ROLES } from "../types/react-app-env";
+import { Lab, ROLES } from "../types/model";
 
 // import reducers
 

@@ -8,7 +8,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
 
 // import model
-import { Registration } from "../../types/react-app-env";
+import { Registration } from "../../types/model";
 // import reducers
 import {
   setShowSuccessSnackBar,

@@ -27,7 +27,7 @@ import {
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../reducers/notificationSlice";
-import {ROLES} from '../types/react-app-env';
+import {ROLES} from '../types/model';
 
 const Login = () => {
   const [role, setRole] = useState(ROLES.LECTURER);
@@ -64,6 +64,7 @@ const Login = () => {
       dispatch(setSnackBarContent("Welcome back!"));
       history.replace("/");
     } catch (err) {
+      setLoading(false);
       dispatch(setShowErrorSnackBar(true));
       dispatch(setSnackBarContent("Permission denied"));
     }

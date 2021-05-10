@@ -15,7 +15,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { CheckboxItem } from "../common/CheckboxList";
 
 // import models
-import { Registration } from "../../types/react-app-env";
+import { Registration } from "../../types/model";
 // import reducers
 import {
   setShowErrorSnackBar,

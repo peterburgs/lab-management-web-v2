@@ -16,7 +16,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
 
 // import models
-import { Teaching, RegistrableCourse } from "../../types/react-app-env";
+import { Teaching, RegistrableCourse } from "../../types/model";
 // import reducers
 import { newTeaching } from "../../reducers/teachingSlice";
 import {

@@ -4,8 +4,8 @@ import AvatarButton from "./AvatarButton";
 import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
-import { Hidden, Skeleton } from "@material-ui/core";
-import { Semester, Registration } from "../../react-app-env";
+import { Box, Skeleton} from "@material-ui/core";
+import { Semester, Registration } from "../../types/react-app-env";
 import SemesterModal from "./SemesterModal";
 import Countdown from "react-countdown";
 import EditSemesterModal from "./EditSemesterModal";
@@ -160,12 +160,12 @@ const TopNavBar = ({
       );
       if (openingReg) {
         return (
-          <Hidden xsUp implementation="css">
+          <Box display="none">
             <Countdown
               date={openingReg.endDate}
               onComplete={handleRegAutoClose}
             />
-          </Hidden>
+          </Box>
         );
       }
       return null;

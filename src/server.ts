@@ -15,7 +15,8 @@ import {
   Course,
   RegistrableCourse,
   Lab,
-} from "./react-app-env";
+  ROLES,
+} from "./types/react-app-env";
 import { add } from "date-fns";
 import _ from "lodash";
 
@@ -740,7 +741,11 @@ const server = () => {
           email: email,
         });
         if (users.models.length > 0) {
-          if (users.models[0].roles.indexOf(role) !== -1)
+          if (
+            users.models[0].roles.indexOf(
+              role === "0" ? ROLES.ADMIN : ROLES.LECTURER
+            ) !== -1
+          )
             return {
               verifiedUser: users.models[0],
               avatarUrl:

@@ -13,7 +13,7 @@ import AddIcon from "@material-ui/icons/Add";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
-import { Lab } from "../react-app-env";
+import { Lab, ROLES } from "../types/react-app-env";
 
 // import reducers
 
@@ -110,7 +110,7 @@ const LabPage = () => {
           data={data}
           columns={columns}
           name="Lab"
-          isAllowEditDelete={role === "ADMIN"}
+          isAllowEditDelete={role === ROLES.ADMIN}
           onClickEditBtn={(id) => history.push(`/labs/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteLabModal(true);
@@ -125,7 +125,7 @@ const LabPage = () => {
           data={data}
           columns={columns}
           name="Lab"
-          isAllowEditDelete={role === "ADMIN"}
+          isAllowEditDelete={role === ROLES.ADMIN}
           onClickEditBtn={(id) => history.push(`/labs/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteLabModal(true);
@@ -148,7 +148,7 @@ const LabPage = () => {
   return (
     <>
       <PrivateRoute
-        roles={["ADMIN"]}
+        roles={[ROLES.ADMIN]}
         path="/labs/:id"
         exact={false}
         component={
@@ -172,7 +172,7 @@ const LabPage = () => {
       />
       <StyledLabPage>
         <Toolbar>
-          <Action isAdmin={role === "ADMIN"}>
+          <Action isAdmin={role === ROLES.ADMIN}>
             <Tooltip title="Refresh table data">
               <IconButtonContainer>
                 <IconButton
@@ -181,7 +181,7 @@ const LabPage = () => {
                 />
               </IconButtonContainer>
             </Tooltip>
-            {role === "ADMIN" && (
+            {role === ROLES.ADMIN && (
               <Button
                 icon={<AddIcon />}
                 onClick={() => setShowNewLabModal(true)}

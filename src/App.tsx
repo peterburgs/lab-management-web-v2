@@ -20,6 +20,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import AuthCheck from "./containers/AuthCheck";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "./containers/ErrorPage";
+import { ROLES } from "./types/react-app-env";
 
 // import reducers
 import { resetState as resetAuthState } from "./reducers/authSlice";
@@ -187,7 +188,7 @@ const App = () => {
               )}
               {/* Private routes */}
               <PrivateRoute
-                roles={["ADMIN", "LECTURER"]}
+                roles={[ROLES.ADMIN, ROLES.LECTURER]}
                 path="/courses"
                 exact={false}
                 component={
@@ -219,7 +220,7 @@ const App = () => {
                 }
               />
               <PrivateRoute
-                roles={["ADMIN"]}
+                roles={[ROLES.ADMIN]}
                 path="/users"
                 exact={false}
                 component={
@@ -253,7 +254,7 @@ const App = () => {
               <PrivateRoute
                 path="/schedule"
                 exact={false}
-                roles={["ADMIN", "LECTURER"]}
+                roles={[ROLES.ADMIN, ROLES.LECTURER]}
                 component={
                   <Layout
                     handleSidebarToggle={handleSidebarToggle}
@@ -285,7 +286,7 @@ const App = () => {
               <PrivateRoute
                 path="/labs"
                 exact={false}
-                roles={["ADMIN", "LECTURER"]}
+                roles={[ROLES.ADMIN, ROLES.LECTURER]}
                 component={
                   <Layout
                     handleSidebarToggle={handleSidebarToggle}
@@ -317,7 +318,7 @@ const App = () => {
               <PrivateRoute
                 path="/requests"
                 exact={false}
-                roles={["ADMIN"]}
+                roles={[ROLES.ADMIN, ROLES.LECTURER]}
                 component={
                   <Layout
                     handleSidebarToggle={handleSidebarToggle}
@@ -347,7 +348,7 @@ const App = () => {
                 }
               />
               <PrivateRoute
-                roles={["ADMIN", "LECTURER"]}
+                roles={[ROLES.ADMIN, ROLES.LECTURER]}
                 path="/registration"
                 exact={false}
                 component={
@@ -373,7 +374,7 @@ const App = () => {
                         />
                       }
                     >
-                      {verifiedRole && verifiedRole === "ADMIN" ? (
+                      {verifiedRole && verifiedRole === ROLES.ADMIN ? (
                         <RegistrationPage />
                       ) : (
                         <LecturerRegistrationPage />

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Modal from "../common/Modal";
-import { ModalProps } from "../../../types/modal";
+import { ModalProps } from "../../types/modal";
 import { useForm } from "react-hook-form";
 import Button from "../common/Button";
 import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
 
 // import model
-import { Registration } from "../../react-app-env";
+import { Registration } from "../../types/react-app-env";
 // import reducers
 import {
   setShowSuccessSnackBar,

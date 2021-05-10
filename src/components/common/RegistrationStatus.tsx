@@ -1,8 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import { Registration } from "../../react-app-env";
+import { Registration, ROLES } from "../../types/react-app-env";
 import Countdown from "react-countdown";
-import Button from "./Button";
 import { useAppSelector } from "../../store";
 
 interface RegistrationStatusProps {
@@ -31,7 +30,7 @@ const RegistrationStatus = ({
               </TimeRemainContainer>
             )}
           />
-          {role === "ADMIN" && (
+          {role === ROLES.ADMIN && (
             <Overlay>
               <CloseRegistrationButton onClick={onCloseBtnClick}>
                 Close now

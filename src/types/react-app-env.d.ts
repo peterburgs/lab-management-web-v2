@@ -1,5 +1,10 @@
 /// <reference types="react-scripts" />
 
+export enum ROLES {
+  ADMIN,
+  LECTURER
+}
+
 export type Semester = {
   _id: string;
   semesterName: string;
@@ -59,7 +64,7 @@ export type User = {
   _id: string;
   email: string;
   fullName: string;
-  roles: string[];
+  roles: ROLES[];
   createdAt: Date;
   updatedAt: Date;
   isHidden: boolean;

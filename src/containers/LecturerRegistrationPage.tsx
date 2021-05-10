@@ -4,7 +4,6 @@ import styled from "styled-components";
 import Table from "../components/common/Table";
 import { Skeleton } from "@material-ui/core";
 import Button from "../components/common/Button";
-import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";
 import { Column } from "react-table";
 import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
@@ -12,18 +11,23 @@ import AddIcon from "@material-ui/icons/Add";
 import EditTeachingModal from "../components/lecturer-registration-page/EditTeachingModal";
 import PrivateRoute from "../containers/PrivateRoute";
 import ImportExportIcon from "@material-ui/icons/ImportExport";
+import ImportPanel from "../components/lecturer-registration-page/ImportPanel";
+
+
+// Import modal
+import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
+import DeleteTeachingModal from "../components/lecturer-registration-page/DeleteTeachingModal";
+import ImportTeachingModal from "../components/lecturer-registration-page/ImportTeachingModal";
+
 
 // import models
-import { Teaching, Course } from "../react-app-env";
+import { Teaching, Course, ROLES } from "../types/react-app-env";
 
 // import hooks
+import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";
 import { useAppSelector } from "../store";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
-import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
 import { useHistory } from "react-router";
-import DeleteTeachingModal from "../components/lecturer-registration-page/DeleteTeachingModal";
-import ImportPanel from "../components/lecturer-registration-page/ImportPanel";
-import ImportTeachingModal from "../components/lecturer-registration-page/ImportTeachingModal";
 
 // Table type
 type TeachingTable = {
@@ -357,7 +361,7 @@ const LecturerRegistrationPage = () => {
   return (
     <>
       <PrivateRoute
-        roles={["ADMIN", "LECTURER"]}
+        roles={[ROLES.ADMIN, ROLES.LECTURER]}
         path="/registration/teachings/:id"
         exact={false}
         component={

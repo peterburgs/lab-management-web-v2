@@ -13,7 +13,7 @@ import DeleteUserModal from "../components/user-page/DeleteUserModal";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
-import { User } from "../react-app-env";
+import { ROLES, User } from "../types/react-app-env";
 
 // import reducers
 
@@ -155,7 +155,7 @@ const UserPage = () => {
   return (
     <>
       <PrivateRoute
-        roles={["ADMIN"]}
+        roles={[ROLES.ADMIN]}
         path="/users/:id"
         exact={false}
         component={

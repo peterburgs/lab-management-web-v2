@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { styled as materialStyled } from "@material-ui/core/styles";
+import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
-import { ModalProps } from "../../../types/modal";
+import { ModalProps } from "../../types/modal";
 import { useForm } from "react-hook-form";
 import { TextField } from "@material-ui/core";
 import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
 
 // import models
-import { Course } from "../../react-app-env";
+import { Course } from "../../types/react-app-env";
 // import reducers
 import { newCourse } from "../../reducers/courseSlice";
 import {

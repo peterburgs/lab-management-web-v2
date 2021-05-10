@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { styled as materialStyled } from "@material-ui/core/styles";
+import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
-import { ModalProps } from "../../../types/modal";
+import { ModalProps } from "../../types/modal";
 import { TextField } from "@material-ui/core";
 import Button from "../common/Button";
 import _ from "lodash";
@@ -10,7 +10,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import CheckboxList, { CheckboxItem } from "../common/CheckboxList";
 
 // import models
-import { User } from "../../react-app-env";
+import { ROLES, User } from "../../types/react-app-env";
 // import reducers
 import { editUser } from "../../reducers/userSlice";
 import {
@@ -43,7 +43,7 @@ const EditUserModal = (props: ModalProps) => {
     if (user) {
       try {
         data.roles = selectedRoles.map((role) => {
-          return role._id;
+          return role._id === "0" ? ROLES.ADMIN : ROLES.LECTURER;
         });
         const clonedUser = {
           ..._.cloneDeep(user),
@@ -94,8 +94,8 @@ const EditUserModal = (props: ModalProps) => {
       setSelectedRoles(
         user.roles.map((role) => {
           return {
-            _id: role,
-            name: role.charAt(0) + role.slice(1).toLowerCase(),
+            _id: role === ROLES.ADMIN ? "0" : "1",
+            name: role === ROLES.ADMIN ? "Admin" : "Lecturer",
           };
         })
       );

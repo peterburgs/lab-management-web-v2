@@ -3,7 +3,7 @@ import {
   createAsyncThunk,
   PayloadAction,
 } from "@reduxjs/toolkit";
-import { User } from "../react-app-env";
+import { ROLES, User } from "../types/react-app-env";
 import { api } from "../api";
 import _ from "lodash";
 import { AppDispatch } from "../store";
@@ -11,7 +11,7 @@ import { AppDispatch } from "../store";
 interface AuthState {
   status: "idle" | "pending" | "succeeded" | "failed";
   verifiedUser: User | null;
-  verifiedRole: string | null;
+  verifiedRole: ROLES | null;
   avatarUrl: string | null;
   verifiedToken: string | null;
   expirationDate: number | null;
@@ -22,14 +22,14 @@ interface GETResponse {
   verifiedUser: User;
   avatarUrl: string;
   verifiedToken: string;
-  verifiedRole: string;
+  verifiedRole: ROLES;
 }
 
 export const verify = createAsyncThunk<
   GETResponse,
   {
     token: string;
-    role: string;
+    role: ROLES;
     expirationDate: string;
   },
   { rejectValue: GETResponse; dispatch: AppDispatch }
@@ -42,7 +42,7 @@ export const verify = createAsyncThunk<
         headers: { Authorization: `Bearer ${token}` },
       });
       localStorage.setItem("token", token);
-      localStorage.setItem("role", role);
+      localStorage.setItem("role", role.toString());
       localStorage.setItem("exp", expirationDate);
       setTimeout(() => {
         thunkApi.dispatch(setIsSessionTimeout(true));

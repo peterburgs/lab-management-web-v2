@@ -14,11 +14,15 @@ import IconButton from "../components/common/IconButton";
 import { Column } from "react-table";
 import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
+import { CheckboxItem } from "../components/common/CheckboxList";
+import RefreshIcon from "@material-ui/icons/Refresh";
+
+// Import modals
 import StartSemesterModal from "../components/registration-page/StartSemesterModal";
 import OpenRegistrationModal from "../components/registration-page/OpenRegistrationModal";
 import SelectCourseModal from "../components/registration-page/SelectCourseModal";
-import { CheckboxItem } from "../components/common/CheckboxList";
-import RefreshIcon from "@material-ui/icons/Refresh";
+import CloseRegistrationModal from "../components/registration-page/CloseRegistration";
+import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
 
 // Import models
 import {
@@ -26,15 +30,15 @@ import {
   Registration,
   Course,
   User,
-} from "../react-app-env";
+} from "../types/react-app-env";
 
 // Import hooks
 import useGetTeachingsByRegistrationBatch from "../hooks/teaching/useGetTeachingsByRegistrationBatch";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
 import { useAppDispatch, useAppSelector } from "../store";
-import CloseRegistrationModal from "../components/registration-page/CloseRegistration";
-import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
+
+// Import reducers
 import { resetState as resetTeachingState } from "../reducers/teachingSlice";
 
 // Table type
@@ -191,7 +195,6 @@ const RegistrationPage = () => {
     if (courseStatus === "succeeded" && userStatus === "succeeded") {
       const { data } = prepareData(
         (teachings as Teaching[]).filter((item) => {
-          console.log(teachingSearchText);
           if (teachingSearchText === "") return true;
           return (
             (item.course as string).includes(teachingSearchText) ||

@@ -13,7 +13,7 @@ import DeleteCourseModal from "../components/course-page/DeleteCourseModal";
 import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
-import { Course } from "../react-app-env";
+import { Course, ROLES } from "../types/react-app-env";
 
 // import reducers
 
@@ -120,7 +120,7 @@ const CoursePage = () => {
           data={data}
           columns={columns}
           name="Course"
-          isAllowEditDelete={role === "ADMIN"}
+          isAllowEditDelete={role === ROLES.ADMIN}
           onClickEditBtn={(id) => history.push(`/courses/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteCourseModal(true);
@@ -135,7 +135,7 @@ const CoursePage = () => {
           data={data}
           columns={columns}
           name="Course"
-          isAllowEditDelete={role === "ADMIN"}
+          isAllowEditDelete={role === ROLES.ADMIN}
           onClickEditBtn={(id) => history.push(`/courses/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteCourseModal(true);
@@ -158,7 +158,7 @@ const CoursePage = () => {
   return (
     <>
       <PrivateRoute
-        roles={["ADMIN"]}
+        roles={[ROLES.ADMIN]}
         path="/courses/:id"
         exact={false}
         component={
@@ -182,7 +182,7 @@ const CoursePage = () => {
       />
       <StyledCoursePage>
         <Toolbar>
-          <Action isAdmin={role === "ADMIN"}>
+          <Action isAdmin={role === ROLES.ADMIN}>
             <Tooltip title="Refresh table data">
               <IconButtonContainer>
                 <IconButton
@@ -191,7 +191,7 @@ const CoursePage = () => {
                 />
               </IconButtonContainer>
             </Tooltip>
-            {role === "ADMIN" && (
+            {role === ROLES.ADMIN && (
               <Button
                 icon={<AddIcon />}
                 onClick={() => setShowNewCourseModal(true)}

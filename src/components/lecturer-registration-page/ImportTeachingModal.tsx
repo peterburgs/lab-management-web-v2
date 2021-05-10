@@ -1,13 +1,13 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import styled from "styled-components";
 import Modal from "../common/Modal";
-import { ModalProps } from "../../../types/modal";
+import { ModalProps } from "../../types/modal";
 import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
 import * as XLSX from "xlsx";
 
 // import models
-import { Teaching, RegistrableCourse } from "../../react-app-env";
+import { Teaching, RegistrableCourse } from "../../types/react-app-env";
 // import reducers
 import {
   createBulkOfTeachings,
@@ -160,7 +160,7 @@ const ImportTeachingModal = (props: ModalProps) => {
     }
   };
 
-  // handle file chosen
+  // handle chose file
   const handleFileSelected = (e: ChangeEvent<HTMLInputElement>) => {
     setFileSelected(e.target.files!);
   };

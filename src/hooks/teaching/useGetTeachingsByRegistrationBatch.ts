@@ -5,7 +5,7 @@ import {
   getTeachings,
   resetState,
 } from "../../reducers/teachingSlice";
-import { Registration } from "../../react-app-env";
+import { Registration } from "../../types/react-app-env";
 import { useLocation } from "react-router";
 
 const useGetTeachingsByRegistrationBatch = (

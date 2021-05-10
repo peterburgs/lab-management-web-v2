@@ -1,10 +1,11 @@
 import React, { ReactNode } from "react";
 import { Redirect, Route } from "react-router";
+import { ROLES } from "../types/react-app-env";
 import { useAppSelector } from "../store";
 
 interface PrivateRouteProps {
   component: ReactNode;
-  roles: string[];
+  roles: ROLES[];
   path: string;
   exact: boolean | undefined;
 }

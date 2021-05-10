@@ -11,6 +11,7 @@ import { ReactComponent as UserIcon } from "../../assets/images/user-icon.svg";
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
 import { useAppSelector } from "../../store";
+import { ROLES } from "../../types/react-app-env";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -45,7 +46,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           name="Labs"
           icon={<LabIcon />}
         />
-        {role && role === "ADMIN" ? (
+        {role && role === ROLES.ADMIN ? (
           <>
             <NavItem
               isCollapsed={isCollapsed}

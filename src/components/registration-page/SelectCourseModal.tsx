@@ -1,10 +1,9 @@
 import React, { MouseEventHandler, useEffect, useState } from "react";
-import styled from "styled-components";
-import { ModalProps } from "../../../types/modal";
+import { ModalProps } from "../../types/modal";
 import Modal from "../common/Modal";
 import SearchBar from "../common/SearchBar";
 import CheckboxList, { CheckboxItem } from "../common/CheckboxList";
-import { Course } from "../../react-app-env";
+import { Course } from "../../types/react-app-env";
 
 interface SelectCourseModalProps extends ModalProps {
   selectedCourses: CheckboxItem[];
@@ -64,10 +63,5 @@ const SelectCourseModal = ({
     </Modal>
   );
 };
-
-const CheckboxListContainer = styled.div`
-  max-height: 500px;
-  overflow: auto;
-`;
 
 export default SelectCourseModal;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { styled as materialStyled } from "@material-ui/core/styles";
+import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
-import { ModalProps } from "../../../types/modal";
+import { ModalProps } from "../../types/modal";
 import { useForm, Controller } from "react-hook-form";
 import { TextField } from "@material-ui/core";
 import Button from "../common/Button";
@@ -10,7 +10,7 @@ import { DateTimePicker } from "@material-ui/lab";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { Semester } from "../../react-app-env";
+import { Semester } from "../../types/react-app-env";
 // import reducers
 import { startSemester } from "../../reducers/semesterSlice";
 import {

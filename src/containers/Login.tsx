@@ -27,9 +27,10 @@ import {
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../reducers/notificationSlice";
+import {ROLES} from '../types/react-app-env';
 
 const Login = () => {
-  const [role, setRole] = useState("LECTURER");
+  const [role, setRole] = useState(ROLES.LECTURER);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -111,8 +112,8 @@ const Login = () => {
             onChange={(e) => setRole(e.target.value)}
             label="Select role"
           >
-            <MenuItem value={"ADMIN"}>Admin</MenuItem>
-            <MenuItem value={"LECTURER"}>Lecturer</MenuItem>
+            <MenuItem value={ROLES.ADMIN}>Admin</MenuItem>
+            <MenuItem value={ROLES.LECTURER}>Lecturer</MenuItem>
           </Select>
         </StyledFormControl>
       </animated.div>

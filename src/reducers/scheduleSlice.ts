@@ -47,7 +47,7 @@ export const generateSchedule = createAsyncThunk<
   "schedule/generateSchedule",
   async ({ registration, isNew }, thunkApi) => {
     try {
-      const { data } = await api.post("/schedule", {
+      const { data } = await api.post("/schedule/generate", {
         registration,
         isNew,
       });
@@ -69,7 +69,14 @@ const initialState: ScheduleState = {
 export const scheduleSlice = createSlice({
   name: "schedule",
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: (state) => {
+      state.count = 0;
+      state.message = "";
+      state.labUsages = [];
+      state.status = "idle";
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getLabUsages.pending, (state, action) => {
       state.status = "pending";
@@ -94,5 +101,7 @@ export const scheduleSlice = createSlice({
     });
   },
 });
+
+export const { resetState } = scheduleSlice.actions;
 
 export default scheduleSlice.reducer;

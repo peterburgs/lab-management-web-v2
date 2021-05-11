@@ -15,8 +15,9 @@ import {
   Course,
   RegistrableCourse,
   Lab,
+  LabUsage,
   ROLES,
-} from "./types/model";
+} from "../types/model";
 import { add } from "date-fns";
 import _ from "lodash";
 
@@ -27,10 +28,10 @@ const RegistrationModel: ModelDefinition<Registration> = Model.extend(
 const TeachingModel: ModelDefinition<Teaching> = Model.extend({});
 const UserModel: ModelDefinition<User> = Model.extend({});
 const CourseModel: ModelDefinition<Course> = Model.extend({});
-const RegistrableCourseModel: ModelDefinition<RegistrableCourse> = Model.extend(
-  {}
-);
+const RegistrableCourseModel: ModelDefinition<RegistrableCourse> =
+  Model.extend({});
 const LabModel: ModelDefinition<Lab> = Model.extend({});
+const LabUsageModel: ModelDefinition<LabUsage> = Model.extend({});
 
 type AppRegistry = Registry<
   {
@@ -41,6 +42,7 @@ type AppRegistry = Registry<
     course: typeof CourseModel;
     registrableCourse: typeof RegistrableCourseModel;
     lab: typeof LabModel;
+    labUsage: typeof LabUsageModel;
   },
   {}
 >;
@@ -56,6 +58,7 @@ const server = () => {
       user: Model,
       registrableCourse: Model,
       lab: Model,
+      labUsage: Model,
     },
     serializers: {
       application: RestSerializer,
@@ -71,6 +74,7 @@ const server = () => {
             isOpening: true,
             createdAt: new Date(),
             updatedAt: new Date(),
+            labSchedule: [],
             isHidden: false,
           },
         ],
@@ -84,6 +88,7 @@ const server = () => {
             updatedAt: new Date(),
             createdAt: new Date(),
             semester: "semester-1",
+            isHidden: false,
           },
           {
             _id: "registration-2",
@@ -94,6 +99,7 @@ const server = () => {
             updatedAt: new Date(),
             createdAt: new Date(),
             semester: "semester-1",
+            isHidden: false,
           },
         ],
         courses: [
@@ -183,7 +189,23 @@ const server = () => {
             theoryRoom: "A1-101",
           },
           {
-            _id: "teaching-2",
+            _id: "teaching-3",
+            user: "user-1",
+            course: "course-1",
+            group: 1,
+            dayOfWeek: 1,
+            startPeriod: 7,
+            endPeriod: 10,
+            numberOfStudents: 30,
+            numberOfPracticalWeeks: 7,
+            registration: "registration-1",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+            theoryRoom: "A1-101",
+          },
+          {
+            _id: "teaching-4",
             user: "user-1",
             course: "course-2",
             group: 1,
@@ -191,6 +213,22 @@ const server = () => {
             startPeriod: 1,
             endPeriod: 3,
             numberOfStudents: 30,
+            numberOfPracticalWeeks: 7,
+            registration: "registration-1",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            isHidden: false,
+            theoryRoom: "A1-101",
+          },
+          {
+            _id: "teaching-2",
+            user: "user-1",
+            course: "course-2",
+            group: 1,
+            dayOfWeek: 1,
+            startPeriod: 1,
+            endPeriod: 3,
+            numberOfStudents: 20,
             numberOfPracticalWeeks: 7,
             registration: "registration-1",
             createdAt: new Date(),
@@ -206,7 +244,7 @@ const server = () => {
             fullName: "Le Duc Thinh",
             createdAt: new Date(),
             updatedAt: new Date(),
-            roles: [0, 1],
+            roles: [0],
             isHidden: false,
           },
           {
@@ -219,6 +257,7 @@ const server = () => {
             isHidden: false,
           },
         ],
+        labUsages: [],
       });
     },
     routes() {
@@ -490,6 +529,34 @@ const server = () => {
           };
         }
       );
+      this.post(
+        "/registrable-courses/bulk",
+        (schema: AppSchema, request) => {
+          let registrableCourses = JSON.parse(
+            request.requestBody
+          ) as RegistrableCourse[];
+          console.log(registrableCourses);
+          registrableCourses = registrableCourses.map(
+            (registrableCourse, index) => {
+              const data = {
+                ...registrableCourse,
+                _id: `registrableCourse-${
+                  registrableCourses.length + index
+                }`,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              };
+              schema.create("registrableCourse", data);
+              return data;
+            }
+          );
+
+          return {
+            registrableCourses,
+            message: "Create all registrable courses successfully",
+          };
+        }
+      );
 
       // Course route
       this.get("/courses", (schema: AppSchema, request) => {
@@ -733,9 +800,8 @@ const server = () => {
       this.get("/auth", (schema: AppSchema, request) => {
         let email = "17110076@student.hcmute.edu.vn"; // get from token
         let role = Number(request.queryParams.role);
-        let token = request.requestHeaders.Authorization.split(
-          " "
-        )[1];
+        let token =
+          request.requestHeaders.Authorization.split(" ")[1];
 
         const users = schema.where("user", {
           email: email,
@@ -765,6 +831,207 @@ const server = () => {
           }
         );
       });
+
+      // Schedule route
+
+      this.get("/schedule", (schema: AppSchema, request) => {
+        const labUsages = schema.where("labUsage", {
+          ...request.queryParams,
+          isHidden: false,
+        });
+
+        if (labUsages.models.length > 0) {
+          return {
+            labUsages: labUsages.models,
+            message: "Get lab usages successfully",
+            count: labUsages.models.length,
+          };
+        }
+        return new Response(
+          404,
+          { some: "header" },
+          {
+            labUsages: [],
+            message: "Cannot find any schedule",
+            count: 0,
+          }
+        );
+      });
+
+      this.post(
+        "/schedule/generate",
+        (schema: AppSchema, request) => {
+          let attrs = JSON.parse(request.requestBody);
+
+          let registration = schema.findBy("registration", {
+            _id: attrs["registration"],
+            isHidden: false,
+          })!;
+
+          let semester = schema.findBy("semester", {
+            _id: registration.semester.toString(),
+            isHidden: false,
+          })!;
+
+          let teachings = schema
+            .where("teaching", {
+              registration: attrs["registration"],
+              isHidden: false,
+            })
+            .models.map((teaching) => teaching.attrs) as Teaching[];
+
+          console.log(teachings);
+
+          let labs = schema
+            .where("lab", { isHidden: false })
+            .models.map((lab) => lab.attrs) as Lab[];
+
+          console.log(labs);
+
+          // algorithm
+          let teachingQueue: Teaching[] = [];
+          let labQueue: Lab[] = [];
+
+          for (let teaching of teachings)
+            teachingQueue.push(teaching);
+          for (let lab of labs) labQueue.push(lab);
+
+          teachingQueue.sort(
+            (o1, o2) => o2.numberOfStudents - o1.numberOfStudents
+          );
+
+          labQueue.sort((o1, o2) => o2.capacity - o1.capacity);
+
+          // Generate 2D array size (numberOfWeek*6days/week )*((15 period/day) *numberOfLab)
+          const makeArray = (w: number, h: number, val: number) => {
+            let arr: number[][] = [];
+            for (let i = 0; i < h; i++) {
+              arr[i] = [];
+              for (let j = 0; j < w; j++) {
+                arr[i][j] = val;
+              }
+            }
+            return arr;
+          };
+
+          const numberOfDaysAWeek = 7;
+          const numberOfPeriodsADay = 15;
+
+          let labSchedule: number[][];
+          // If Admin wants to make New Schedule
+          if (Boolean(attrs["isNew"])) {
+            labSchedule = makeArray(
+              semester.numberOfWeeks * numberOfDaysAWeek,
+              labs.length * numberOfPeriodsADay,
+              0
+            );
+          }
+          // If Admin wants to Modify an existing Schedule
+          else {
+            labSchedule = _.cloneDeep(semester.labSchedule);
+          }
+
+          const labUsages: LabUsage[] = [];
+
+          // scheduling
+          while (teachingQueue.length) {
+            let currentTeaching = teachingQueue.shift()!;
+            let availableSlots: {
+              weekNo: number;
+              dayOfWeek: number;
+              currentDay: number;
+              lab: Lab;
+            }[] = [];
+            for (let i = 0; i < labQueue.length; i++) {
+              for (
+                let j = 0;
+                j < semester.numberOfWeeks * numberOfDaysAWeek;
+                j++
+              ) {
+                const week = Math.floor(j / numberOfDaysAWeek);
+                const dayOfWeek = j % numberOfDaysAWeek;
+                if (dayOfWeek === currentTeaching.dayOfWeek) {
+                  if (
+                    availableSlots.filter(
+                      (slot) => slot.weekNo + 1 === week
+                    ).length === 0
+                  ) {
+                    if (
+                      availableSlots.filter(
+                        (slot) => slot.weekNo === week
+                      ).length === 0
+                    ) {
+                      for (
+                        let period = currentTeaching.startPeriod;
+                        period <= currentTeaching.endPeriod;
+                        period++
+                      ) {
+                        if (
+                          labSchedule[
+                            period + numberOfPeriodsADay * i
+                          ][j] !== 0
+                        ) {
+                          break;
+                        }
+                        if (
+                          period === currentTeaching.endPeriod &&
+                          availableSlots.length <
+                            currentTeaching.numberOfPracticalWeeks
+                        ) {
+                          availableSlots.push({
+                            weekNo: week,
+                            dayOfWeek: dayOfWeek,
+                            lab: labQueue[i],
+                            currentDay: j,
+                          });
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            if (
+              availableSlots.length ===
+              currentTeaching.numberOfPracticalWeeks
+            ) {
+              for (let slot of availableSlots) {
+                const labUsage = {
+                  lab: slot.lab._id,
+                  teaching: currentTeaching._id,
+                  weekNo: slot.weekNo,
+                  dayOfWeek: slot.dayOfWeek,
+                  startPeriod: currentTeaching.startPeriod,
+                  endPeriod: currentTeaching.endPeriod,
+                  semester: semester._id,
+                  isHidden: false,
+                };
+                const result = schema.create("labUsage", labUsage);
+                labUsages.push(result);
+                for (
+                  let currentSchedulePeriod =
+                    currentTeaching.startPeriod;
+                  currentSchedulePeriod <= currentTeaching.endPeriod;
+                  currentSchedulePeriod++
+                ) {
+                  labSchedule[
+                    currentSchedulePeriod +
+                      15 * labQueue.indexOf(slot.lab)
+                  ][slot.currentDay] = 1;
+                }
+              }
+
+              semester.update({ labSchedule });
+            }
+          }
+
+          console.log(labUsages);
+
+          return {
+            message: "Generate schedule successfully",
+          };
+        }
+      );
     },
   });
 };

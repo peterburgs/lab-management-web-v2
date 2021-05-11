@@ -67,6 +67,38 @@ export const newRegistrableCourse = createAsyncThunk<
   }
 );
 
+export const createBulkOfRegistrableCourses = createAsyncThunk<
+  { registrableCourses: RegistrableCourse[]; message: string },
+  RegistrableCourse[],
+  {
+    rejectValue: {
+      registrableCourses: RegistrableCourse[];
+      message: string;
+    };
+  }
+>(
+  "registrableCourses/createBulkOfRegistrableCourses",
+  async (registrableCourses, thunkApi) => {
+    try {
+      const { data } = await api.post(
+        "/registrable-courses/bulk",
+        registrableCourses
+      );
+      return data as {
+        registrableCourses: RegistrableCourse[];
+        message: string;
+      };
+    } catch (err) {
+      return thunkApi.rejectWithValue(
+        err.response.data as {
+          registrableCourses: RegistrableCourse[];
+          message: string;
+        }
+      );
+    }
+  }
+);
+
 const initialState = {
   status: "idle",
   registrableCourses: [],
@@ -109,6 +141,16 @@ export const RegistrableCourseSlice = createSlice({
         state.status = "succeeded";
         state.registrableCourses = state.registrableCourses.concat(
           action.payload.registrableCourse!
+        );
+        state.message = action.payload.message;
+      }
+    );
+    builder.addCase(
+      createBulkOfRegistrableCourses.fulfilled,
+      (state, action) => {
+        state.status = "succeeded";
+        state.registrableCourses = state.registrableCourses.concat(
+          action.payload.registrableCourses
         );
         state.message = action.payload.message;
       }

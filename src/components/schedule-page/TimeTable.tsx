@@ -2,18 +2,105 @@ import React, { useRef, useEffect } from "react";
 import styled, { css } from "styled-components";
 import Usage from "./Usage";
 import "simplebar/dist/simplebar.min.css";
+import {
+  Course,
+  Lab,
+  LabUsage,
+  Teaching,
+  User,
+} from "../../types/model";
 
-const TimeTable = () => {
+interface TimeTableProps {
+  labUsages: LabUsage[];
+  labs: Lab[];
+  courses: Course[];
+  lecturers: User[];
+  teachings: Teaching[];
+}
+
+const TimeTable = ({
+  labUsages,
+  labs,
+  courses,
+  lecturers,
+  teachings,
+}: TimeTableProps) => {
+  const renderUsages = () => {
+    const cells: JSX.Element[] = [];
+    for (let lab of labs) {
+      const usages = labUsages.filter(
+        (usage) => usage.lab === lab._id
+      );
+      if (usages.length > 0) {
+        // Get usages that have the same dayOfWeek
+        const usagesByDayOfWeek: Map<number, LabUsage[]> = new Map();
+        for (let i = 0; i < 7; i++) {
+          for (let usage of usages) {
+            if (usage.dayOfWeek === i) {
+              let dayOfWeekUsages = usagesByDayOfWeek.get(i)!;
+              if (!dayOfWeekUsages) {
+                dayOfWeekUsages = [];
+                dayOfWeekUsages.push(usage);
+              } else {
+                dayOfWeekUsages.push(usage);
+              }
+              usagesByDayOfWeek.set(i, dayOfWeekUsages);
+            }
+          }
+        }
+        console.log(usagesByDayOfWeek);
+        usagesByDayOfWeek.forEach((usages, dayOfWeek) => {
+          cells.push(
+            <Cell
+              key={lab._id + dayOfWeek}
+              position={{
+                row: labs.indexOf(lab) + 2,
+                column: dayOfWeek + 1,
+              }}
+            >
+              {usages.map((usage) => (
+                <Usage
+                  key={usage._id}
+                  startPeriod={usage.startPeriod}
+                  endPeriod={usage.endPeriod}
+                  courseName={
+                    courses.find(
+                      (course) =>
+                        course._id ===
+                        teachings.find(
+                          (teaching) =>
+                            teaching._id === usage.teaching
+                        )!.course
+                    )!.courseName
+                  }
+                  lecturerName={
+                    lecturers.find(
+                      (lecturer) =>
+                        lecturer._id ===
+                        teachings.find(
+                          (teaching) =>
+                            teaching._id === usage.teaching
+                        )!.user
+                    )!.fullName
+                  }
+                />
+              ))}
+            </Cell>
+          );
+        });
+      }
+    }
+    console.log(cells);
+    return cells;
+  };
+
   return (
     <StyledTimeTable>
       <LabContainer>
         <Padding />
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
-        <Lab>A1-101</Lab>
+        {labs.map((lab) => (
+          <LabName key={lab._id}>{lab.labName}</LabName>
+        ))}
       </LabContainer>
       <UsageContainer>
         <DayOfWeek>Monday</DayOfWeek>
@@ -22,60 +109,8 @@ const TimeTable = () => {
         <DayOfWeek>Thursday</DayOfWeek>
         <DayOfWeek>Friday</DayOfWeek>
         <DayOfWeek>Saturday</DayOfWeek>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
-        <Cell position={false}>
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-          <Usage
-            startPeriod={1}
-            endPeriod={3}
-            courseName="Database Management System"
-            lecturerName="Nguyen Thanh Son"
-          />
-        </Cell>
+        <DayOfWeek>Sunday</DayOfWeek>
+        {renderUsages()}
       </UsageContainer>
     </StyledTimeTable>
   );
@@ -96,7 +131,7 @@ const LabContainer = styled.div`
   z-index: 2;
 `;
 
-const Lab = styled.div`
+const LabName = styled.div`
   background-color: ${({ theme }) => theme.blue};
   border-radius: 4px;
   padding: 0px 5px;
@@ -115,7 +150,7 @@ const Lab = styled.div`
 const UsageContainer = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(6, minmax(auto, 1fr));
+  grid-template-columns: repeat(7, minmax(auto, 1fr));
   grid-template-rows: 50px;
   grid-auto-rows: 145px;
   margin-left: 1rem;
@@ -144,17 +179,13 @@ const Padding = styled.div`
 `;
 
 interface CellProps {
-  position: boolean;
+  position: { row: number; column: number };
 }
 
 const Cell = styled.div<CellProps>`
   display: flex;
-  ${({ position }) =>
-    position &&
-    css`
-      grid-row: 3;
-      grid-column: 3;
-    `}
+  grid-row: ${({ position }) => position.row};
+  grid-column: ${({ position }) => position.column};
 `;
 
 export default TimeTable;

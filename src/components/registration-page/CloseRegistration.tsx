@@ -42,13 +42,14 @@ const CloseRegistrationModal = (props: ModalProps) => {
           editRegistration(clonedRegistration)
         );
         unwrapResult(actionResult);
-
+        setStatus("idle");
         dispatch(
           setSnackBarContent("Close registration successfully")
         );
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
+        setStatus("idle");
         console.log("Failed to close registration", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));

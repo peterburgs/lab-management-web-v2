@@ -425,6 +425,7 @@ const RegistrationPage = () => {
         setShowModal={setShowOpenRegistrationModal}
         setShowSelectCourseModal={setShowSelectCourseModal}
         selectedCourses={selectedCourses}
+        setBatch={setBatch}
       />
       <CloseRegistrationModal
         showModal={showCloseRegistrationModal}

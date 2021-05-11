@@ -70,6 +70,9 @@ const TopNavBar = ({
 
   // handle close registration automatically
   const handleRegAutoClose = async () => {
+    console.log('====================================');
+    console.log("Hello");
+    console.log('====================================');
     const clonedRegistration = _.cloneDeep(
       (registrations as Registration[]).find(
         (reg) => reg.isOpening === true

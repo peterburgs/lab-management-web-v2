@@ -11,6 +11,7 @@ export type Semester = {
   isOpening: boolean;
   updatedAt: Date;
   createdAt: Date;
+  labSchedule: number[][];
   isHidden: boolean;
 };
 
@@ -81,10 +82,10 @@ export type LabUsage = {
   _id: string;
   lab: string | Lab;
   teaching: string | Teaching;
-  weekNo: string;
+  weekNo: number;
   dayOfWeek: number;
-  startPeriod: Date;
-  endPeriod: Date;
+  startPeriod: number;
+  endPeriod: number;
   createdAt: Date;
   updatedAt: Date;
   isHidden: boolean;

@@ -10,7 +10,7 @@ interface SemesterState {
   message?: string;
 }
 
-interface GETResponse {
+export interface GETResponse {
   semesters: Semester[];
   count: number;
   message: string;

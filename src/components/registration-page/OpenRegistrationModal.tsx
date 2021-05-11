@@ -23,7 +23,10 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 import { openRegistration } from "../../reducers/registrationSlice";
-import { newRegistrableCourse } from "../../reducers/registrableCourseSlice";
+import {
+  newRegistrableCourse,
+  createBulkOfRegistrableCourses,
+} from "../../reducers/registrableCourseSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
 
@@ -31,6 +34,7 @@ import { useAppDispatch, useAppSelector } from "../../store";
 interface OpenRegistrationModalProps extends ModalProps {
   setShowSelectCourseModal: (a: boolean) => void;
   selectedCourses: CheckboxItem[];
+  setBatch: (a: number) => void;
 }
 
 const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
@@ -45,12 +49,10 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
     (state) => state.semesters.semesters[0]
   );
   const [status, setStatus] = useState("idle");
-  const [isAllCoursesApplied, setIsAllCoursesApplied] = useState(
-    true
-  );
+  const [isAllCoursesApplied, setIsAllCoursesApplied] =
+    useState(true);
 
   const onSubmit = async (data: Registration) => {
-    console.log(props.selectedCourses);
     if (courses.length > 0 && semester) {
       try {
         data.batch = registrations.length + 1;
@@ -68,14 +70,26 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
                 course: course._id,
               };
             });
-            // TODO: Can be improved?
-            for (let i = 0; i < registrableCourses.length; i++) {
-              const actionResult = await dispatch(
-                newRegistrableCourse(registrableCourses[i])
-              );
-              unwrapResult(actionResult);
-            }
+            console.log(registrableCourses);
+            const actionResult = await dispatch(
+              createBulkOfRegistrableCourses(registrableCourses)
+            );
+            unwrapResult(actionResult);
+          } else {
+            const registrableCourses = props.selectedCourses.map(
+              (course) => {
+                return {
+                  registration: regResult._id,
+                  course: course._id,
+                };
+              }
+            );
+            const actionResult = await dispatch(
+              createBulkOfRegistrableCourses(registrableCourses)
+            );
+            unwrapResult(actionResult);
           }
+          props.setBatch(registrations.length + 1);
         }
         unwrapResult(actionResult);
 

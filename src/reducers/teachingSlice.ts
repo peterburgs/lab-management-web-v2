@@ -11,7 +11,7 @@ interface TeachingState {
   message?: string;
 }
 
-interface GETResponse {
+export interface GETResponse {
   teachings: Teaching[];
   count: number;
   message: string;

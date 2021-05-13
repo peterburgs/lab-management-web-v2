@@ -25,6 +25,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/react-table": "^7.0.29",
     "@types/styled-components": "^5.1.9",
+    "@types/uuid": "^8.3.0",
     "axios": "^0.21.1",
     "date-fns": "^2.19.0",
     "file-saver": "^2.0.5",
@@ -45,6 +46,7 @@
     "simplebar-react": "^2.3.0",
     "styled-components": "^5.2.1",
     "typescript": "~3.8.2",
+    "uuid": "^8.3.2",
     "xlsx": "^0.16.9"
   },
   "scripts": {

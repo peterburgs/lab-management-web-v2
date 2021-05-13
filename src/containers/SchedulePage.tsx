@@ -9,7 +9,6 @@ import {
 import TimeTable from "../components/schedule-page/TimeTable";
 import Button from "../components/common/Button";
 import { Skeleton } from "@material-ui/core";
-import { api } from "../api";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 
 // import hooks
@@ -17,20 +16,20 @@ import useGetLabUsagesBySemester from "../hooks/schedule/useGetLabUsagesBySemest
 import useGetAllLabs from "../hooks/lab/useGetAllLabs";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
+import useGetAllSemester from "../hooks/semester/useGetAllSemester";
+import useGetAllTeaching from "../hooks/teaching/useGetAllTeachings";
 
 // import model
 import {
   LabUsage,
   Semester,
   Lab,
-  Teaching,
   Course,
   User,
 } from "../types/model";
 
 // import type
-import { GETResponse as SemesterGETResponse } from "../reducers/semesterSlice";
-import { GETResponse as TeachingGETResponse } from "../reducers/teachingSlice";
+import { useAppSelector } from "../store";
 
 const period2Shift = (start: number, end: number) => {
   if (start >= 1 && end <= 5) return 1;
@@ -40,47 +39,42 @@ const period2Shift = (start: number, end: number) => {
 };
 
 const SchedulePage = () => {
-  const [shift, setShift] = useState(1);
+  const [shift, setShift] = useState(0);
   const [week, setWeek] = useState(0);
-  const [semesterId, setSemesterId] = useState<string>("semester-1");
-  const [currentSemester, setCurrentSemester] = useState<Semester>(
-    null!
-  );
-  const [teachings, setTeachings] = useState<Teaching[]>([]);
-  const [currentLabUsages, setCurrentLabUsages] = useState<
+  const [filteredLabUsages, setFilterLabUsages] = useState<
     LabUsage[]
   >([]);
 
+  const [selectedSemester, setSelectedSemester] = useState<Semester>(
+    null!
+  );
+
   // call hooks
-  const [labUsages, scheduleStatus] =
-    useGetLabUsagesBySemester(currentSemester);
   const [courses] = useGetAllCourses();
   const [users] = useGetAllUsers();
   const [labs] = useGetAllLabs();
+  const openingSemester = useAppSelector(
+    (state) => state.semesters.semesters[0]
+  );
+  const [semesters] = useGetAllSemester();
+  const [teachings] = useGetAllTeaching();
+  const [labUsages, scheduleStatus] =
+    useGetLabUsagesBySemester(openingSemester);
 
   // useEffect
+
+  // initialize selected semester
   useEffect(() => {
-    (async () => {
-      try {
-        const res = (
-          await api.get("/semesters", {
-            params: { _id: semesterId },
-          })
-        ).data as SemesterGETResponse;
+    if (semesters.length > 0 && openingSemester) {
+      setSelectedSemester(openingSemester);
+    }
+  }, [semesters, openingSemester]);
 
-        if (res.semesters.length > 0) {
-          setCurrentSemester(res.semesters[0]);
-        }
-      } catch (err) {
-        console.log(err.message);
-      }
-    })();
-  }, [semesterId]);
-
+  // Filter lab usages
   useEffect(() => {
     if (labUsages) {
       console.log(labUsages);
-      setCurrentLabUsages(
+      setFilterLabUsages(
         (labUsages as LabUsage[]).filter(
           (labUsage) =>
             labUsage.weekNo === week &&
@@ -93,20 +87,6 @@ const SchedulePage = () => {
       );
     }
   }, [week, labUsages, shift]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = (await api.get("/teachings"))
-          .data as TeachingGETResponse;
-        if (res.teachings.length > 0) {
-          setTeachings(res.teachings);
-        }
-      } catch (err) {
-        console.log(err.message);
-      }
-    })();
-  }, []);
 
   // conditional render
   const renderContent = () => {
@@ -148,8 +128,8 @@ const SchedulePage = () => {
                   onChange={(e) => setWeek(e.target.value as number)}
                   label="Week"
                 >
-                  {currentSemester &&
-                    [...Array(currentSemester.numberOfWeeks)].map(
+                  {selectedSemester &&
+                    [...Array(selectedSemester.numberOfWeeks)].map(
                       (_, i) => (
                         <MenuItem value={i} key={i}>
                           {i}
@@ -163,24 +143,32 @@ const SchedulePage = () => {
                 <Select
                   labelId="semester-label"
                   id="semester-select"
-                  value={semesterId}
-                  onChange={(e) => setSemesterId(e.target.value)}
+                  value={selectedSemester._id}
+                  onChange={(e) =>
+                    setSelectedSemester(
+                      semesters.filter(
+                        (semester) => semester._id === e.target.value
+                      )[0]
+                    )
+                  }
                   label="Semester"
                 >
-                  <MenuItem value={"semester-1"}>
-                    Semester 2020-2021
-                  </MenuItem>
+                  {semesters.map((semester) => (
+                    <MenuItem value={semester._id}>
+                      {semester.semesterName}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Filter>
             <Action>
               <Button>Export theory rooms</Button>
-              <Button>Add lab usage</Button>
+              <Button>Add extra lab usage</Button>
             </Action>
           </Toolbar>
           <TableContainer>
             <TimeTable
-              labUsages={currentLabUsages}
+              labUsages={filteredLabUsages}
               labs={labs as Lab[]}
               courses={courses as Course[]}
               lecturers={users as User[]}

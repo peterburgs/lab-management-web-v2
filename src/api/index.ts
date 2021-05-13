@@ -1,10 +1,10 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: "https://759de6356bdb.ngrok.io/api/v2",
 });
 
 export function auth() {
-  const token = localStorage.get("token");
+  const token = localStorage.getItem("token");
   return { Authorization: `Bearer ${token}` };
 }

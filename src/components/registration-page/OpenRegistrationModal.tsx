@@ -15,7 +15,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { CheckboxItem } from "../common/CheckboxList";
 
 // import models
-import { Registration } from "../../types/model";
+import { RegistrableCourse, Registration } from "../../types/model";
 // import reducers
 import {
   setShowErrorSnackBar,
@@ -64,7 +64,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
         const regResult = actionResult.payload?.registration;
         if (regResult) {
           if (isAllCoursesApplied) {
-            const registrableCourses = courses.map((course) => {
+            const registrableCourses: RegistrableCourse[] = courses.map((course) => {
               return {
                 registration: regResult._id,
                 course: course._id,

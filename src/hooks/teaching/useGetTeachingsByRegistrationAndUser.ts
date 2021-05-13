@@ -21,6 +21,8 @@ const useGetTeachingsByRegistrationAndUser = (
 
   useEffect(() => {
     if (teachingStatus === "idle" && registration && user) {
+      console.log(registration);
+      console.log(user);
       (async () => {
         try {
           const actionResult = await dispatch(
@@ -41,6 +43,7 @@ const useGetTeachingsByRegistrationAndUser = (
         teachingStatus === "failed" ||
         teachingStatus === "succeeded"
       ) {
+        console.log("hello");
         dispatch(resetState());
       }
     };

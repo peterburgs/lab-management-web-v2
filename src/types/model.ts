@@ -17,6 +17,7 @@ export type Semester = {
 
 export type Teaching = {
   _id: string;
+  uId: string;
   user: string | User;
   course: string | Course;
   group: number;

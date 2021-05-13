@@ -4,7 +4,7 @@ import AvatarButton from "./AvatarButton";
 import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
-import { Box, Skeleton} from "@material-ui/core";
+import { Box, Skeleton } from "@material-ui/core";
 import { Semester, Registration } from "../../types/model";
 import SemesterModal from "./SemesterModal";
 import Countdown from "react-countdown";
@@ -45,34 +45,24 @@ const TopNavBar = ({
 }: TopNavBarProps) => {
   // useState
   const [showSemesterModal, setShowSemesterModal] = useState(false);
-  const [showEditSemesterModal, setShowEditSemesterModal] = useState(
-    false
-  );
-  const [
-    showCloseSemesterModal,
-    setShowCloseSemesterModal,
-  ] = useState(false);
-  const [
-    closeRegistrationStatus,
-    setCloseRegistrationStatus,
-  ] = useState("idle");
+  const [showEditSemesterModal, setShowEditSemesterModal] =
+    useState(false);
+  const [showCloseSemesterModal, setShowCloseSemesterModal] =
+    useState(false);
+  const [closeRegistrationStatus, setCloseRegistrationStatus] =
+    useState("idle");
   const dispatch = useAppDispatch();
 
   // * Call hooks
   const [semester, semesterStatus] = useGetOpenSemester();
-  const [
-    registrations,
-    registrationStatus,
-  ] = useGetRegistrationBySemester((semester as Semester)?._id);
+  const [registrations, registrationStatus] =
+    useGetRegistrationBySemester((semester as Semester)?._id);
   const location = useLocation();
 
   // event handler
 
   // handle close registration automatically
   const handleRegAutoClose = async () => {
-    console.log('====================================');
-    console.log("Hello");
-    console.log('====================================');
     const clonedRegistration = _.cloneDeep(
       (registrations as Registration[]).find(
         (reg) => reg.isOpening === true
@@ -183,7 +173,7 @@ const TopNavBar = ({
       <StyledTopNavBar>
         <SemesterContainer>{renderSemester()}</SemesterContainer>
         <SearchBarContainer onClick={handleClosePanel}>
-          {location.pathname !== "/" ? (
+          {location.pathname !== "/registration" ? (
             <AppSearchBar />
           ) : (
             registrations.length > 0 && semester && <AppSearchBar />

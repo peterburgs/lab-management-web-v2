@@ -10,7 +10,7 @@ import Button from "../common/Button";
 import CheckboxList, { CheckboxItem } from "../common/CheckboxList";
 
 // import models
-import { User } from "../../types/model";
+import { User, ROLES } from "../../types/model";
 // import reducers
 import { newUser } from "../../reducers/userSlice";
 import {
@@ -33,7 +33,10 @@ const NewUserModal = (props: ModalProps) => {
   const onSubmit = async (data: User) => {
     try {
       data.isHidden = false;
-
+      data.roles = selectedRoles.map((role) => {
+        return role._id === "0" ? ROLES.ADMIN : ROLES.LECTURER;
+      });
+      console.log(data);
       setStatus("pending");
       const actionResult = await dispatch(newUser(data));
       unwrapResult(actionResult);
@@ -100,8 +103,8 @@ const NewUserModal = (props: ModalProps) => {
           selectedItems={selectedRoles}
           onSelectItem={handleSelectRoles}
           items={[
-            { _id: "ADMIN", name: "Admin" },
-            { _id: "LECTURER", name: "Lecturer" },
+            { _id: "0", name: "Admin" },
+            { _id: "1", name: "Lecturer" },
           ]}
         />
 

@@ -7,7 +7,7 @@ import {
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "../reducers/notificationSlice";
-import {ROLES} from '../types/model';
+import { ROLES } from "../types/model";
 
 const AuthCheck = () => {
   const history = useHistory();
@@ -15,7 +15,10 @@ const AuthCheck = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token")!;
-    const role = localStorage.getItem("role")! === "0" ? ROLES.ADMIN : ROLES.LECTURER;
+    const role =
+      localStorage.getItem("role")! === "0"
+        ? ROLES.ADMIN
+        : ROLES.LECTURER;
     const expirationDate = localStorage.getItem("exp")!;
 
     if (!token) {

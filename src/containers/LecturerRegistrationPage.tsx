@@ -13,12 +13,10 @@ import PrivateRoute from "../containers/PrivateRoute";
 import ImportExportIcon from "@material-ui/icons/ImportExport";
 import ImportPanel from "../components/lecturer-registration-page/ImportPanel";
 
-
 // Import modal
 import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
 import DeleteTeachingModal from "../components/lecturer-registration-page/DeleteTeachingModal";
 import ImportTeachingModal from "../components/lecturer-registration-page/ImportTeachingModal";
-
 
 // import models
 import { Teaching, Course, ROLES } from "../types/model";
@@ -49,7 +47,8 @@ const prepareData = (
 } => {
   let data: TeachingTable[];
 
-  if (teachings.length > 0) {
+  if (teachings.length > 0 && courses.length > 0) {
+    console.log(teachings);
     data = teachings.map((teaching) => {
       return {
         rowId: teaching._id,
@@ -72,22 +71,15 @@ const prepareData = (
 
 const LecturerRegistrationPage = () => {
   // state
-  const [showNewTeachingModal, setShowNewTeachingModal] = useState(
-    false
-  );
-  const [
-    showDeleteTeachingModal,
-    setShowDeleteTeachingModal,
-  ] = useState(false);
-  const [
-    teachingIdToDelete,
-    setTeachingIdToDelete,
-  ] = useState<string>(null!);
+  const [showNewTeachingModal, setShowNewTeachingModal] =
+    useState(false);
+  const [showDeleteTeachingModal, setShowDeleteTeachingModal] =
+    useState(false);
+  const [teachingIdToDelete, setTeachingIdToDelete] =
+    useState<string>(null!);
   const [showImportPanel, setShowImportPanel] = useState(false);
-  const [
-    showImportTeachingModal,
-    setShowImportTeachingModal,
-  ] = useState(false);
+  const [showImportTeachingModal, setShowImportTeachingModal] =
+    useState(false);
 
   // call hooks
   const semesterStatus = useAppSelector(
@@ -104,13 +96,11 @@ const LecturerRegistrationPage = () => {
   const verifiedUser = useAppSelector(
     (state) => state.auth.verifiedUser
   );
-  const [
-    teachings,
-    teachingStatus,
-  ] = useFetchTeachingsByOpenRegistrationAndUser(
-    openRegistration,
-    verifiedUser
-  );
+  const [teachings, teachingStatus] =
+    useFetchTeachingsByOpenRegistrationAndUser(
+      openRegistration,
+      verifiedUser
+    );
   const [courses, courseStatus] = useGetAllCourses();
   const teachingSearchText = useAppSelector(
     (state) => state.search.teachingSearchText

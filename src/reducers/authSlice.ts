@@ -88,7 +88,7 @@ export const AuthSlice = createSlice({
       state.status = "succeeded";
       state.verifiedUser = action.payload.verifiedUser;
       state.verifiedToken = action.payload.verifiedToken;
-      state.verifiedRole = action.payload.verifiedRole;
+      state.verifiedRole = Number(action.payload.verifiedRole);
       state.avatarUrl = action.payload.avatarUrl;
     });
     builder.addCase(verify.rejected, (state) => {
@@ -101,9 +101,6 @@ export const AuthSlice = createSlice({
   },
 });
 
-export const {
-  setIsSessionTimeout,
-  resetState,
-} = AuthSlice.actions;
+export const { setIsSessionTimeout, resetState } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

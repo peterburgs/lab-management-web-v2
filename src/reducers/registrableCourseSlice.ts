@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RegistrableCourse } from "../types/model";
-import { api } from "../api";
+import { api, auth } from "../api";
 import _ from "lodash";
 
 interface RegistrableCourseState {
@@ -35,6 +35,7 @@ export const getRegistrableCourses = createAsyncThunk<
   async (filter, thunkApi) => {
     try {
       const { data } = await api.get("/registrable-courses", {
+        headers: auth(),
         params: { ...filter },
       });
       return data as GETResponse;
@@ -56,7 +57,8 @@ export const newRegistrableCourse = createAsyncThunk<
     try {
       const { data } = await api.post(
         "/registrable-courses",
-        registrableCourse
+        registrableCourse,
+        { headers: auth() }
       );
       return data as POSTResponse;
     } catch (err) {
@@ -82,7 +84,8 @@ export const createBulkOfRegistrableCourses = createAsyncThunk<
     try {
       const { data } = await api.post(
         "/registrable-courses/bulk",
-        registrableCourses
+        { registrableCourses: [...registrableCourses] },
+        { headers: auth() }
       );
       return data as {
         registrableCourses: RegistrableCourse[];

@@ -39,10 +39,8 @@ const ImportTeachingModal = (props: ModalProps) => {
   );
 
   // Fetch registrable courses
-  const [
-    registrableCourses,
-    registrableCourseStatus,
-  ] = useGetRegistrableCoursesByRegistration(openRegistration?._id);
+  const [registrableCourses, registrableCourseStatus] =
+    useGetRegistrableCoursesByRegistration(openRegistration?._id);
 
   // handle new course submit
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -80,7 +78,7 @@ const ImportTeachingModal = (props: ModalProps) => {
         } as { [index: string]: string };
 
         for (const teaching of teachings) {
-          for (const [key, value] of Object.entries(teaching)) {
+          for (let [key, value] of Object.entries(teaching)) {
             // check if right format
             if (!attrs.find((attr) => attr === key)) {
               dispatch(
@@ -93,7 +91,9 @@ const ImportTeachingModal = (props: ModalProps) => {
             }
 
             // check if right data type
+            if (key === "course") value = value.toString();
             if (typeof value !== attrsDataType[key]) {
+              console.log(typeof value);
               dispatch(
                 setSnackBarContent(
                   "Your data does not have correct type"
@@ -126,6 +126,7 @@ const ImportTeachingModal = (props: ModalProps) => {
         setStatus("pending");
         try {
           const prepareData = teachings.map((teaching) => {
+            teaching.course = teaching.course.toString();
             return {
               ...teaching,
               registration: openRegistration!._id,
@@ -133,6 +134,8 @@ const ImportTeachingModal = (props: ModalProps) => {
               isHidden: false,
             };
           });
+
+          console.log(prepareData);
 
           const actionResult = await dispatch(
             createBulkOfTeachings(prepareData)

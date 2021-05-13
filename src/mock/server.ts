@@ -20,6 +20,7 @@ import {
 } from "../types/model";
 import { add } from "date-fns";
 import _ from "lodash";
+import { v4 as uuidv4 } from "uuid";
 
 const SemesterModel: ModelDefinition<Semester> = Model.extend({});
 const RegistrationModel: ModelDefinition<Registration> = Model.extend(
@@ -244,7 +245,7 @@ const server = () => {
             fullName: "Le Duc Thinh",
             createdAt: new Date(),
             updatedAt: new Date(),
-            roles: [0],
+            roles: [0, 1],
             isHidden: false,
           },
           {
@@ -858,6 +859,18 @@ const server = () => {
         );
       });
 
+      this.post("/schedule", (schema: AppSchema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        attrs._id = uuidv4();
+        attrs.createdAt = new Date();
+        attrs.updatedAt = new Date();
+
+        return {
+          labUsage: schema.create("labUsage", attrs),
+          message: "Create lab usage successfully",
+        };
+      });
+
       this.post(
         "/schedule/generate",
         (schema: AppSchema, request) => {
@@ -997,6 +1010,7 @@ const server = () => {
             ) {
               for (let slot of availableSlots) {
                 const labUsage = {
+                  _id: uuidv4(),
                   lab: slot.lab._id,
                   teaching: currentTeaching._id,
                   weekNo: slot.weekNo,

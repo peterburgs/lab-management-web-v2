@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Teaching } from "../types/model";
-import { api } from "../api";
+import { api, auth } from "../api";
 import _ from "lodash";
 import { RootState } from "../store";
 
@@ -47,6 +47,7 @@ export const getTeachings = createAsyncThunk<
 >("teachings/getTeachings", async (filter, thunkApi) => {
   try {
     const { data } = await api.get("/teachings", {
+      headers: auth(),
       params: { ...filter },
     });
     return data as GETResponse;
@@ -61,7 +62,9 @@ export const newTeaching = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("teachings/newTeaching", async (teaching, thunkApi) => {
   try {
-    const { data } = await api.post("/teachings", teaching);
+    const { data } = await api.post("/teachings", teaching, {
+      headers: auth(),
+    });
     return data as POSTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(
@@ -76,7 +79,13 @@ export const createBulkOfTeachings = createAsyncThunk<
   { rejectValue: { teachings: Teaching[]; message: string } }
 >("teachings/createBulkOfTeachings", async (teachings, thunkApi) => {
   try {
-    const { data } = await api.post("/teachings/bulk", teachings);
+    const { data } = await api.post(
+      "/teachings/bulk",
+      { teachings: [...teachings] },
+      {
+        headers: auth(),
+      }
+    );
     return data as { teachings: Teaching[]; message: string };
   } catch (err) {
     return thunkApi.rejectWithValue(
@@ -93,7 +102,8 @@ export const editTeaching = createAsyncThunk<
   try {
     const { data } = await api.put(
       `/teachings/${teaching._id}`,
-      teaching
+      teaching,
+      { headers: auth() }
     );
     return data as PUTResponse;
   } catch (err) {
@@ -107,7 +117,9 @@ export const deleteTeaching = createAsyncThunk<
   { rejectValue: DELETEResponse }
 >("teachings/deleteTeaching", async (teachingId, thunkApi) => {
   try {
-    const { data } = await api.delete(`/teachings/${teachingId}`);
+    const { data } = await api.delete(`/teachings/${teachingId}`, {
+      headers: auth(),
+    });
     return data as DELETEResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(

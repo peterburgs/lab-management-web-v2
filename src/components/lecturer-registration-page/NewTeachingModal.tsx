@@ -29,12 +29,8 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import useGetRegistrableCoursesByRegistration from "../../hooks/registrableCourse/useGetRegistrableCoursesByRegistration";
 
 const NewTeachingModal = (props: ModalProps) => {
-  const {
-    register,
-    handleSubmit,
-    errors,
-    control,
-  } = useForm<Teaching>();
+  const { register, handleSubmit, errors, control } =
+    useForm<Teaching>();
 
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
@@ -51,10 +47,8 @@ const NewTeachingModal = (props: ModalProps) => {
   );
 
   // Fetch registrable courses
-  const [
-    registrableCourses,
-    registrableCourseStatus,
-  ] = useGetRegistrableCoursesByRegistration(openRegistration?._id);
+  const [registrableCourses, registrableCourseStatus] =
+    useGetRegistrableCoursesByRegistration(openRegistration?._id);
 
   // handle new course submit
   const onSubmit = async (data: Teaching) => {
@@ -67,7 +61,8 @@ const NewTeachingModal = (props: ModalProps) => {
         try {
           data.isHidden = false;
           data.registration = openRegistration!._id;
-          data.user = verifiedUser!._id;
+          data.uId = verifiedUser!._id;
+
           setStatus("pending");
           const actionResult = await dispatch(newTeaching(data));
           unwrapResult(actionResult);

@@ -1,5 +1,10 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  Redirect,
+  useHistory,
+} from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import Layout from "./containers/Layout";
 import ReactModal from "react-modal";

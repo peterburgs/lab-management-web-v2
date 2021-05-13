@@ -27,7 +27,7 @@ import {
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../reducers/notificationSlice";
-import {ROLES} from '../types/model';
+import { ROLES } from "../types/model";
 
 const Login = () => {
   const [role, setRole] = useState(ROLES.LECTURER);
@@ -62,7 +62,7 @@ const Login = () => {
 
       dispatch(setShowSuccessSnackBar(true));
       dispatch(setSnackBarContent("Welcome back!"));
-      history.replace("/");
+      history.replace("registration");
     } catch (err) {
       setLoading(false);
       dispatch(setShowErrorSnackBar(true));

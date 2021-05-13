@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { LabUsage } from "../types/model";
-import { api } from "../api";
+import { api, auth } from "../api";
 import _ from "lodash";
 
 interface ScheduleState {
@@ -24,6 +24,11 @@ interface POSTResponse {
   message: string;
 }
 
+interface LabUsagePOSTResponse {
+  labUsage: LabUsage | null;
+  message: string;
+}
+
 export const getLabUsages = createAsyncThunk<
   GETResponse,
   GETFilter,
@@ -31,11 +36,29 @@ export const getLabUsages = createAsyncThunk<
 >("schedule/getLabUsages", async (filter, thunkApi) => {
   try {
     const { data } = await api.get("/schedule", {
+      headers: auth(),
       params: { ...filter },
     });
     return data as GETResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as GETResponse);
+  }
+});
+
+export const newLabUsage = createAsyncThunk<
+  LabUsagePOSTResponse,
+  LabUsage,
+  { rejectValue: LabUsagePOSTResponse }
+>("schedule/newLabUsage", async (labUsage, thunkApi) => {
+  try {
+    const { data } = await api.post("/schedule", labUsage, {
+      headers: auth(),
+    });
+    return data as LabUsagePOSTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as LabUsagePOSTResponse
+    );
   }
 });
 
@@ -47,10 +70,14 @@ export const generateSchedule = createAsyncThunk<
   "schedule/generateSchedule",
   async ({ registration, isNew }, thunkApi) => {
     try {
-      const { data } = await api.post("/schedule/generate", {
-        registration,
-        isNew,
-      });
+      const { data } = await api.post(
+        "/schedule/generate",
+        {
+          registration,
+          isNew,
+        },
+        { headers: auth() }
+      );
       return data as POSTResponse;
     } catch (err) {
       return thunkApi.rejectWithValue(
@@ -97,6 +124,13 @@ export const scheduleSlice = createSlice({
     });
     builder.addCase(generateSchedule.fulfilled, (state, action) => {
       state.status = "succeeded";
+      state.message = action.payload.message;
+    });
+    builder.addCase(newLabUsage.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.labUsages = state.labUsages.concat(
+        action.payload.labUsage!
+      );
       state.message = action.payload.message;
     });
   },

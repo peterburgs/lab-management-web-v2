@@ -141,8 +141,8 @@ const EditUserModal = (props: ModalProps) => {
               selectedItems={selectedRoles}
               onSelectItem={handleSelectRoles}
               items={[
-                { _id: "ADMIN", name: "Admin" },
-                { _id: "LECTURER", name: "Lecturer" },
+                { _id: "0", name: "Admin" },
+                { _id: "1", name: "Lecturer" },
               ]}
             />
             <StyledButton

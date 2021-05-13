@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { User } from "../types/model";
-import { api } from "../api";
+import { api, auth } from "../api";
 import _ from "lodash";
 
 interface UserState {
@@ -44,6 +44,7 @@ export const getUsers = createAsyncThunk<
 >("users/getUsers", async (filter, thunkApi) => {
   try {
     const { data } = await api.get("/users", {
+      headers: auth(),
       params: { ...filter },
     });
     return data as GETResponse;
@@ -58,7 +59,9 @@ export const newUser = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("users/newUser", async (user, thunkApi) => {
   try {
-    const { data } = await api.post("/users", user);
+    const { data } = await api.post("/users", user, {
+      headers: auth(),
+    });
     return data as POSTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(
@@ -73,7 +76,9 @@ export const editUser = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("users/editUser", async (user, thunkApi) => {
   try {
-    const { data } = await api.put(`/users/${user._id}`, user);
+    const { data } = await api.put(`/users/${user._id}`, user, {
+      headers: auth(),
+    });
     return data as PUTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as PUTResponse);
@@ -86,7 +91,9 @@ export const deleteUser = createAsyncThunk<
   { rejectValue: DELETEResponse }
 >("users/deleteUser", async (userId, thunkApi) => {
   try {
-    const { data } = await api.delete(`/users/${userId}`);
+    const { data } = await api.delete(`/users/${userId}`, {
+      headers: auth(),
+    });
     return data as DELETEResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(

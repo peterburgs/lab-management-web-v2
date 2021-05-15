@@ -16,6 +16,7 @@ interface TimeTableProps {
   courses: Course[];
   lecturers: User[];
   teachings: Teaching[];
+  onEditLabUsage: (id: string) => void;
 }
 
 const TimeTable = ({
@@ -24,6 +25,7 @@ const TimeTable = ({
   courses,
   lecturers,
   teachings,
+  onEditLabUsage,
 }: TimeTableProps) => {
   const renderUsages = () => {
     const cells: JSX.Element[] = [];
@@ -60,6 +62,8 @@ const TimeTable = ({
             >
               {usages.map((usage) => (
                 <Usage
+                  id={usage._id}
+                  onEditLabUsage={onEditLabUsage}
                   key={usage._id}
                   startPeriod={usage.startPeriod}
                   endPeriod={usage.endPeriod}

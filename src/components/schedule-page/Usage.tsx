@@ -6,6 +6,8 @@ interface UsageProps {
   endPeriod: number;
   courseName: string;
   lecturerName: string;
+  id: string;
+  onEditLabUsage: (id: string) => void;
 }
 
 const Usage = ({
@@ -13,6 +15,8 @@ const Usage = ({
   endPeriod,
   courseName,
   lecturerName,
+  id,
+  onEditLabUsage,
 }: UsageProps) => {
   const convertPeriodToShift = (
     startPeriod: number,
@@ -33,7 +37,9 @@ const Usage = ({
       <LecturerName>{lecturerName}</LecturerName>
       <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
       <ActionButtonContainer>
-        <ActionButton>Edit</ActionButton>
+        <ActionButton onClick={() => onEditLabUsage(id)}>
+          Edit
+        </ActionButton>
         <ActionButton>Delete</ActionButton>
       </ActionButtonContainer>
     </StyledUsage>

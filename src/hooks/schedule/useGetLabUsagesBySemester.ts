@@ -14,12 +14,12 @@ const useGetLabUsagesBySemester = (
   const labUsages = useAppSelector(
     (state) => state.schedule.labUsages
   );
-  const scheduleStatus = useAppSelector(
-    (state) => state.schedule.status
+  const labUsageStatus = useAppSelector(
+    (state) => state.schedule.labUsageStatus
   );
 
   useEffect(() => {
-    if (scheduleStatus === "idle" && semester) {
+    if (labUsageStatus === "idle" && semester) {
       (async () => {
         try {
           const actionResult = await dispatch(
@@ -36,15 +36,15 @@ const useGetLabUsagesBySemester = (
 
     return () => {
       if (
-        scheduleStatus === "failed" ||
-        scheduleStatus === "succeeded"
+        labUsageStatus === "failed" ||
+        labUsageStatus === "succeeded"
       ) {
         dispatch(resetState());
       }
     };
-  }, [scheduleStatus, dispatch, semester]);
+  }, [labUsageStatus, dispatch, semester]);
 
-  return [labUsages, scheduleStatus];
+  return [labUsages, labUsageStatus];
 };
 
 export default useGetLabUsagesBySemester;

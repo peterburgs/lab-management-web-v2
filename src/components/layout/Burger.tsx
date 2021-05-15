@@ -22,7 +22,7 @@ interface StyledBurgerProps {
 }
 
 const StyledBurger = styled.button<StyledBurgerProps>`
-  display: none;
+  display: flex;
   flex-direction: column;
   justify-content: space-around;
   background: transparent;

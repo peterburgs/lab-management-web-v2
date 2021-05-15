@@ -26,6 +26,8 @@ import AuthCheck from "./containers/AuthCheck";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "./containers/ErrorPage";
 import { ROLES } from "./types/model";
+import UserPage from "./containers/UserPage";
+import RequestDetail from "./components/request-page/RequestDetail";
 
 // import reducers
 import { resetState as resetAuthState } from "./reducers/authSlice";
@@ -41,7 +43,6 @@ import {
 // import hooks
 import { useGoogleLogout } from "react-google-login";
 import { useAppDispatch, useAppSelector } from "./store";
-import UserPage from "./containers/UserPage";
 
 // snackbar animation helper
 function SlideTransition(props: TransitionProps) {

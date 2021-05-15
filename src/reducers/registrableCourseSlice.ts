@@ -110,7 +110,14 @@ const initialState = {
 export const RegistrableCourseSlice = createSlice({
   name: "registrableCourses",
   initialState,
-  reducers: {},
+  reducers: {
+    resetState: (state) => {
+      state.count = 0;
+      state.message = "";
+      state.registrableCourses = [];
+      state.status = "idle";
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getRegistrableCourses.pending, (state) => {
       state.status = "pending";
@@ -160,5 +167,7 @@ export const RegistrableCourseSlice = createSlice({
     );
   },
 });
+
+export const { resetState } = RegistrableCourseSlice.actions;
 
 export default RegistrableCourseSlice.reducer;

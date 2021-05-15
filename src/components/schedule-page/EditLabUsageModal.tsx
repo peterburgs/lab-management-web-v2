@@ -15,9 +15,9 @@ import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { Teaching, RegistrableCourse } from "../../types/model";
+import { LabUsage, Lab } from "../../types/model";
 // import reducers
-import { editTeaching } from "../../reducers/teachingSlice";
+import { editLabUsage } from "../../reducers/scheduleSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
@@ -27,80 +27,60 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useForm, Controller } from "react-hook-form";
 import { useParams } from "react-router";
-import useGetRegistrableCoursesByRegistration from "../../hooks/registrableCourse/useGetRegistrableCoursesByRegistration";
+import useGetAllLabs from "../../hooks/lab/useGetAllLabs";
 
-const EditTeachingModal = (props: ModalProps) => {
+const EditLabUsageModal = (props: ModalProps) => {
   // call hooks
   const { register, handleSubmit, errors, control } =
-    useForm<Teaching>();
+    useForm<LabUsage>();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const teaching = useAppSelector((state) =>
-    state.teachings.teachings.find((item) => item._id === id)
+  const labUsage = useAppSelector((state) =>
+    state.schedule.labUsages.find((item) => item._id === id)
   );
-  // get opening registration
-  const openRegistration = useAppSelector((state) =>
-    state.registrations.registrations.find(
-      (reg) => reg.isOpening === true
-    )
+
+  const labs = useAppSelector((state) => state.labs.labs);
+  const semester = useAppSelector(
+    (state) => state.semesters.semesters[0]
   );
-  // Fetch registrable courses
-  const [registrableCourses, registrableCourseStatus] =
-    useGetRegistrableCoursesByRegistration(openRegistration?._id);
 
   // useState
   const [status, setStatus] = useState("idle");
 
   // handle submit event
-  const onSubmit = async (data: Teaching) => {
-    if (teaching) {
-      if (registrableCourseStatus === "succeeded") {
-        if (
-          (registrableCourses as RegistrableCourse[]).find(
-            (item) => item.course === data.course
-          )
-        ) {
-          try {
-            const clonedTeaching = {
-              ..._.cloneDeep(teaching),
-              ...data,
-            } as Teaching;
+  const onSubmit = async (data: LabUsage) => {
+    if (labUsage) {
+      if (labs.find((item) => item._id === data.lab)) {
+        try {
+          const clonedLabUsage = {
+            ..._.cloneDeep(labUsage),
+            ...data,
+          } as LabUsage;
 
-            clonedTeaching.uId = clonedTeaching.user as string;
-
-            console.log(clonedTeaching);
-
-            setStatus("pending");
-            const actionResult = await dispatch(
-              editTeaching(clonedTeaching)
-            );
-            unwrapResult(actionResult);
-
-            setStatus("idle");
-            dispatch(
-              setSnackBarContent("Edit teaching successfully")
-            );
-            dispatch(setShowSuccessSnackBar(true));
-            props.setShowModal(false);
-          } catch (err) {
-            console.log("Failed to edit teaching", err);
-            if (err.response) {
-              dispatch(setSnackBarContent(err.response.data.message));
-            } else {
-              dispatch(setSnackBarContent("Failed to edit teaching"));
-            }
-            setStatus("idle");
-            dispatch(setShowErrorSnackBar(true));
-            props.setShowModal(false);
-          }
-        } else {
-          dispatch(
-            setSnackBarContent(
-              "The course is not allowed to register to this registration"
-            )
+          setStatus("pending");
+          const actionResult = await dispatch(
+            editLabUsage(clonedLabUsage)
           );
+          unwrapResult(actionResult);
+
+          setStatus("idle");
+          dispatch(setSnackBarContent("Edit lab usage successfully"));
+          dispatch(setShowSuccessSnackBar(true));
+          props.setShowModal(false);
+        } catch (err) {
+          console.log("Failed to edit lab usage", err);
+          if (err.response) {
+            dispatch(setSnackBarContent(err.response.data.message));
+          } else {
+            dispatch(setSnackBarContent("Failed to edit lab usage"));
+          }
+          setStatus("idle");
           dispatch(setShowErrorSnackBar(true));
+          props.setShowModal(false);
         }
+      } else {
+        dispatch(setSnackBarContent("Lab name is not correct"));
+        dispatch(setShowErrorSnackBar(true));
       }
     }
   };
@@ -108,62 +88,60 @@ const EditTeachingModal = (props: ModalProps) => {
   return (
     <Modal {...props}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        {teaching && (
+        {labUsage && labs.length > 0 && semester && (
           <>
-            <StyledTextField
-              label="Course ID"
-              inputRef={register({ required: true })}
-              defaultValue={teaching.course}
-              name="course"
-              error={Boolean(errors.course)}
-              helperText={errors.course && "*This field is required"}
+            <Controller
+              name="lab"
+              control={control}
+              defaultValue={labUsage.lab}
+              rules={{ required: true }}
+              render={(props) => (
+                <StyledFormControl variant="outlined">
+                  <InputLabel id="lab-label">Lab</InputLabel>
+                  <Select
+                    labelId="lab-label"
+                    value={props.value}
+                    onChange={(e) => props.onChange(e.target.value)}
+                    label="Lab"
+                  >
+                    {labs.map((lab, i) => (
+                      <MenuItem value={lab._id} key={lab._id}>
+                        {lab.labName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </StyledFormControl>
+              )}
             />
-            <StyledTextField
-              label="Group"
-              inputRef={register({ required: true })}
-              defaultValue={teaching.group}
-              name="group"
-              error={Boolean(errors.group)}
-              type="number"
-              helperText={errors.group && "*This field is required"}
-            />
-            <StyledTextField
-              label="Number of students"
-              inputRef={register({ required: true })}
-              defaultValue={teaching.numberOfStudents}
-              name="numberOfStudents"
-              error={Boolean(errors.numberOfStudents)}
-              type="number"
-              helperText={
-                errors.numberOfStudents && "*This field is required"
-              }
-            />
-            <StyledTextField
-              label="Theory room"
-              inputRef={register({ required: true })}
-              defaultValue={teaching.theoryRoom}
-              name="theoryRoom"
-              error={Boolean(errors.theoryRoom)}
-              helperText={
-                errors.theoryRoom && "*This field is required"
-              }
-            />
-            <StyledTextField
-              label="Number of practical weeks"
-              inputRef={register({ required: true, min: 1 })}
-              defaultValue={teaching.numberOfPracticalWeeks}
-              name="numberOfPracticalWeeks"
-              error={Boolean(errors.numberOfPracticalWeeks)}
-              type="number"
-              helperText={
-                errors.numberOfPracticalWeeks &&
-                "*This field is required"
-              }
+            <Controller
+              name="weekNo"
+              control={control}
+              defaultValue={labUsage.weekNo}
+              rules={{ required: true }}
+              render={(props) => (
+                <StyledFormControl variant="outlined">
+                  <InputLabel id="weekno-label">Week</InputLabel>
+                  <Select
+                    labelId="weekno-label"
+                    value={props.value}
+                    onChange={(e) => props.onChange(e.target.value)}
+                    label="Week"
+                  >
+                    {[...Array(semester.numberOfWeeks)].map(
+                      (_, i) => (
+                        <MenuItem value={i} key={"weekNo" + i}>
+                          {i}
+                        </MenuItem>
+                      )
+                    )}
+                  </Select>
+                </StyledFormControl>
+              )}
             />
             <Controller
               name="dayOfWeek"
               control={control}
-              defaultValue={teaching.dayOfWeek}
+              defaultValue={labUsage.dayOfWeek}
               rules={{ required: true }}
               render={(props) => (
                 <StyledFormControl variant="outlined">
@@ -180,6 +158,7 @@ const EditTeachingModal = (props: ModalProps) => {
                     <MenuItem value={3}>Thursday</MenuItem>
                     <MenuItem value={4}>Friday</MenuItem>
                     <MenuItem value={5}>Saturday</MenuItem>
+                    <MenuItem value={6}>Sunday</MenuItem>
                   </Select>
                 </StyledFormControl>
               )}
@@ -187,7 +166,7 @@ const EditTeachingModal = (props: ModalProps) => {
             <Controller
               name="startPeriod"
               control={control}
-              defaultValue={teaching.startPeriod}
+              defaultValue={labUsage.startPeriod}
               rules={{ required: true }}
               render={(props) => (
                 <StyledFormControl variant="outlined">
@@ -212,7 +191,7 @@ const EditTeachingModal = (props: ModalProps) => {
             <Controller
               name="endPeriod"
               control={control}
-              defaultValue={teaching.endPeriod}
+              defaultValue={labUsage.endPeriod}
               rules={{ required: true }}
               render={(props) => (
                 <StyledFormControl variant="outlined">
@@ -280,4 +259,4 @@ const StyledFormControl = materialStyled(FormControl)({
   marginTop: "0.5rem",
 });
 
-export default EditTeachingModal;
+export default EditLabUsageModal;

@@ -3,6 +3,17 @@ export enum ROLES {
   LECTURER,
 }
 
+export enum STATUSES {
+  PENDING,
+  APPROVED,
+  DENIED,
+}
+
+export enum REQUEST_TYPES {
+  MODIFY_LAB_USAGE,
+  ADD_EXTRA_CLASS,
+}
+
 export type Semester = {
   _id: string;
   semesterName: string;
@@ -90,4 +101,17 @@ export type LabUsage = {
   createdAt: Date;
   updatedAt: Date;
   isHidden: boolean;
+};
+
+export type Request = {
+  _id: string;
+  lab: Lab | string;
+  status: STATUSES;
+  user: User | string;
+  title: string;
+  description: string;
+  type: REQUEST_TYPES;
+  isHidden: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 };

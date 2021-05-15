@@ -5,8 +5,6 @@ import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
 import { useForm, Controller } from "react-hook-form";
 import {
-  FormControlLabel,
-  Checkbox,
   FormControl,
   MenuItem,
   InputLabel,
@@ -26,10 +24,10 @@ import { generateSchedule } from "../../reducers/scheduleSlice";
 import { useAppDispatch, useAppSelector } from "../../store";
 
 const GenerateScheduleModal = (props: ModalProps) => {
-  const { handleSubmit, control } = useForm<{
-    registration: string;
-    isNew: boolean;
-  }>();
+  const { handleSubmit, control } =
+    useForm<{
+      registration: string;
+    }>();
 
   const dispatch = useAppDispatch();
   const registrations = useAppSelector(
@@ -38,10 +36,7 @@ const GenerateScheduleModal = (props: ModalProps) => {
 
   const [status, setStatus] = useState("idle");
 
-  const onSubmit = async (data: {
-    registration: string;
-    isNew: boolean;
-  }) => {
+  const onSubmit = async (data: { registration: string }) => {
     if (registrations.length > 0) {
       try {
         setStatus("pending");
@@ -99,25 +94,6 @@ const GenerateScheduleModal = (props: ModalProps) => {
             </StyledFormControl>
           )}
         />
-        <Controller
-          name="isNew"
-          control={control}
-          defaultValue={true}
-          render={(props) => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={props.value}
-                  onChange={(e) => {
-                    props.onChange(e.target.checked);
-                  }}
-                />
-              }
-              label="Create a new schedule"
-            />
-          )}
-        />
-
         <SubmitButton
           disabled={status === "pending"}
           loading={status === "pending"}

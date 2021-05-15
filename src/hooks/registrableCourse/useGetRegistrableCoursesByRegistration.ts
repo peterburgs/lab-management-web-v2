@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { getRegistrableCourses } from "../../reducers/registrableCourseSlice";
+import {
+  getRegistrableCourses,
+  resetState,
+} from "../../reducers/registrableCourseSlice";
 
 const useGetRegistrableCoursesByRegistration = (
   registration: string | undefined
@@ -27,6 +30,14 @@ const useGetRegistrableCoursesByRegistration = (
         }
       })();
     }
+    return () => {
+      if (
+        registrableCourseStatus === "succeeded" ||
+        registrableCourseStatus === "failed"
+      ) {
+        dispatch(resetState());
+      }
+    };
   }, [registrableCourseStatus, dispatch, registration]);
 
   return [registrableCourses, registrableCourseStatus];

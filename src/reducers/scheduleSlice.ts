@@ -4,23 +4,29 @@ import { api, auth } from "../api";
 import _ from "lodash";
 
 interface ScheduleState {
-  status: "idle" | "pending" | "succeeded" | "failed";
+  scheduleStatus: "idle" | "pending" | "succeeded" | "failed";
+  labUsageStatus: "idle" | "pending" | "succeeded" | "failed";
   labUsages: LabUsage[];
   count: number;
   message?: string;
 }
 
-interface GETResponse {
+interface LabUsageGETResponse {
   labUsages: LabUsage[];
   count: number;
   message: string;
 }
 
-interface GETFilter {
+interface LabUsageGETFilter {
   semester?: string;
 }
 
-interface POSTResponse {
+interface SchedulePOSTResponse {
+  message: string;
+}
+
+interface LabUsagePUTResponse {
+  labUsage: LabUsage;
   message: string;
 }
 
@@ -30,18 +36,20 @@ interface LabUsagePOSTResponse {
 }
 
 export const getLabUsages = createAsyncThunk<
-  GETResponse,
-  GETFilter,
-  { rejectValue: GETResponse }
+  LabUsageGETResponse,
+  LabUsageGETFilter,
+  { rejectValue: LabUsageGETResponse }
 >("schedule/getLabUsages", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/schedule", {
+    const { data } = await api.get("/schedules", {
       headers: auth(),
       params: { ...filter },
     });
-    return data as GETResponse;
+    return data as LabUsageGETResponse;
   } catch (err) {
-    return thunkApi.rejectWithValue(err.response.data as GETResponse);
+    return thunkApi.rejectWithValue(
+      err.response.data as LabUsageGETResponse
+    );
   }
 });
 
@@ -51,7 +59,7 @@ export const newLabUsage = createAsyncThunk<
   { rejectValue: LabUsagePOSTResponse }
 >("schedule/newLabUsage", async (labUsage, thunkApi) => {
   try {
-    const { data } = await api.post("/schedule", labUsage, {
+    const { data } = await api.post("/schedules", labUsage, {
       headers: auth(),
     });
     return data as LabUsagePOSTResponse;
@@ -62,33 +70,50 @@ export const newLabUsage = createAsyncThunk<
   }
 });
 
-export const generateSchedule = createAsyncThunk<
-  POSTResponse,
-  { registration: string; isNew: boolean },
-  { rejectValue: POSTResponse }
->(
-  "schedule/generateSchedule",
-  async ({ registration, isNew }, thunkApi) => {
-    try {
-      const { data } = await api.post(
-        "/schedule/generate",
-        {
-          registration,
-          isNew,
-        },
-        { headers: auth() }
-      );
-      return data as POSTResponse;
-    } catch (err) {
-      return thunkApi.rejectWithValue(
-        err.response.data as POSTResponse
-      );
-    }
+export const editLabUsage = createAsyncThunk<
+  LabUsagePUTResponse,
+  LabUsage,
+  { rejectValue: LabUsagePUTResponse }
+>("schedule/editLabUsage", async (labUsage, thunkApi) => {
+  try {
+    const { data } = await api.put(
+      `/schedules/${labUsage._id}`,
+      labUsage,
+      { headers: auth() }
+    );
+    return data as LabUsagePUTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as LabUsagePUTResponse
+    );
   }
-);
+});
+
+export const generateSchedule = createAsyncThunk<
+  SchedulePOSTResponse,
+  { registration: string },
+  { rejectValue: SchedulePOSTResponse }
+>("schedule/generateSchedule", async ({ registration }, thunkApi) => {
+  try {
+    console.log(registration);
+    const { data } = await api.post(
+      "/schedules/generate",
+      {
+        registration,
+      },
+      { headers: auth() }
+    );
+    return data as SchedulePOSTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as SchedulePOSTResponse
+    );
+  }
+});
 
 const initialState: ScheduleState = {
-  status: "idle",
+  scheduleStatus: "idle",
+  labUsageStatus: "idle",
   labUsages: [],
   count: 0,
 };
@@ -101,21 +126,22 @@ export const scheduleSlice = createSlice({
       state.count = 0;
       state.message = "";
       state.labUsages = [];
-      state.status = "idle";
+      state.scheduleStatus = "idle";
+      state.labUsageStatus = "idle";
     },
   },
   extraReducers: (builder) => {
     builder.addCase(getLabUsages.pending, (state, action) => {
-      state.status = "pending";
+      state.labUsageStatus = "pending";
     });
     builder.addCase(getLabUsages.fulfilled, (state, action) => {
-      state.status = "succeeded";
+      state.labUsageStatus = "succeeded";
       state.labUsages = _.cloneDeep(action.payload.labUsages);
       state.count = action.payload.count;
       state.message = action.payload.message;
     });
     builder.addCase(getLabUsages.rejected, (state, action) => {
-      state.status = "failed";
+      state.labUsageStatus = "failed";
       if (action.payload) {
         state.labUsages = [];
         state.count = action.payload.count;
@@ -123,12 +149,21 @@ export const scheduleSlice = createSlice({
       }
     });
     builder.addCase(generateSchedule.fulfilled, (state, action) => {
-      state.status = "succeeded";
+      state.scheduleStatus = "succeeded";
       state.message = action.payload.message;
     });
     builder.addCase(newLabUsage.fulfilled, (state, action) => {
-      state.status = "succeeded";
+      state.labUsageStatus = "succeeded";
       state.labUsages = state.labUsages.concat(
+        action.payload.labUsage!
+      );
+      state.message = action.payload.message;
+    });
+    builder.addCase(editLabUsage.fulfilled, (state, action) => {
+      const currentIndex = state.labUsages.findIndex(
+        (item) => item._id === action.payload.labUsage!._id
+      );
+      state.labUsages[currentIndex] = _.cloneDeep(
         action.payload.labUsage!
       );
       state.message = action.payload.message;

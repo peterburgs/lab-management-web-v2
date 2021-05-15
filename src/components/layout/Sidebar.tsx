@@ -70,6 +70,11 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           icon={<ScheduleIcon />}
         />
       </NavItemContainer>
+      <Footer>
+        <Copyright isCollapsed={isCollapsed}>
+          © Peterbrugs & Starea 2021
+        </Copyright>
+      </Footer>
     </StyledSidebar>
   );
 };
@@ -89,6 +94,14 @@ const Header = styled.div`
   align-items: center;
 `;
 
+const Footer = styled.div`
+  padding: 20px 10px;
+  margin: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 interface AppNameProps {
   isCollapsed: boolean;
 }
@@ -96,10 +109,24 @@ const AppName = styled.span<AppNameProps>`
   color: white;
   font-size: 20px;
   font-weight: 500;
+  margin-left: 15px;
 
   @media (max-width: 1220px) {
     margin-left: 15px;
   }
+
+  ${({ isCollapsed }) =>
+    isCollapsed &&
+    css`
+      display: none;
+    `}
+`;
+
+const Copyright = styled.span<AppNameProps>`
+  color: white;
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.7;
 
   ${({ isCollapsed }) =>
     isCollapsed &&

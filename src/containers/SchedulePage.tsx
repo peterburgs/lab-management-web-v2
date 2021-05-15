@@ -10,6 +10,8 @@ import TimeTable from "../components/schedule-page/TimeTable";
 import Button from "../components/common/Button";
 import { Skeleton } from "@material-ui/core";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
+import PrivateRoute from "./PrivateRoute";
+import EditLabUsageModal from "../components/schedule-page/EditLabUsageModal";
 
 // import hooks
 import useGetLabUsagesBySemester from "../hooks/schedule/useGetLabUsagesBySemester";
@@ -26,10 +28,12 @@ import {
   Lab,
   Course,
   User,
+  ROLES,
 } from "../types/model";
 
 // import type
 import { useAppSelector } from "../store";
+import { useHistory } from "react-router";
 
 const period2Shift = (start: number, end: number) => {
   if (start >= 1 && end <= 5) return 1;
@@ -40,7 +44,7 @@ const period2Shift = (start: number, end: number) => {
 
 const SchedulePage = () => {
   const [shift, setShift] = useState(0);
-  const [week, setWeek] = useState(0);
+  const [week, setWeek] = useState(1);
   const [filteredLabUsages, setFilterLabUsages] = useState<
     LabUsage[]
   >([]);
@@ -58,8 +62,9 @@ const SchedulePage = () => {
   );
   const [semesters] = useGetAllSemester();
   const [teachings] = useGetAllTeaching();
-  const [labUsages, scheduleStatus] =
-    useGetLabUsagesBySemester(openingSemester);
+  const [labUsages, labUsageSchedule] =
+    useGetLabUsagesBySemester(selectedSemester);
+  const history = useHistory();
 
   // useEffect
 
@@ -72,7 +77,7 @@ const SchedulePage = () => {
 
   // Filter lab usages
   useEffect(() => {
-    if (labUsages) {
+    if (labUsages.length > 0) {
       console.log(labUsages);
       setFilterLabUsages(
         (labUsages as LabUsage[]).filter(
@@ -88,9 +93,16 @@ const SchedulePage = () => {
     }
   }, [week, labUsages, shift]);
 
+  const handleEditLabUsage = (id: string) => {
+    history.push(`/schedule/${id}`);
+  };
+
   // conditional render
   const renderContent = () => {
-    if (scheduleStatus === "pending" || scheduleStatus === "idle") {
+    if (
+      labUsageSchedule === "pending" ||
+      labUsageSchedule === "idle"
+    ) {
       return (
         <SkeletonContainer>
           <Skeleton variant="rectangular" height={40} />
@@ -99,7 +111,7 @@ const SchedulePage = () => {
           <Skeleton variant="rectangular" height={40} />
         </SkeletonContainer>
       );
-    } else if (scheduleStatus === "succeeded") {
+    } else if (labUsageSchedule === "succeeded") {
       return (
         <>
           <Toolbar>
@@ -143,7 +155,9 @@ const SchedulePage = () => {
                 <Select
                   labelId="semester-label"
                   id="semester-select"
-                  value={selectedSemester._id}
+                  value={
+                    selectedSemester ? selectedSemester._id : null
+                  }
                   onChange={(e) =>
                     setSelectedSemester(
                       semesters.filter(
@@ -163,17 +177,19 @@ const SchedulePage = () => {
             </Filter>
             <Action>
               <Button>Export theory rooms</Button>
-              <Button>Add extra lab usage</Button>
             </Action>
           </Toolbar>
           <TableContainer>
-            <TimeTable
-              labUsages={filteredLabUsages}
-              labs={labs as Lab[]}
-              courses={courses as Course[]}
-              lecturers={users as User[]}
-              teachings={teachings}
-            />
+            {courses.length > 0 && users.length > 0 ? (
+              <TimeTable
+                labUsages={filteredLabUsages}
+                labs={labs as Lab[]}
+                courses={courses as Course[]}
+                lecturers={users as User[]}
+                teachings={teachings}
+                onEditLabUsage={handleEditLabUsage}
+              />
+            ) : null}
           </TableContainer>
         </>
       );
@@ -187,7 +203,23 @@ const SchedulePage = () => {
     }
   };
 
-  return <StyledSchedulePage>{renderContent()}</StyledSchedulePage>;
+  return (
+    <>
+      <PrivateRoute
+        roles={[ROLES.ADMIN]}
+        path="/schedule/:id"
+        exact={false}
+        component={
+          <EditLabUsageModal
+            showModal={true}
+            setShowModal={() => history.goBack()}
+            name="Edit lab usage"
+          />
+        }
+      />
+      <StyledSchedulePage>{renderContent()}</StyledSchedulePage>
+    </>
+  );
 };
 
 const StyledSchedulePage = styled.div`
@@ -220,7 +252,7 @@ const Filter = styled.div`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   font-size: 0.875rem;
 
   @media (max-width: 600px) {

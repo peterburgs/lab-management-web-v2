@@ -85,6 +85,7 @@ const Layout = ({
 };
 
 // Styling
+
 const Container = styled.div`
   display: grid;
   height: 100vh;
@@ -142,7 +143,8 @@ const ContentContainer = styled.div<ContentContainerProps>`
   padding: 0px 24px;
   /* The content section must have width and height so that its children can be scrolled */
   height: calc(100vh - 92px);
-  width: calc(100vw - 240px);
+  width: ${({ isCollapsed }) =>
+    isCollapsed ? "calc(100vw - 67px)" : "calc(100vw - 240px)"};
 
   @media (min-width: 1220px) {
     grid-area: "content";

@@ -36,6 +36,7 @@ type TeachingTable = {
   period: string;
   credit: number;
   numOfStudents: number;
+  dayOfWeek: number;
 };
 
 // prepare data for the table
@@ -60,6 +61,7 @@ const prepareData = (
         credit: courses.find((c) => c._id === teaching.course)!
           .numberOfCredits,
         numOfStudents: teaching.numberOfStudents,
+        dayOfWeek: teaching.dayOfWeek,
       };
     });
   } else {
@@ -125,6 +127,10 @@ const LecturerRegistrationPage = () => {
       {
         Header: "Group",
         accessor: "group" as const,
+      },
+      {
+        Header: "Day of week",
+        accessor: "dayOfWeek" as const,
       },
       {
         Header: "Period",

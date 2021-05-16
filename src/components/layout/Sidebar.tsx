@@ -72,7 +72,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
       </NavItemContainer>
       <Footer>
         <Copyright isCollapsed={isCollapsed}>
-          © Peterbrugs & Starea 2021
+          © Peter Burgs & Starea 2021
         </Copyright>
       </Footer>
     </StyledSidebar>

@@ -26,8 +26,6 @@ import AuthCheck from "./containers/AuthCheck";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorPage from "./containers/ErrorPage";
 import { ROLES } from "./types/model";
-import UserPage from "./containers/UserPage";
-import RequestDetail from "./components/request-page/RequestDetail";
 
 // import reducers
 import { resetState as resetAuthState } from "./reducers/authSlice";
@@ -43,6 +41,7 @@ import {
 // import hooks
 import { useGoogleLogout } from "react-google-login";
 import { useAppDispatch, useAppSelector } from "./store";
+import SimpleBar from "simplebar-react";
 
 // snackbar animation helper
 function SlideTransition(props: TransitionProps) {
@@ -65,6 +64,10 @@ const SchedulePage = React.lazy(
 const LabPage = React.lazy(() => import("./containers/LabPage"));
 const RequestPage = React.lazy(
   () => import("./containers/RequestPage")
+);
+const UserPage = React.lazy(() => import("./containers/UserPage"));
+const RequestDetailPage = React.lazy(
+  () => import("./containers/RequestDetailPage")
 );
 
 // material-ui theme
@@ -323,7 +326,7 @@ const App = () => {
               />
               <PrivateRoute
                 path="/requests"
-                exact={false}
+                exact={true}
                 roles={[ROLES.ADMIN, ROLES.LECTURER]}
                 component={
                   <Layout
@@ -385,6 +388,38 @@ const App = () => {
                       ) : (
                         <LecturerRegistrationPage />
                       )}
+                    </Suspense>
+                  </Layout>
+                }
+              />
+              <PrivateRoute
+                roles={[ROLES.ADMIN, ROLES.LECTURER]}
+                path="/requests/:id"
+                exact={false}
+                component={
+                  <Layout
+                    handleSidebarToggle={handleSidebarToggle}
+                    isCollapsed={isCollapsed}
+                    setCollapsed={setCollapsed}
+                  >
+                    <Suspense
+                      fallback={
+                        <LinearProgress
+                          style={{
+                            width: isCollapsed
+                              ? "calc(100vw - 67px)"
+                              : "calc(100vw - 240px)",
+                            position: "absolute",
+                            right: "0px",
+                            top:
+                              window.innerWidth < 1220
+                                ? "-80px"
+                                : "0px",
+                          }}
+                        />
+                      }
+                    >
+                      <RequestDetailPage />
                     </Suspense>
                   </Layout>
                 }

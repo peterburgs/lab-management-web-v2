@@ -75,6 +75,7 @@ export type User = {
   _id: string;
   email: string;
   fullName: string;
+  avatarUrl: string;
   roles: ROLES[];
   createdAt: Date;
   updatedAt: Date;
@@ -107,11 +108,27 @@ export type Request = {
   _id: string;
   lab: Lab | string;
   status: STATUSES;
-  user: User | string;
-  title: string;
-  description: string;
-  type: REQUEST_TYPES;
-  isHidden: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+	user: User | string;
+	weekNo: number;
+	dayOfWeek: number;
+	startPeriod: number;
+	endPeriod: number;
+	labUsage?: LabUsage;
+	teaching?: Teaching;
+	title: string,
+	description: string,
+	type: REQUEST_TYPES,
+	isHidden: boolean,
+	createdAt?: Date,
+  updatedAt?: Date,
+};
+
+export type Comment = {
+  _id?: string, // no need to declare in mongoose model
+ 	user: User,
+	request: Request,
+	text: string,
+	isHidden:boolean,
+	createdAt?: Date,
+  updatedAt?: Date,
 };

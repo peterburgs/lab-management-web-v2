@@ -1,17 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
-import { useForm, Controller } from "react-hook-form";
-import {
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
-} from "@material-ui/core";
+import { useForm } from "react-hook-form";
 import Button from "../common/Button";
 import { unwrapResult } from "@reduxjs/toolkit";
+import _ from "lodash";
 
 // import reducers
 import {
@@ -24,23 +18,35 @@ import { generateSchedule } from "../../reducers/scheduleSlice";
 import { useAppDispatch, useAppSelector } from "../../store";
 
 const GenerateScheduleModal = (props: ModalProps) => {
-  const { handleSubmit, control } =
-    useForm<{
-      registration: string;
-    }>();
+  const { handleSubmit } = useForm();
 
   const dispatch = useAppDispatch();
-  const registrations = useAppSelector(
-    (state) => state.registrations.registrations
+  const latestRegistration = useAppSelector((state) =>
+    state.registrations.registrations.length > 1
+      ? _.cloneDeep(state.registrations.registrations).sort(
+          (a, b) => b.batch - a.batch
+        )[0]
+      : state.registrations.registrations[0]
+  );
+
+  const teachings = useAppSelector((state) =>
+    state.teachings.teachings.length > 0
+      ? state.teachings.teachings.filter(
+          (teaching) =>
+            teaching.registration === latestRegistration._id
+        )
+      : []
   );
 
   const [status, setStatus] = useState("idle");
 
-  const onSubmit = async (data: { registration: string }) => {
-    if (registrations.length > 0) {
+  const onSubmit = async () => {
+    if (latestRegistration) {
       try {
         setStatus("pending");
-        const actionResult = await dispatch(generateSchedule(data));
+        const actionResult = await dispatch(
+          generateSchedule({ registration: latestRegistration._id })
+        );
 
         unwrapResult(actionResult);
 
@@ -66,34 +72,12 @@ const GenerateScheduleModal = (props: ModalProps) => {
   return (
     <Modal {...props}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          name="registration"
-          control={control}
-          defaultValue={
-            registrations.length > 0 ? registrations[0]._id : null
-          }
-          rules={{ required: true }}
-          render={(props) => (
-            <StyledFormControl variant="outlined">
-              <InputLabel id="registration-label">
-                Registration
-              </InputLabel>
-              <Select
-                labelId="registration-label"
-                value={props.value}
-                onChange={(e) => props.onChange(e.target.value)}
-                label="Registration"
-              >
-                {registrations.map((reg) => (
-                  <MenuItem
-                    key={reg._id}
-                    value={reg._id}
-                  >{`Registration batch ${reg.batch}`}</MenuItem>
-                ))}
-              </Select>
-            </StyledFormControl>
-          )}
-        />
+        {latestRegistration && teachings.length > 0 && (
+          <Label>
+            <Header>{`Registration batch ${latestRegistration.batch}`}</Header>
+            <Text>{`The number of teachings: ${teachings.length}`}</Text>
+          </Label>
+        )}
         <SubmitButton
           disabled={status === "pending"}
           loading={status === "pending"}
@@ -132,9 +116,21 @@ const SubmitButton = styled(Button)`
   }
 `;
 
-const StyledFormControl = materialStyled(FormControl)({
-  marginBottom: "1rem",
-  marginTop: "0.5rem",
-});
+const Label = styled.div`
+  margin-bottom: "1rem";
+  margin-left: "0.5rem";
+  display: flex;
+  flex-direction: column;
+`;
+
+const Header = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+`;
+
+const Text = styled.div`
+  font-size: 16px;
+  font-weight: 400;
+`;
 
 export default GenerateScheduleModal;

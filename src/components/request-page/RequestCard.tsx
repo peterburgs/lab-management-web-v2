@@ -3,6 +3,9 @@ import styled from "styled-components";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
 import { REQUEST_TYPES, STATUSES } from "../../types/model";
 import { Link } from "react-router-dom";
+import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
 interface RequestCardProps {
   title: string;
@@ -27,26 +30,61 @@ const RequestCard = ({
 }: RequestCardProps) => {
   return (
     <StyledRequestCard>
-      <ContentContainer>
-        <Header>
-          <RequestLink to="/id">
-            <TypeBadge>
-              {type === REQUEST_TYPES.MODIFY_LAB_USAGE
-                ? "MODIFY LAB USAGE"
-                : "ADD EXTRA CLASS"}
-            </TypeBadge>
-            <span>{title}</span>
-          </RequestLink>
-        </Header>
-        <Info>
-          {status === STATUSES.PENDING
-            ? "Open at " + pendingAt!.toDateString()
-            : status === STATUSES.APPROVED
-            ? "Approved at " + approvedAt!.toDateString()
-            : "Denied at " + deniedAt!.toDateString()}
-          <span> by {authorName}</span>
-        </Info>
-      </ContentContainer>
+      <Container>
+        <StatusIconContainer>
+          {status === STATUSES.PENDING ? (
+            <HourglassEmptyOutlinedIcon
+              style={{ color: "#0070f3" }}
+            />
+          ) : status === STATUSES.APPROVED ? (
+            <CheckIcon style={{ color: "#44BD63" }} />
+          ) : (
+            <CloseIcon style={{ color: "#F02849" }} />
+          )}
+        </StatusIconContainer>
+        <ContentContainer>
+          <Header>
+            <RequestLink to="/requests/id">
+              <TypeBadge>
+                {type === REQUEST_TYPES.MODIFY_LAB_USAGE
+                  ? "MODIFY LAB USAGE"
+                  : "ADD EXTRA CLASS"}
+              </TypeBadge>
+              <span>{title}</span>
+            </RequestLink>
+          </Header>
+          <Info>
+            {status === STATUSES.PENDING
+              ? "Open at " +
+                pendingAt!.toDateString() +
+                " " +
+                pendingAt!.getHours() +
+                ":" +
+                pendingAt!.getMinutes() +
+                ":" +
+                pendingAt!.getSeconds()
+              : status === STATUSES.APPROVED
+              ? "Approved at " +
+                approvedAt!.toDateString() +
+                " " +
+                approvedAt!.getHours() +
+                ":" +
+                approvedAt!.getMinutes() +
+                ":" +
+                approvedAt!.getSeconds()
+              : "Denied at " +
+                deniedAt!.toDateString() +
+                " " +
+                deniedAt!.getHours() +
+                ":" +
+                deniedAt!.getMinutes() +
+                ":" +
+                deniedAt!.getSeconds()}
+            <span> by {authorName}</span>
+          </Info>
+        </ContentContainer>
+      </Container>
+
       <CommentBadge>
         <ChatBubbleOutlineIcon fontSize="small" />
         <span>{numberOfComments}</span>
@@ -77,6 +115,10 @@ const StyledRequestCard = styled.div`
 const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const StatusIconContainer = styled.div`
+  margin-right: 1rem;
 `;
 
 const RequestLink = styled(Link)`
@@ -111,6 +153,10 @@ const TypeBadge = styled.div`
   font-size: 12px;
   padding: 0.3rem;
   font-weight: 600;
+`;
+
+const Container = styled.div`
+  display: flex;
 `;
 
 export default RequestCard;

@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
-import { REQUEST_TYPES, STATUSES, User } from "../types/model";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { STATUSES, User, REQUEST_TYPES } from "../types/model";
+import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
-import Request from "../components/request-page/RequestCard";
-import SimpleBar from "simplebar-react";
 import MobileDateTimePicker from "@material-ui/lab/MobileDateTimePicker";
 import {
   TextField,
@@ -14,8 +12,10 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import { styled as materialStyled } from "@material-ui/styles";
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
+import RequestCard from "../components/request-page/RequestCard";
+import "simplebar/dist/simplebar.min.css";
+import SimpleBar from "simplebar-react";
 
 const RequestPage = () => {
   const [selectedStatus, setSelectedStatus] = useState<STATUSES>(
@@ -24,7 +24,7 @@ const RequestPage = () => {
 
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
-  const [selectedAuthor, setSelectedAuthor] = useState<string>(null!);
+  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
 
   // call hooks
 
@@ -42,7 +42,7 @@ const RequestPage = () => {
               isSelected={selectedStatus === STATUSES.PENDING}
               onClick={() => handleSelectStatus(STATUSES.PENDING)}
             >
-              <AddCircleOutlineIcon fontSize="small" />
+              <HourglassEmptyOutlinedIcon fontSize="small" />
               <span>100 pending</span>
             </SelectStatusButton>
             <SelectStatusButton
@@ -118,7 +118,7 @@ const RequestPage = () => {
         }}
       >
         <RequestListContainer>
-          <Request
+          <RequestCard
             title="Change to lab 1"
             type={REQUEST_TYPES.MODIFY_LAB_USAGE}
             status={STATUSES.PENDING}
@@ -126,11 +126,59 @@ const RequestPage = () => {
             authorName="Starea"
             numberOfComments={123}
           />
-          <Request
-            title="Change to lab 1"
-            type={REQUEST_TYPES.MODIFY_LAB_USAGE}
-            status={STATUSES.PENDING}
-            pendingAt={new Date()}
+          <RequestCard
+            title="Add usage to lab 2"
+            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
+            status={STATUSES.APPROVED}
+            approvedAt={new Date()}
+            authorName="Starea"
+            numberOfComments={123}
+          />
+          <RequestCard
+            title="Add usage to lab 3"
+            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
+            status={STATUSES.DENIED}
+            deniedAt={new Date()}
+            authorName="Starea"
+            numberOfComments={123}
+          />
+          <RequestCard
+            title="Add usage to lab 3"
+            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
+            status={STATUSES.DENIED}
+            deniedAt={new Date()}
+            authorName="Starea"
+            numberOfComments={123}
+          />
+          <RequestCard
+            title="Add usage to lab 3"
+            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
+            status={STATUSES.DENIED}
+            deniedAt={new Date()}
+            authorName="Starea"
+            numberOfComments={123}
+          />
+          <RequestCard
+            title="Add usage to lab 3"
+            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
+            status={STATUSES.DENIED}
+            deniedAt={new Date()}
+            authorName="Starea"
+            numberOfComments={123}
+          />
+          <RequestCard
+            title="Add usage to lab 3"
+            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
+            status={STATUSES.DENIED}
+            deniedAt={new Date()}
+            authorName="Starea"
+            numberOfComments={123}
+          />
+          <RequestCard
+            title="Add usage to lab 3"
+            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
+            status={STATUSES.DENIED}
+            deniedAt={new Date()}
             authorName="Starea"
             numberOfComments={123}
           />
@@ -144,6 +192,12 @@ const StyledRequestPage = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+`;
+
+const RequestListContainer = styled.div`
+  margin-top: 1rem;
+  height: 100%;
+  overflow: hidden;
 `;
 
 const Filter = styled.div`
@@ -193,11 +247,6 @@ const SelectStatusButton = styled.button<SelectStatusButtonProps>`
   & > span {
     margin-left: 0.2rem;
   }
-`;
-
-const RequestListContainer = styled.div`
-  margin-top: 1rem;
-  overflow: hidden;
 `;
 
 export default RequestPage;

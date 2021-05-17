@@ -14,6 +14,7 @@ import authReducer from "../reducers/authSlice";
 import searchReducer from "../reducers/searchSlice";
 import labReducer from "../reducers/labSlice";
 import scheduleReducer from "../reducers/scheduleSlice";
+import requestReducer from "../reducers/requestSlice";
 import {
   useDispatch,
   useSelector,
@@ -33,6 +34,7 @@ export const store = configureStore({
     search: searchReducer,
     labs: labReducer,
     schedule: scheduleReducer,
+    requests: requestReducer,
   },
   devTools: process.env.NODE_ENV === "development",
 });
@@ -46,4 +48,5 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 >;
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>();
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export const useAppSelector: TypedUseSelectorHook<RootState> =
+  useSelector;

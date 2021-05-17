@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import { useAppSelector } from "../../store";
+import { ROLES } from "../../types/model";
 
 interface UsageProps {
   startPeriod: number;
@@ -8,6 +10,7 @@ interface UsageProps {
   lecturerName: string;
   id: string;
   onEditLabUsage: (id: string) => void;
+  onRequestModifyLabUsage: (id: string) => void;
 }
 
 const Usage = ({
@@ -17,6 +20,7 @@ const Usage = ({
   lecturerName,
   id,
   onEditLabUsage,
+  onRequestModifyLabUsage,
 }: UsageProps) => {
   const convertPeriodToShift = (
     startPeriod: number,
@@ -31,16 +35,26 @@ const Usage = ({
     }
   };
 
+  const role = useAppSelector((state) => state.auth.verifiedRole);
+
   return (
     <StyledUsage shift={convertPeriodToShift(startPeriod, endPeriod)}>
       <CourseName>{courseName}</CourseName>
       <LecturerName>{lecturerName}</LecturerName>
       <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
       <ActionButtonContainer>
-        <ActionButton onClick={() => onEditLabUsage(id)}>
-          Edit
-        </ActionButton>
-        <ActionButton>Delete</ActionButton>
+        {role === ROLES.ADMIN ? (
+          <>
+            <ActionButton onClick={() => onEditLabUsage(id)}>
+              Edit
+            </ActionButton>
+            <ActionButton>Delete</ActionButton>
+          </>
+        ) : (
+          <ActionButton onClick={() => onRequestModifyLabUsage(id)}>
+            Change lab usage
+          </ActionButton>
+        )}
       </ActionButtonContainer>
     </StyledUsage>
   );

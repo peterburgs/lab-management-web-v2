@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 // Import components
 import Table from "../components/common/Table";
@@ -16,6 +16,7 @@ import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import { CheckboxItem } from "../components/common/CheckboxList";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import _ from "lodash";
 
 // Import modals
 import StartSemesterModal from "../components/registration-page/StartSemesterModal";
@@ -83,29 +84,20 @@ const prepareData = (
 
 const RegistrationPage = () => {
   // useState
-  const [batch, setBatch] = useState(1);
-  const [
-    showStartSemesterModal,
-    setShowStartSemesterModal,
-  ] = useState(false);
-  const [
-    showOpenRegistrationModal,
-    setShowOpenRegistrationModal,
-  ] = useState(false);
-  const [showSelectCourseModal, setShowSelectCourseModal] = useState(
-    false
-  );
-  const [
-    showCloseRegistrationModal,
-    setShowCloseRegistrationModal,
-  ] = useState(false);
-  const [
-    showGenerateScheduleModal,
-    setShowGenerateScheduleModal,
-  ] = useState(false);
+  const [showStartSemesterModal, setShowStartSemesterModal] =
+    useState(false);
+  const [showOpenRegistrationModal, setShowOpenRegistrationModal] =
+    useState(false);
+  const [showSelectCourseModal, setShowSelectCourseModal] =
+    useState(false);
+  const [showCloseRegistrationModal, setShowCloseRegistrationModal] =
+    useState(false);
+  const [showGenerateScheduleModal, setShowGenerateScheduleModal] =
+    useState(false);
   const [selectedCourses, setSelectedCourses] = useState<
     CheckboxItem[]
   >([]);
+  const [batch, setBatch] = useState(1);
 
   // call hooks
   const semesterStatus = useAppSelector(
@@ -118,13 +110,11 @@ const RegistrationPage = () => {
   const registrationStatus = useAppSelector(
     (state) => state.registrations.status
   );
-  const [
-    teachings,
-    teachingStatus,
-  ] = useGetTeachingsByRegistrationBatch(
-    registrations as Registration[],
-    batch
-  );
+  const [teachings, teachingStatus] =
+    useGetTeachingsByRegistrationBatch(
+      registrations as Registration[],
+      batch
+    );
   const [courses, courseStatus] = useGetAllCourses();
   const [users, userStatus] = useGetAllUsers();
   const teachingSearchText = useAppSelector(
@@ -150,6 +140,22 @@ const RegistrationPage = () => {
   const handleRefreshData = () => {
     dispatch(resetTeachingState());
   };
+
+  useEffect(() => {
+    if (registrations.length > 0) {
+      let reg: Registration;
+      if (registrations.length === 1) {
+        reg = _.cloneDeep(registrations[0]);
+        setBatch(reg.batch);
+      } else {
+        const newRegs = _.cloneDeep(registrations);
+        reg = _.cloneDeep(
+          newRegs.sort((a, b) => b.batch - a.batch)
+        )[0];
+        setBatch(reg.batch);
+      }
+    }
+  }, [registrations]);
 
   // conditional renderer
   const renderTable = () => {

@@ -3,15 +3,15 @@ export enum ROLES {
   LECTURER,
 }
 
-export enum STATUSES {
-  PENDING,
-  APPROVED,
-  DENIED,
+export enum REQUEST_TYPES {
+  MODIFY_LAB_USAGE = "MODIFY LAB USAGE",
+  ADD_EXTRA_CLASS = "ADD EXTRA CLASS",
 }
 
-export enum REQUEST_TYPES {
-  MODIFY_LAB_USAGE,
-  ADD_EXTRA_CLASS,
+export enum REQUEST_STATUSES {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
 }
 
 export type Semester = {
@@ -107,28 +107,28 @@ export type LabUsage = {
 export type Request = {
   _id: string;
   lab: Lab | string;
-  status: STATUSES;
-	user: User | string;
-	weekNo: number;
-	dayOfWeek: number;
-	startPeriod: number;
-	endPeriod: number;
-	labUsage?: LabUsage;
-	teaching?: Teaching;
-	title: string,
-	description: string,
-	type: REQUEST_TYPES,
-	isHidden: boolean,
-	createdAt?: Date,
-  updatedAt?: Date,
+  status: REQUEST_STATUSES;
+  user: User | string;
+  weekNo: number;
+  dayOfWeek: number;
+  startPeriod: number;
+  endPeriod: number;
+  labUsage?: LabUsage | string;
+  teaching?: Teaching | string;
+  title: string;
+  description: string;
+  type: REQUEST_TYPES;
+  isHidden: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type Comment = {
-  _id?: string, // no need to declare in mongoose model
- 	user: User,
-	request: Request,
-	text: string,
-	isHidden:boolean,
-	createdAt?: Date,
-  updatedAt?: Date,
+  _id: string;
+  user: User | string;
+  request: Request | string;
+  text: string;
+  isHidden: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 };

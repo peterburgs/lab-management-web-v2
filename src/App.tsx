@@ -3,7 +3,6 @@ import {
   Switch,
   Route,
   Redirect,
-  useHistory,
 } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import Layout from "./containers/Layout";

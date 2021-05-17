@@ -22,7 +22,7 @@ const AuthCheck = () => {
     const expirationDate = localStorage.getItem("exp")!;
 
     if (!token) {
-      history.replace("login");
+      history.replace("/login");
     } else {
       (async () => {
         try {
@@ -31,7 +31,7 @@ const AuthCheck = () => {
           );
           unwrapResult(verifyResult);
         } catch (err) {
-          history.replace("login");
+          history.replace("/login");
           localStorage.removeItem("token");
           localStorage.removeItem("role");
           localStorage.removeItem("exp");

@@ -30,13 +30,31 @@ import { useHistory } from "react-router";
 // Table type
 type TeachingTable = {
   rowId: string;
-  courseId: string;
+  teachingId: string;
   courseName: string;
   group: number;
   period: string;
-  credit: number;
   numOfStudents: number;
-  dayOfWeek: number;
+  dayOfWeek: string;
+};
+
+const dowNum2String = (dow: number) => {
+  switch (dow) {
+    case 0:
+      return "Monday";
+    case 1:
+      return "Tuesday";
+    case 2:
+      return "Wednesday";
+    case 3:
+      return "Thursday";
+    case 4:
+      return "Friday";
+    case 5:
+      return "Saturday";
+    case 6:
+      return "Sunday";
+  }
 };
 
 // prepare data for the table
@@ -53,15 +71,13 @@ const prepareData = (
     data = teachings.map((teaching) => {
       return {
         rowId: teaching._id,
-        courseId: teaching.course as string,
+        teachingId: teaching._id,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,
         group: teaching.group,
         period: `${teaching.startPeriod} - ${teaching.endPeriod}`,
-        credit: courses.find((c) => c._id === teaching.course)!
-          .numberOfCredits,
         numOfStudents: teaching.numberOfStudents,
-        dayOfWeek: teaching.dayOfWeek,
+        dayOfWeek: dowNum2String(teaching.dayOfWeek)!,
       };
     });
   } else {
@@ -117,8 +133,8 @@ const LecturerRegistrationPage = () => {
         accessor: "rowId" as const,
       },
       {
-        Header: "Course ID",
-        accessor: "courseId" as const,
+        Header: "Teaching ID",
+        accessor: "teachingId" as const,
       },
       {
         Header: "Course Name",
@@ -135,10 +151,6 @@ const LecturerRegistrationPage = () => {
       {
         Header: "Period",
         accessor: "period" as const,
-      },
-      {
-        Header: "Credits",
-        accessor: "credit" as const,
       },
       {
         Header: "Number of students",

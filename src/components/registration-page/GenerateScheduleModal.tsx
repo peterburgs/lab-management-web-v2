@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
@@ -16,26 +16,20 @@ import {
 import { generateSchedule } from "../../reducers/scheduleSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
+import useGetAllTeachings from "../../hooks/teaching/useGetAllTeachings";
+import { Teaching, Registration } from "../../types/model";
 
 const GenerateScheduleModal = (props: ModalProps) => {
   const { handleSubmit } = useForm();
 
   const dispatch = useAppDispatch();
-  const latestRegistration = useAppSelector((state) =>
-    state.registrations.registrations.length > 1
-      ? _.cloneDeep(state.registrations.registrations).sort(
-          (a, b) => b.batch - a.batch
-        )[0]
-      : state.registrations.registrations[0]
-  );
 
-  const teachings = useAppSelector((state) =>
-    state.teachings.teachings.length > 0
-      ? state.teachings.teachings.filter(
-          (teaching) =>
-            teaching.registration === latestRegistration._id
-        )
-      : []
+  const [latestRegistration, setLatestRegistration] =
+    useState<Registration>(null!);
+
+  const [teachings] = useGetAllTeachings();
+  const registrations = useAppSelector(
+    (state) => state.registrations.registrations
   );
 
   const [status, setStatus] = useState("idle");
@@ -69,13 +63,34 @@ const GenerateScheduleModal = (props: ModalProps) => {
     }
   };
 
+  useEffect(() => {
+    if (registrations.length > 0) {
+      let reg: Registration;
+      if (registrations.length === 1) {
+        reg = _.cloneDeep(registrations[0]);
+        setLatestRegistration(reg);
+      } else {
+        const newRegs = _.cloneDeep(registrations);
+        reg = _.cloneDeep(
+          newRegs.sort((a, b) => b.batch - a.batch)
+        )[0];
+        setLatestRegistration(reg);
+      }
+    }
+  }, [registrations]);
+
   return (
     <Modal {...props}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        {latestRegistration && teachings.length > 0 && (
+        {latestRegistration && (
           <Label>
             <Header>{`Registration batch ${latestRegistration.batch}`}</Header>
-            <Text>{`The number of teachings: ${teachings.length}`}</Text>
+            <Text>{`The number of teachings: ${
+              teachings.filter(
+                (teaching) =>
+                  teaching.registration === latestRegistration._id
+              ).length
+            }`}</Text>
           </Label>
         )}
         <SubmitButton
@@ -124,11 +139,12 @@ const Label = styled.div`
 `;
 
 const Header = styled.div`
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 500;
 `;
 
 const Text = styled.div`
+  margin-top: 1rem;
   font-size: 16px;
   font-weight: 400;
 `;

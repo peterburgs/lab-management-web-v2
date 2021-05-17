@@ -11,7 +11,7 @@ interface ScheduleState {
   message?: string;
 }
 
-interface LabUsageGETResponse {
+export interface LabUsageGETResponse {
   labUsages: LabUsage[];
   count: number;
   message: string;
@@ -95,7 +95,6 @@ export const generateSchedule = createAsyncThunk<
   { rejectValue: SchedulePOSTResponse }
 >("schedule/generateSchedule", async ({ registration }, thunkApi) => {
   try {
-    console.log(registration);
     const { data } = await api.post(
       "/schedules/generate",
       {

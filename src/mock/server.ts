@@ -16,6 +16,8 @@ import {
   RegistrableCourse,
   Lab,
   LabUsage,
+  Request,
+  Comment,
   ROLES,
 } from "../types/model";
 import { add } from "date-fns";
@@ -33,6 +35,8 @@ const RegistrableCourseModel: ModelDefinition<RegistrableCourse> =
   Model.extend({});
 const LabModel: ModelDefinition<Lab> = Model.extend({});
 const LabUsageModel: ModelDefinition<LabUsage> = Model.extend({});
+const RequestModel: ModelDefinition<Request> = Model.extend({});
+const CommentModel: ModelDefinition<Comment> = Model.extend({});
 
 type AppRegistry = Registry<
   {
@@ -44,6 +48,8 @@ type AppRegistry = Registry<
     registrableCourse: typeof RegistrableCourseModel;
     lab: typeof LabModel;
     labUsage: typeof LabUsageModel;
+    request: typeof RequestModel;
+    comment: typeof CommentModel;
   },
   {}
 >;
@@ -60,6 +66,8 @@ const server = () => {
       registrableCourse: Model,
       lab: Model,
       labUsage: Model,
+      request: Model,
+      comment: Model,
     },
     serializers: {
       application: RestSerializer,
@@ -85,7 +93,7 @@ const server = () => {
             batch: 1,
             startDate: new Date(),
             endDate: add(new Date(), { minutes: 30 }),
-            isOpening: true,
+            isOpening: false,
             updatedAt: new Date(),
             createdAt: new Date(),
             semester: "semester-1",
@@ -96,7 +104,7 @@ const server = () => {
             batch: 2,
             startDate: new Date(),
             endDate: new Date(),
-            isOpening: false,
+            isOpening: true,
             updatedAt: new Date(),
             createdAt: new Date(),
             semester: "semester-1",
@@ -183,7 +191,7 @@ const server = () => {
             endPeriod: 3,
             numberOfStudents: 30,
             numberOfPracticalWeeks: 7,
-            registration: "registration-1",
+            registration: "registration-2",
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
@@ -199,7 +207,7 @@ const server = () => {
             endPeriod: 10,
             numberOfStudents: 30,
             numberOfPracticalWeeks: 7,
-            registration: "registration-1",
+            registration: "registration-2",
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
@@ -215,7 +223,7 @@ const server = () => {
             endPeriod: 3,
             numberOfStudents: 30,
             numberOfPracticalWeeks: 7,
-            registration: "registration-1",
+            registration: "registration-2",
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
@@ -231,7 +239,7 @@ const server = () => {
             endPeriod: 3,
             numberOfStudents: 20,
             numberOfPracticalWeeks: 7,
-            registration: "registration-1",
+            registration: "registration-2",
             createdAt: new Date(),
             updatedAt: new Date(),
             isHidden: false,
@@ -259,6 +267,8 @@ const server = () => {
           },
         ],
         labUsages: [],
+        requests: [],
+        comments: [],
       });
     },
     routes() {
@@ -835,7 +845,7 @@ const server = () => {
 
       // Schedule route
 
-      this.get("/schedule", (schema: AppSchema, request) => {
+      this.get("/schedules", (schema: AppSchema, request) => {
         const labUsages = schema.where("labUsage", {
           ...request.queryParams,
           isHidden: false,
@@ -859,23 +869,10 @@ const server = () => {
         );
       });
 
-      this.post("/schedule", (schema: AppSchema, request) => {
-        let attrs = JSON.parse(request.requestBody);
-        attrs._id = uuidv4();
-        attrs.createdAt = new Date();
-        attrs.updatedAt = new Date();
-
-        return {
-          labUsage: schema.create("labUsage", attrs),
-          message: "Create lab usage successfully",
-        };
-      });
-
       this.post(
-        "/schedule/generate",
+        "/schedules/generate",
         (schema: AppSchema, request) => {
           let attrs = JSON.parse(request.requestBody);
-
           let registration = schema.findBy("registration", {
             _id: attrs["registration"],
             isHidden: false,
@@ -932,7 +929,8 @@ const server = () => {
 
           let labSchedule: number[][];
           // If Admin wants to make New Schedule
-          if (Boolean(attrs["isNew"])) {
+          if (semester.labSchedule.length === 0) {
+            console.log("hello");
             labSchedule = makeArray(
               semester.numberOfWeeks * numberOfDaysAWeek,
               labs.length * numberOfPeriodsADay,
@@ -957,7 +955,7 @@ const server = () => {
             }[] = [];
             for (let i = 0; i < labQueue.length; i++) {
               for (
-                let j = 0;
+                let j = 7;
                 j < semester.numberOfWeeks * numberOfDaysAWeek;
                 j++
               ) {
@@ -966,7 +964,9 @@ const server = () => {
                 if (dayOfWeek === currentTeaching.dayOfWeek) {
                   if (
                     availableSlots.filter(
-                      (slot) => slot.weekNo + 1 === week
+                      (slot) =>
+                        slot.weekNo + 1 === week ||
+                        slot.weekNo - 1 === week
                     ).length === 0
                   ) {
                     if (
@@ -1030,7 +1030,10 @@ const server = () => {
                 ) {
                   labSchedule[
                     currentSchedulePeriod +
-                      15 * labQueue.indexOf(slot.lab)
+                      15 *
+                        labQueue.findIndex(
+                          (lab) => lab._id === slot.lab._id
+                        )
                   ][slot.currentDay] = 1;
                 }
               }
@@ -1046,6 +1049,71 @@ const server = () => {
           };
         }
       );
+
+      // Request routes
+      this.get("/requests", (schema: AppSchema, request) => {
+        const requests = schema.where("request", {
+          ...request.queryParams,
+          isHidden: false,
+        });
+
+        if (requests.models.length > 0) {
+          return {
+            requests: requests.models,
+            message: "Get requests successfully",
+            count: requests.models.length,
+          };
+        }
+        return new Response(
+          404,
+          { some: "header" },
+          {
+            requests: [],
+            message: "Cannot find any requests",
+            count: 0,
+          }
+        );
+      });
+      this.post("/requests", (schema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        attrs._id = "request-1";
+        attrs.createdAt = new Date();
+        attrs.updatedAt = new Date();
+
+        return {
+          request: schema.create("request", attrs),
+          message: "Create request successfully",
+        };
+      });
+      this.put(
+        "/requests/:requestid",
+        (schema: AppSchema, request) => {
+          let attrs = JSON.parse(request.requestBody);
+          const requestObj = schema.findBy("request", {
+            _id: request.params.requestid,
+          });
+          if (requestObj) {
+            requestObj.update({ ...attrs });
+            return {
+              request: requestObj,
+              message: "Update request successfully",
+            };
+          }
+
+          return new Response(
+            422,
+            { some: "header" },
+            {
+              request: null,
+              message: "Object sent did not match",
+            }
+          );
+        }
+      );
+
+      // Comment routes
+
+      
     },
   });
 };

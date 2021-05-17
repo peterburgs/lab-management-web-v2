@@ -46,21 +46,19 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           name="Labs"
           icon={<LabIcon />}
         />
+        <NavItem
+          isCollapsed={isCollapsed}
+          path="/requests"
+          name="Requests"
+          icon={<RequestIcon />}
+        />
         {role === ROLES.ADMIN ? (
-          <>
-            <NavItem
-              isCollapsed={isCollapsed}
-              path="/requests"
-              name="Requests"
-              icon={<RequestIcon />}
-            />
-            <NavItem
-              isCollapsed={isCollapsed}
-              path="/users"
-              name="Users"
-              icon={<UserIcon />}
-            />
-          </>
+          <NavItem
+            isCollapsed={isCollapsed}
+            path="/users"
+            name="Users"
+            icon={<UserIcon />}
+          />
         ) : null}
 
         <NavItem

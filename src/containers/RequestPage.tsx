@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import { STATUSES, User, REQUEST_TYPES } from "../types/model";
+import {
+  REQUEST_STATUSES,
+  User,
+  REQUEST_TYPES,
+  Request,
+  ROLES,
+} from "../types/model";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
@@ -11,56 +17,211 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Skeleton,
 } from "@material-ui/core";
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
 import RequestCard from "../components/request-page/RequestCard";
 import "simplebar/dist/simplebar.min.css";
 import SimpleBar from "simplebar-react";
+import useGetAllRequests from "../hooks/request/useGetAllRequests";
+import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
+import _ from "lodash";
+import { useAppSelector } from "../store";
 
 const RequestPage = () => {
-  const [selectedStatus, setSelectedStatus] = useState<STATUSES>(
-    null!
+  const [selectedStatus, setSelectedStatus] =
+    useState<REQUEST_STATUSES>(REQUEST_STATUSES.PENDING);
+
+  const [startDate, setStartDate] = useState<Date>(null!);
+  const [endDate, setEndDate] = useState<Date>(null!);
+  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
+  const [filteredRequests, setFilterRequests] = useState<Request[]>(
+    []
   );
 
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [endDate, setEndDate] = useState<Date>(new Date());
-  const [selectedAuthor, setSelectedAuthor] = useState<string>("");
-
   // call hooks
-
-  const handleSelectStatus = (status: STATUSES) => {
+  const requestSearchText = useAppSelector(
+    (state) => state.search.requestSearchText
+  );
+  const handleSelectStatus = (status: REQUEST_STATUSES) => {
     setSelectedStatus(status);
   };
   const [users, userStatus] = useGetAllUsers();
+  const [requests, requestStatus] = useGetAllRequests();
+
+  const role = useAppSelector((state) => state.auth.verifiedRole);
+  const lecturer = useAppSelector(
+    (state) => state.auth.verifiedUser?._id
+  );
+
+  // conditional renderer
+  const conditionalRenderer = () => {
+    if (requestStatus === "pending" || requestStatus === "idle") {
+      return (
+        <SkeletonContainer>
+          <Skeleton variant="rectangular" height={40} />
+          <Skeleton variant="rectangular" height={40} />
+          <Skeleton variant="rectangular" height={40} />
+          <Skeleton variant="rectangular" height={40} />
+        </SkeletonContainer>
+      );
+    } else if (filteredRequests.length > 0) {
+      return (
+        <SimpleBar
+          style={{
+            maxHeight: "calc(100% - 70px)",
+          }}
+        >
+          <RequestListContainer>
+            {(filteredRequests as Request[]).map((request) => {
+              if (request.status === REQUEST_STATUSES.PENDING) {
+                return (
+                  <RequestCard
+                    key={request._id}
+                    title={request.title}
+                    type={request.type}
+                    status={request.status}
+                    pendingAt={request.updatedAt}
+                    requestId={request._id}
+                    user={
+                      (users as User[]).find(
+                        (user) => user._id === request.user
+                      )!
+                    }
+                    numberOfComments={123}
+                  />
+                );
+              } else if (
+                request.status === REQUEST_STATUSES.APPROVED
+              ) {
+                return (
+                  <RequestCard
+                    key={request._id}
+                    title={request.title}
+                    type={request.type}
+                    status={request.status}
+                    approvedAt={request.updatedAt}
+                    requestId={request._id}
+                    user={
+                      (users as User[]).find(
+                        (user) => user._id === request.user
+                      )!
+                    }
+                    numberOfComments={123}
+                  />
+                );
+              }
+              return (
+                <RequestCard
+                  key={request._id}
+                  title={request.title}
+                  type={request.type}
+                  status={request.status}
+                  deniedAt={request.updatedAt}
+                  requestId={request._id}
+                  user={
+                    (users as User[]).find(
+                      (user) => user._id === request.user
+                    )!
+                  }
+                  numberOfComments={123}
+                />
+              );
+            })}
+          </RequestListContainer>
+        </SimpleBar>
+      );
+    } else {
+      return (
+        <NotFoundContainer>
+          <NothingImage />
+          <span>There is no requests yet</span>
+        </NotFoundContainer>
+      );
+    }
+  };
+
+  useEffect(() => {
+    setFilterRequests(
+      _.cloneDeep(
+        (requests as Request[]).filter(
+          (request) =>
+            request.status === selectedStatus &&
+            request.title
+              .toLowerCase()
+              .includes(requestSearchText.toLowerCase())
+        )
+      )
+    );
+  }, [requests, selectedStatus, requestSearchText]);
+
+  useEffect(() => {
+    if (lecturer && role) {
+      if (role === ROLES.LECTURER) {
+        setFilterRequests(
+          _.cloneDeep(
+            (requests as Request[]).filter(
+              (request) => request.user === lecturer
+            )
+          )
+        );
+      }
+    }
+  }, [lecturer, role, requests]);
 
   return (
     <StyledRequestPage>
-      {userStatus === "succeeded" && (
+      {userStatus === "succeeded" && requestStatus === "succeeded" && (
         <Toolbar>
           <StatusContainer>
             <SelectStatusButton
-              isSelected={selectedStatus === STATUSES.PENDING}
-              onClick={() => handleSelectStatus(STATUSES.PENDING)}
+              isSelected={selectedStatus === REQUEST_STATUSES.PENDING}
+              onClick={() =>
+                handleSelectStatus(REQUEST_STATUSES.PENDING)
+              }
             >
               <HourglassEmptyOutlinedIcon fontSize="small" />
-              <span>100 pending</span>
+              <span>
+                {`${
+                  (requests as Request[]).filter(
+                    (request) =>
+                      request.status === REQUEST_STATUSES.PENDING
+                  ).length
+                } pending`}
+              </span>
             </SelectStatusButton>
             <SelectStatusButton
-              isSelected={selectedStatus === STATUSES.APPROVED}
-              onClick={() => handleSelectStatus(STATUSES.APPROVED)}
+              isSelected={
+                selectedStatus === REQUEST_STATUSES.APPROVED
+              }
+              onClick={() =>
+                handleSelectStatus(REQUEST_STATUSES.APPROVED)
+              }
             >
               <CheckIcon fontSize="small" />
-              <span>100 approved</span>
+              <span>{`${
+                (requests as Request[]).filter(
+                  (request) =>
+                    request.status === REQUEST_STATUSES.APPROVED
+                ).length
+              } approved`}</span>
             </SelectStatusButton>
             <SelectStatusButton
-              isSelected={selectedStatus === STATUSES.DENIED}
-              onClick={() => handleSelectStatus(STATUSES.DENIED)}
+              isSelected={selectedStatus === REQUEST_STATUSES.DENIED}
+              onClick={() =>
+                handleSelectStatus(REQUEST_STATUSES.DENIED)
+              }
             >
               <CloseIcon fontSize="small" />
-              <span>100 denied</span>
+              <span>{`${
+                (requests as Request[]).filter(
+                  (request) =>
+                    request.status === REQUEST_STATUSES.DENIED
+                ).length
+              } denied`}</span>
             </SelectStatusButton>
           </StatusContainer>
-          <Filter>
+          <Filter isAdmin={role === ROLES.ADMIN}>
             <MobileDateTimePicker
               label="Start date"
               value={startDate}
@@ -89,101 +250,34 @@ const RequestPage = () => {
                 />
               )}
             />
-            <FormControl variant="standard" style={{ minWidth: 120 }}>
-              <InputLabel id="author-label">Author</InputLabel>
-              <Select
-                margin="none"
-                labelId="author-label"
-                value={selectedAuthor}
-                onChange={(e) => setSelectedAuthor(e.target.value)}
-                label="Author"
+            {role === ROLES.ADMIN && (
+              <FormControl
+                variant="standard"
+                style={{ minWidth: 120 }}
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {(users as User[]).map((user) => (
-                  <MenuItem value={user._id} key={user._id}>
-                    {user.fullName}
+                <InputLabel id="author-label">Author</InputLabel>
+                <Select
+                  margin="none"
+                  labelId="author-label"
+                  value={selectedAuthor}
+                  onChange={(e) => setSelectedAuthor(e.target.value)}
+                  label="Author"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
                   </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                  {(users as User[]).map((user) => (
+                    <MenuItem value={user._id} key={user._id}>
+                      {user.email}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
           </Filter>
         </Toolbar>
       )}
-
-      <SimpleBar
-        style={{
-          maxHeight: "calc(100% - 70px)",
-        }}
-      >
-        <RequestListContainer>
-          <RequestCard
-            title="Change to lab 1"
-            type={REQUEST_TYPES.MODIFY_LAB_USAGE}
-            status={STATUSES.PENDING}
-            pendingAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-          <RequestCard
-            title="Add usage to lab 2"
-            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
-            status={STATUSES.APPROVED}
-            approvedAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-          <RequestCard
-            title="Add usage to lab 3"
-            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
-            status={STATUSES.DENIED}
-            deniedAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-          <RequestCard
-            title="Add usage to lab 3"
-            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
-            status={STATUSES.DENIED}
-            deniedAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-          <RequestCard
-            title="Add usage to lab 3"
-            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
-            status={STATUSES.DENIED}
-            deniedAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-          <RequestCard
-            title="Add usage to lab 3"
-            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
-            status={STATUSES.DENIED}
-            deniedAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-          <RequestCard
-            title="Add usage to lab 3"
-            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
-            status={STATUSES.DENIED}
-            deniedAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-          <RequestCard
-            title="Add usage to lab 3"
-            type={REQUEST_TYPES.ADD_EXTRA_CLASS}
-            status={STATUSES.DENIED}
-            deniedAt={new Date()}
-            authorName="Starea"
-            numberOfComments={123}
-          />
-        </RequestListContainer>
-      </SimpleBar>
+      {conditionalRenderer()}
     </StyledRequestPage>
   );
 };
@@ -200,9 +294,14 @@ const RequestListContainer = styled.div`
   overflow: hidden;
 `;
 
-const Filter = styled.div`
+interface FilterProps {
+  isAdmin: boolean;
+}
+
+const Filter = styled.div<FilterProps>`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: ${({ isAdmin }) =>
+    isAdmin ? "1fr 1fr 1fr" : "1fr 1fr"};
   justify-content: center;
   align-items: center;
   column-gap: 1rem;
@@ -246,6 +345,39 @@ const SelectStatusButton = styled.button<SelectStatusButtonProps>`
 
   & > span {
     margin-left: 0.2rem;
+  }
+`;
+
+const SkeletonContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-row-gap: 1rem;
+`;
+
+const NotFoundContainer = styled.div`
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
+  margin-top: 1rem;
+  svg {
+    max-width: 550px;
+    height: auto;
+  }
+
+  span {
+    font-weight: 500;
+    font-size: 25px;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    svg {
+      max-width: 300px;
+      height: auto;
+    }
   }
 `;
 

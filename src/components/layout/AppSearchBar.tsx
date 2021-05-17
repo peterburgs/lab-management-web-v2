@@ -12,6 +12,7 @@ import {
   setLabSearch,
   setTeachingSearch,
   setUserSearch,
+  setRequestSearch,
 } from "../../reducers/searchSlice";
 import { useAppDispatch } from "../../store";
 import { useLocation } from "react-router";
@@ -41,6 +42,9 @@ const AppSearchBar = () => {
         case "labs":
           dispatch(setLabSearch(inputRef.current.value));
           break;
+        case "requests":
+          dispatch(setRequestSearch(inputRef.current.value));
+          break;
         case "schedule":
           console.log("Test");
           break;
@@ -69,6 +73,9 @@ const AppSearchBar = () => {
         break;
       case "labs":
         setPlaceholder("Enter lab name to search");
+        break;
+      case "requests":
+        setPlaceholder("Enter request title to search");
         break;
     }
   }, [location, inputRef, dispatch]);

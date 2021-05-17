@@ -1,7 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
-import { REQUEST_TYPES, STATUSES } from "../../types/model";
+import {
+  REQUEST_TYPES,
+  REQUEST_STATUSES,
+  User,
+} from "../../types/model";
 import { Link } from "react-router-dom";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 import CheckIcon from "@material-ui/icons/Check";
@@ -12,10 +16,11 @@ interface RequestCardProps {
   pendingAt?: Date;
   approvedAt?: Date;
   deniedAt?: Date;
-  status: STATUSES;
+  status: REQUEST_STATUSES;
   type: REQUEST_TYPES;
-  authorName: string;
+  user: User;
   numberOfComments: number;
+  requestId: string;
 }
 
 const RequestCard = ({
@@ -25,18 +30,19 @@ const RequestCard = ({
   deniedAt,
   status,
   type,
-  authorName,
+  user,
   numberOfComments,
+  requestId,
 }: RequestCardProps) => {
   return (
     <StyledRequestCard>
       <Container>
         <StatusIconContainer>
-          {status === STATUSES.PENDING ? (
+          {status === REQUEST_STATUSES.PENDING ? (
             <HourglassEmptyOutlinedIcon
               style={{ color: "#0070f3" }}
             />
-          ) : status === STATUSES.APPROVED ? (
+          ) : status === REQUEST_STATUSES.APPROVED ? (
             <CheckIcon style={{ color: "#44BD63" }} />
           ) : (
             <CloseIcon style={{ color: "#F02849" }} />
@@ -44,43 +50,42 @@ const RequestCard = ({
         </StatusIconContainer>
         <ContentContainer>
           <Header>
-            <RequestLink to="/requests/id">
-              <TypeBadge>
-                {type === REQUEST_TYPES.MODIFY_LAB_USAGE
-                  ? "MODIFY LAB USAGE"
-                  : "ADD EXTRA CLASS"}
-              </TypeBadge>
+            <RequestLink to={`/requests/${requestId}`}>
+              <TypeBadge>{type}</TypeBadge>
               <span>{title}</span>
             </RequestLink>
           </Header>
           <Info>
-            {status === STATUSES.PENDING
+            {status === REQUEST_STATUSES.PENDING
               ? "Open at " +
-                pendingAt!.toDateString() +
+                new Date(pendingAt!).toDateString() +
                 " " +
-                pendingAt!.getHours() +
+                new Date(pendingAt!).getHours() +
                 ":" +
-                pendingAt!.getMinutes() +
+                new Date(pendingAt!).getMinutes() +
                 ":" +
-                pendingAt!.getSeconds()
-              : status === STATUSES.APPROVED
+                new Date(pendingAt!).getSeconds()
+              : status === REQUEST_STATUSES.APPROVED
               ? "Approved at " +
-                approvedAt!.toDateString() +
+                new Date(approvedAt!).toDateString() +
                 " " +
-                approvedAt!.getHours() +
+                new Date(approvedAt!).getHours() +
                 ":" +
-                approvedAt!.getMinutes() +
+                new Date(approvedAt!).getMinutes() +
                 ":" +
-                approvedAt!.getSeconds()
+                new Date(approvedAt!).getSeconds()
               : "Denied at " +
-                deniedAt!.toDateString() +
+                new Date(deniedAt!).toDateString() +
                 " " +
-                deniedAt!.getHours() +
+                new Date(deniedAt!).getHours() +
                 ":" +
-                deniedAt!.getMinutes() +
+                new Date(deniedAt!).getMinutes() +
                 ":" +
-                deniedAt!.getSeconds()}
-            <span> by {authorName}</span>
+                new Date(deniedAt!).getSeconds()}
+            <span>
+              {" "}
+              by {user.fullName} - {user.email}
+            </span>
           </Info>
         </ContentContainer>
       </Container>

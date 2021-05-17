@@ -34,6 +34,8 @@ import {
 // import type
 import { useAppSelector } from "../store";
 import { useHistory } from "react-router";
+import ModifyLabUsageRequestModal from "../components/schedule-page/ModifyLabUsageRequestModal";
+import AddExtraClassRequestModal from "../components/schedule-page/AddExtraClassRequest";
 
 const period2Shift = (start: number, end: number) => {
   if (start >= 1 && end <= 5) return 1;
@@ -52,6 +54,16 @@ const SchedulePage = () => {
   const [selectedSemester, setSelectedSemester] = useState<Semester>(
     null!
   );
+  const [labUsageToChange, setLabUsageToChange] =
+    useState<string>("");
+  const [
+    showModifyLabUsageRequestModal,
+    setShowModifyLabUsageRequestModal,
+  ] = useState(false);
+  const [
+    showAddExtraClassRequestModal,
+    setShowAddExtraClassRequestModal,
+  ] = useState(false);
 
   // call hooks
   const [courses] = useGetAllCourses();
@@ -64,6 +76,7 @@ const SchedulePage = () => {
   const [teachings] = useGetAllTeaching();
   const [labUsages, labUsageSchedule] =
     useGetLabUsagesBySemester(selectedSemester);
+  const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
 
   // useEffect
@@ -95,6 +108,11 @@ const SchedulePage = () => {
 
   const handleEditLabUsage = (id: string) => {
     history.push(`/schedule/${id}`);
+  };
+
+  const handleRequestModifyLabUsage = (labUsageId: string) => {
+    setLabUsageToChange(labUsageId);
+    setShowModifyLabUsageRequestModal(true);
   };
 
   // conditional render
@@ -168,7 +186,7 @@ const SchedulePage = () => {
                   label="Semester"
                 >
                   {semesters.map((semester) => (
-                    <MenuItem value={semester._id}>
+                    <MenuItem value={semester._id} key={semester._id}>
                       {semester.semesterName}
                     </MenuItem>
                   ))}
@@ -176,7 +194,17 @@ const SchedulePage = () => {
               </FormControl>
             </Filter>
             <Action>
-              <Button>Export theory rooms</Button>
+              {role === ROLES.ADMIN ? (
+                <Button>Export theory rooms</Button>
+              ) : (
+                <Button
+                  onClick={() =>
+                    setShowAddExtraClassRequestModal(true)
+                  }
+                >
+                  Make request to add extra class
+                </Button>
+              )}
             </Action>
           </Toolbar>
           <TableContainer>
@@ -188,6 +216,7 @@ const SchedulePage = () => {
                 lecturers={users as User[]}
                 teachings={teachings}
                 onEditLabUsage={handleEditLabUsage}
+                onRequestModifyLabUsage={handleRequestModifyLabUsage}
               />
             ) : null}
           </TableContainer>
@@ -205,6 +234,19 @@ const SchedulePage = () => {
 
   return (
     <>
+      {labUsageToChange && (
+        <ModifyLabUsageRequestModal
+          showModal={showModifyLabUsageRequestModal}
+          setShowModal={setShowModifyLabUsageRequestModal}
+          name="Make request to change lab usage"
+          labUsageId={labUsageToChange}
+        />
+      )}
+      <AddExtraClassRequestModal
+        showModal={showAddExtraClassRequestModal}
+        setShowModal={setShowAddExtraClassRequestModal}
+        name="Make request to add lab usage"
+      />
       <PrivateRoute
         roles={[ROLES.ADMIN]}
         path="/schedule/:id"

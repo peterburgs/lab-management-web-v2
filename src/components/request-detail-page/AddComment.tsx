@@ -26,6 +26,7 @@ const AddComment = () => {
             wrapperClassName="wrapper-class"
             editorClassName="editor-class"
             onEditorStateChange={setEditorState}
+            placeholder="Leave a comment..."
           />
           {/* <textarea
           disabled
@@ -68,6 +69,7 @@ const TextboxContainer = styled.div`
   border: 1px solid #e1e4e8;
   border-radius: 7px;
   background-color: white;
+  padding:0.5rem;
 `;
 
 const ActionButton = styled(Button)`

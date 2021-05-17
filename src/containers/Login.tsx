@@ -62,7 +62,7 @@ const Login = () => {
 
       dispatch(setShowSuccessSnackBar(true));
       dispatch(setSnackBarContent("Welcome back!"));
-      history.replace("registration");
+      history.replace("academic-year");
     } catch (err) {
       setLoading(false);
       dispatch(setShowErrorSnackBar(true));
@@ -143,7 +143,7 @@ const Login = () => {
       rightBackground={RightBackground}
     >
       <HeaderContainer>
-        <Header>Laboratory usages management</Header>
+        <Header>Laboratory management</Header>
       </HeaderContainer>
       <Action>
         {transition((style, item) => {

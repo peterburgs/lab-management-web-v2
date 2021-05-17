@@ -65,7 +65,7 @@ const RequestPage = () => {
           <Skeleton variant="rectangular" height={40} />
         </SkeletonContainer>
       );
-    } else if (filteredRequests.length > 0) {
+    } else if (filteredRequests.length > 0 && users.length > 0) {
       return (
         <SimpleBar
           style={{
@@ -161,13 +161,18 @@ const RequestPage = () => {
         setFilterRequests(
           _.cloneDeep(
             (requests as Request[]).filter(
-              (request) => request.user === lecturer
+              (request) =>
+                request.user === lecturer &&
+                request.status === selectedStatus &&
+                request.title
+                  .toLowerCase()
+                  .includes(requestSearchText.toLowerCase())
             )
           )
         );
       }
     }
-  }, [lecturer, role, requests]);
+  }, [lecturer, role, requests, selectedStatus, requestSearchText]);
 
   return (
     <StyledRequestPage>

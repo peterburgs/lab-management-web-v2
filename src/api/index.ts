@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000/api/v1",
+  baseURL: "https://b17ce19dfbec.ngrok.io/api/v2",
 });
 
 export function auth() {

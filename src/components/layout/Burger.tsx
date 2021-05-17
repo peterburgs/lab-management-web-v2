@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import DehazeIcon from "@material-ui/icons/Dehaze";
 
 interface BurgerProps {
   isCollapsed: boolean;
@@ -8,20 +10,22 @@ interface BurgerProps {
 
 const Burger = ({ isCollapsed, onToggle }: BurgerProps) => {
   return (
-    <StyledBurger onClick={onToggle} isCollapsed={isCollapsed}>
-      <div />
-      <div />
-      <div />
+    <StyledBurger onClick={onToggle}>
+      {isCollapsed ? (
+        <DehazeIcon fontSize="medium" style={{ color: "white" }} />
+      ) : (
+        <ArrowBackIosIcon
+          fontSize="medium"
+          style={{ color: "white" }}
+        />
+      )}
     </StyledBurger>
   );
 };
 
 // Styling
-interface StyledBurgerProps {
-  isCollapsed: boolean;
-}
 
-const StyledBurger = styled.button<StyledBurgerProps>`
+const StyledBurger = styled.button`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -32,38 +36,8 @@ const StyledBurger = styled.button<StyledBurgerProps>`
   width: 1.25rem;
   height: 1.25rem;
 
-  &:focus {
-    outline: none;
-  }
-
   @media (max-width: 1220px) {
     display: flex;
-  }
-
-  div {
-    background: white;
-    border-radius: 10px;
-    transition: all 0.3s linear;
-    position: relative;
-    transform-origin: 1px;
-    width: 1.25rem;
-    height: 0.15rem;
-
-    :nth-child(1) {
-      transform: ${({ isCollapsed }) =>
-        isCollapsed ? "rotate(0)" : "rotate(45deg)"};
-    }
-
-    :nth-child(2) {
-      opacity: ${({ isCollapsed }) => (isCollapsed ? 1 : 0)};
-      transform: ${({ isCollapsed }) =>
-        isCollapsed ? "translateX(0)" : "translateX(20px)"};
-    }
-
-    :nth-child(3) {
-      transform: ${({ isCollapsed }) =>
-        isCollapsed ? "rotate(0)" : "rotate(-45deg)"};
-    }
   }
 `;
 

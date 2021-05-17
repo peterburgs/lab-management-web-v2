@@ -1,9 +1,5 @@
 import React, { Suspense, useEffect, useState } from "react";
-import {
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import Layout from "./containers/Layout";
 import ReactModal from "react-modal";
@@ -67,6 +63,9 @@ const RequestPage = React.lazy(
 const UserPage = React.lazy(() => import("./containers/UserPage"));
 const RequestDetailPage = React.lazy(
   () => import("./containers/RequestDetailPage")
+);
+const AcademicYearPage = React.lazy(
+  () => import("./containers/AcademicYearPage")
 );
 
 // material-ui theme
@@ -387,6 +386,38 @@ const App = () => {
                       ) : (
                         <LecturerRegistrationPage />
                       )}
+                    </Suspense>
+                  </Layout>
+                }
+              />
+              <PrivateRoute
+                roles={[ROLES.ADMIN]}
+                path="/academic-year"
+                exact={false}
+                component={
+                  <Layout
+                    handleSidebarToggle={handleSidebarToggle}
+                    isCollapsed={isCollapsed}
+                    setCollapsed={setCollapsed}
+                  >
+                    <Suspense
+                      fallback={
+                        <LinearProgress
+                          style={{
+                            width: isCollapsed
+                              ? "calc(100vw - 67px)"
+                              : "calc(100vw - 240px)",
+                            position: "absolute",
+                            right: "0px",
+                            top:
+                              window.innerWidth < 1220
+                                ? "-80px"
+                                : "0px",
+                          }}
+                        />
+                      }
+                    >
+                      <AcademicYearPage />
                     </Suspense>
                   </Layout>
                 }

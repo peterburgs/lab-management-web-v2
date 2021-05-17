@@ -51,7 +51,11 @@ const RequestCard = ({
         <ContentContainer>
           <Header>
             <RequestLink to={`/requests/${requestId}`}>
-              <TypeBadge>{type}</TypeBadge>
+              <TypeBadge>
+                {type === REQUEST_TYPES.MODIFY_LAB_USAGE
+                  ? "MODIFY LAB USAGE"
+                  : "ADD EXTRA CLASS"}
+              </TypeBadge>
               <span>{title}</span>
             </RequestLink>
           </Header>

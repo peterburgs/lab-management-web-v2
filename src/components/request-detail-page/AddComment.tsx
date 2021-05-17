@@ -1,23 +1,67 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { EditorState, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 import Button from "../common/Button";
+import { newComment } from "../../reducers/commentSlice";
+import { useAppDispatch, useAppSelector } from "../../store";
+import {
+  setShowErrorSnackBar,
+  setShowSuccessSnackBar,
+  setSnackBarContent,
+} from "../../reducers/notificationSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
 
-const AddComment = () => {
+interface AddCommentProps {
+  request: string;
+}
+
+const AddComment = (props: AddCommentProps) => {
   const [editorState, setEditorState] = React.useState<EditorState>(
     EditorState.createEmpty()
   );
 
+  const [status, setStatus] = useState("idle");
+  const user = useAppSelector((state) => state.auth.verifiedUser);
+  const avatarUrl = useAppSelector((state) => state.auth.avatarUrl);
+
+  const dispatch = useAppDispatch();
+
+  const handleSubmit = async (data: string) => {
+    if (user) {
+      try {
+        let comment = {
+          text: data,
+          uId: user._id,
+          request: props.request,
+          isHidden: false,
+        };
+        setStatus("pending");
+        const actionResult = await dispatch(newComment(comment));
+        unwrapResult(actionResult);
+
+        dispatch(setSnackBarContent("New comment created"));
+        dispatch(setShowSuccessSnackBar(true));
+      } catch (err) {
+        console.log("Failed to create new comment", err);
+        if (err.response) {
+          dispatch(setSnackBarContent(err.response.data.message));
+        } else {
+          dispatch(setSnackBarContent("Failed to create new comment"));
+        }
+        dispatch(setShowErrorSnackBar(true));
+      } finally {
+        setStatus("idle");
+      }
+    }
+  };
+
   return (
     <StyledComment>
       <AvatarContainer>
-        <img
-          alt="user avatar"
-          src="https://lh4.googleusercontent.com/-8dPdj1_5_8I/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucliLTUwmZKoDHXKqKQztraa2HWHWg/s96-c/photo.jpg"
-        />
+        <img alt="user avatar" src={avatarUrl!} />
       </AvatarContainer>
       <CommentForm>
         <TextboxContainer>
@@ -35,7 +79,18 @@ const AddComment = () => {
           )}
         /> */}
         </TextboxContainer>
-        <ActionButton>Comment</ActionButton>
+        <ActionButton
+          loading={status === "pending"}
+          onClick={() =>
+            handleSubmit(
+              draftToHtml(
+                convertToRaw(editorState.getCurrentContent())
+              )
+            )
+          }
+        >
+          Comment
+        </ActionButton>
       </CommentForm>
     </StyledComment>
   );
@@ -69,7 +124,7 @@ const TextboxContainer = styled.div`
   border: 1px solid #e1e4e8;
   border-radius: 7px;
   background-color: white;
-  padding:0.5rem;
+  padding: 0.5rem;
 `;
 
 const ActionButton = styled(Button)`

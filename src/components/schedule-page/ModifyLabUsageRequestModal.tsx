@@ -67,12 +67,12 @@ const ModifyLabUsageRequestModal = (
     startB: number,
     endB: number
   ) => {
-    for (let i = startA; i <= endA; i++) {
-      for (let j = startB; j <= endB; j++) {
-        if (i === j) return false;
-      }
-    }
-    return true;
+    if (startB >= startA && endB <= endA) return true;
+    if (startB >= startA && startB <= endA && endB >= endA)
+      return true;
+    if (startB <= startA && endB >= startA && endB <= endA)
+      return true;
+    return false;
   };
 
   const isValidLabUsage = (
@@ -127,17 +127,13 @@ const ModifyLabUsageRequestModal = (
       ) {
         try {
           data.isHidden = false;
-          data.user = verifiedUser!._id;
+          data.uId = verifiedUser!._id;
           data.status = REQUEST_STATUSES.PENDING;
           data.labUsage = labUsage._id;
           data.type = REQUEST_TYPES.MODIFY_LAB_USAGE;
-
-          console.log(data);
-
           setStatus("pending");
           const actionResult = await dispatch(newRequest(data));
           unwrapResult(actionResult);
-
           setStatus("idle");
           dispatch(
             setSnackBarContent("Create new request successfully")
@@ -160,7 +156,7 @@ const ModifyLabUsageRequestModal = (
       } else {
         dispatch(
           setSnackBarContent(
-            "The lab you choose is not free at the moment"
+            "The lab you choose is not idle at the present"
           )
         );
         dispatch(setShowErrorSnackBar(true));

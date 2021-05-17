@@ -1112,8 +1112,40 @@ const server = () => {
       );
 
       // Comment routes
+      this.get("/comments", (schema: AppSchema, request) => {
+        const comments = schema.where("comment", {
+          ...request.queryParams,
+          isHidden: false,
+        });
 
-      
+        if (comments.models.length > 0) {
+          return {
+            comments: comments.models,
+            message: "Get comments successfully",
+            count: comments.models.length,
+          };
+        }
+        return new Response(
+          404,
+          { some: "header" },
+          {
+            comments: [],
+            message: "Cannot find any comments",
+            count: 0,
+          }
+        );
+      });
+      this.post("/comments", (schema, request) => {
+        let attrs = JSON.parse(request.requestBody);
+        attrs._id = "comment-1";
+        attrs.createdAt = new Date();
+        attrs.updatedAt = new Date();
+
+        return {
+          comment: schema.create("comment", attrs),
+          message: "Create comment successfully",
+        };
+      });
     },
   });
 };

@@ -106,6 +106,7 @@ const TopNavBar = ({
       );
     }
     if (semesterStatus === "succeeded") {
+      // TODO: Delete semester link
       return (
         <SemesterLink onClick={() => setShowSemesterModal(true)}>
           {(semester as Semester).semesterName}

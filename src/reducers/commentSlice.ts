@@ -1,46 +1,42 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Registration } from "../types/model";
+import { Comment } from "../types/model";
 import { api, auth } from "../api";
 import _ from "lodash";
 
-interface RegistrationState {
+interface CommentState {
   status: "idle" | "pending" | "succeeded" | "failed";
-  registrations: Registration[];
+  comments: Comment[];
   count: number;
   message?: string;
 }
 
 interface GETResponse {
-  registrations: Registration[];
+  comments: Comment[];
   count: number;
   message: string;
 }
 
 interface GETFilter {
-  batch?: number;
-  startDate?: Date;
-  endDate?: Date;
-  isOpening?: boolean;
-  semester?: string;
+  request: string;
 }
 
 interface POSTResponse {
-  registration: Registration | null;
+  comment: Comment | null;
   message: string;
 }
 
 interface PUTResponse {
-  registration: Registration | null;
+  comment: Comment | null;
   message: string;
 }
 
-export const getRegistrations = createAsyncThunk<
+export const getComments = createAsyncThunk<
   GETResponse,
   GETFilter,
   { rejectValue: GETResponse }
->("registrations/getRegistrations", async (filter, thunkApi) => {
+>("comments/getComments", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/registrations", {
+    const { data } = await api.get("/comments", {
       headers: auth(),
       params: { ...filter },
     });
@@ -50,106 +46,94 @@ export const getRegistrations = createAsyncThunk<
   }
 });
 
-export const openRegistration = createAsyncThunk<
+export const newComment = createAsyncThunk<
   POSTResponse,
-  Registration,
+  Comment,
   { rejectValue: POSTResponse }
->(
-  "registrations/openRegistration",
-  async (registration, thunkApi) => {
-    try {
-      const { data } = await api.post(
-        "/registrations",
-        registration,
-        { headers: auth() }
-      );
-      return data as POSTResponse;
-    } catch (err) {
-      return thunkApi.rejectWithValue(
-        err.response.data as POSTResponse
-      );
-    }
+>("comments/newComment", async (comment, thunkApi) => {
+  try {
+    const { data } = await api.post("/comments", comment, {
+      headers: auth(),
+    });
+    return data as POSTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as POSTResponse
+    );
   }
-);
+});
 
-export const editRegistration = createAsyncThunk<
+export const editComment = createAsyncThunk<
   PUTResponse,
-  Registration,
+  Comment,
   { rejectValue: PUTResponse }
->(
-  "registrations/editRegistration",
-  async (registration, thunkApi) => {
-    try {
-      const { data } = await api.put(
-        `/registrations/${registration._id}`,
-        registration,
-        { headers: auth() }
-      );
-      return data as PUTResponse;
-    } catch (err) {
-      return thunkApi.rejectWithValue(
-        err.response.data as PUTResponse
-      );
-    }
+>("comments/editComment", async (comment, thunkApi) => {
+  try {
+    const { data } = await api.put(
+      `/comments/${comment._id}`,
+      comment,
+      { headers: auth() }
+    );
+    return data as PUTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(err.response.data as PUTResponse);
   }
-);
+});
 
 const initialState = {
   status: "idle",
-  registrations: [],
+  comments: [],
   count: 0,
-} as RegistrationState;
+} as CommentState;
 
-export const registrationSlice = createSlice({
-  name: "registrations",
+export const commentSlice = createSlice({
+  name: "comment",
   initialState,
   reducers: {
     resetState: (state) => {
       state.count = 0;
       state.message = "";
-      state.registrations = [];
+      state.comments = [];
       state.status = "idle";
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getRegistrations.pending, (state) => {
+    builder.addCase(getComments.pending, (state) => {
       state.status = "pending";
     });
-    builder.addCase(getRegistrations.fulfilled, (state, action) => {
+    builder.addCase(getComments.fulfilled, (state, action) => {
       state.status = "succeeded";
-      state.registrations = _.cloneDeep(action.payload.registrations);
+      state.comments = _.cloneDeep(action.payload.comments);
       state.count = action.payload.count;
       state.message = action.payload.message;
     });
-    builder.addCase(getRegistrations.rejected, (state, action) => {
+    builder.addCase(getComments.rejected, (state, action) => {
       state.status = "failed";
       if (action.payload) {
         state.message = action.payload.message;
-        state.registrations = [];
+        state.comments = [];
         state.count = action.payload.count;
         state.message = action.payload.message;
       }
     });
-    builder.addCase(openRegistration.fulfilled, (state, action) => {
+    builder.addCase(newComment.fulfilled, (state, action) => {
       state.status = "succeeded";
-      state.registrations = state.registrations.concat(
-        action.payload.registration!
-      );
+      state.comments = state.comments.concat(action.payload.comment!);
       state.count = state.count + 1;
       state.message = action.payload.message;
     });
-    builder.addCase(editRegistration.fulfilled, (state, action) => {
-      const currentIndex = state.registrations.findIndex(
-        (reg) => reg._id === action.payload.registration!._id
+    builder.addCase(editComment.fulfilled, (state, action) => {
+      const currentIndex = state.comments.findIndex(
+        (reg) => reg._id === action.payload.comment!._id
       );
-      state.registrations[currentIndex] = _.cloneDeep(
-        action.payload.registration!
+      state.comments[currentIndex] = _.cloneDeep(
+        action.payload.comment!
       );
       state.message = action.payload.message;
     });
   },
 });
 
-export const { resetState } = registrationSlice.actions;
+export const { resetState } = commentSlice.actions;
 
-export default registrationSlice.reducer;
+export default commentSlice.reducer;

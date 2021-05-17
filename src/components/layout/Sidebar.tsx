@@ -7,6 +7,7 @@ import { ReactComponent as ScheduleIcon } from "../../assets/images/schedule-ico
 import { ReactComponent as LabIcon } from "../../assets/images/lab-icon.svg";
 import { ReactComponent as RequestIcon } from "../../assets/images/request-icon.svg";
 import { ReactComponent as UserIcon } from "../../assets/images/user-icon.svg";
+import { ReactComponent as AcademicYearIcon } from "../../assets/images/academic-year-icon.svg";
 
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
@@ -25,9 +26,24 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
     <StyledSidebar>
       <Header>
         <Burger isCollapsed={isCollapsed} onToggle={onToggle} />
-        <AppName isCollapsed={isCollapsed}>Lab Management</AppName>
+        <Container isCollapsed={isCollapsed}>
+          <AppName>Lab Management</AppName>
+        </Container>
       </Header>
+      <Breadcrumbs isCollapsed={isCollapsed}>
+        <span>2020 - 2021</span> / <span>Semester 1</span>
+      </Breadcrumbs>
       <NavItemContainer>
+        {role === ROLES.ADMIN ? (
+          <>
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/academic-year"
+              name="Academic years"
+              icon={<AcademicYearIcon />}
+            />
+          </>
+        ) : null}
         <NavItem
           isCollapsed={isCollapsed}
           path="/registration"
@@ -53,12 +69,14 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           icon={<RequestIcon />}
         />
         {role === ROLES.ADMIN ? (
-          <NavItem
-            isCollapsed={isCollapsed}
-            path="/users"
-            name="Users"
-            icon={<UserIcon />}
-          />
+          <>
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/users"
+              name="Users"
+              icon={<UserIcon />}
+            />
+          </>
         ) : null}
 
         <NavItem
@@ -86,7 +104,7 @@ const StyledSidebar = styled.div`
 `;
 
 const Header = styled.div`
-  padding: 20px 10px;
+  padding: 10px 10px 0px 10px;
   margin: 12px;
   display: flex;
   align-items: center;
@@ -100,18 +118,24 @@ const Footer = styled.div`
   justify-content: center;
 `;
 
-interface AppNameProps {
-  isCollapsed: boolean;
-}
-const AppName = styled.span<AppNameProps>`
+const AppName = styled.span`
   color: white;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
   margin-left: 15px;
 
   @media (max-width: 1220px) {
     margin-left: 15px;
   }
+`;
+
+interface ContainerProps {
+  isCollapsed: boolean;
+}
+
+const Container = styled.div<ContainerProps>`
+  display: flex;
+  flex-direction: column;
 
   ${({ isCollapsed }) =>
     isCollapsed &&
@@ -120,7 +144,27 @@ const AppName = styled.span<AppNameProps>`
     `}
 `;
 
-const Copyright = styled.span<AppNameProps>`
+const Breadcrumbs = styled.div<ContainerProps>`
+  display: flex;
+  margin: 0px 12px 12px 12px;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  & > span {
+    text-decoration: underline;
+    cursor: pointer;
+    color: white;
+    font-size: 12px;
+    margin: 0 0.5rem;
+  }
+  ${({ isCollapsed }) =>
+    isCollapsed &&
+    css`
+      display: none;
+    `}
+`;
+
+const Copyright = styled.span<ContainerProps>`
   color: white;
   font-size: 14px;
   font-weight: 400;

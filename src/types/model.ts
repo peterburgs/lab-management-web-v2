@@ -4,14 +4,23 @@ export enum ROLES {
 }
 
 export enum REQUEST_TYPES {
-  MODIFY_LAB_USAGE = "MODIFY LAB USAGE",
-  ADD_EXTRA_CLASS = "ADD EXTRA CLASS",
+  MODIFY_LAB_USAGE,
+  ADD_EXTRA_CLASS,
 }
 
 export enum REQUEST_STATUSES {
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  DENIED = "DENIED",
+  PENDING,
+  APPROVED,
+  DENIED,
+}
+
+export enum ACTIONS {
+  CREATE,
+  GET,
+  DELETE,
+  UPDATE,
+  LOGIN,
+  REGISTER,
 }
 
 export type Semester = {
@@ -92,15 +101,15 @@ export type Lab = {
 };
 
 export type LabUsage = {
-  _id: string;
+  _id?: string;
   lab: string | Lab;
   teaching: string | Teaching;
   weekNo: number;
   dayOfWeek: number;
   startPeriod: number;
   endPeriod: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   isHidden: boolean;
 };
 
@@ -109,6 +118,7 @@ export type Request = {
   lab: Lab | string;
   status: REQUEST_STATUSES;
   user: User | string;
+  uId?: string;
   weekNo: number;
   dayOfWeek: number;
   startPeriod: number;
@@ -124,11 +134,16 @@ export type Request = {
 };
 
 export type Comment = {
-  _id: string;
-  user: User | string;
+  _id?: string;
+  user?: User | string;
+  uId?: string;
   request: Request | string;
   text: string;
   isHidden: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+export type AcademicYear = {
+  
+}

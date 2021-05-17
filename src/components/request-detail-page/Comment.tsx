@@ -1,24 +1,22 @@
 import React from "react";
 import styled from "styled-components";
+import moment from "moment";
 
-const Comment = () => {
+interface CommentProps {
+  avatarUrl: string;
+  createdAt: Date;
+  text: string;
+}
+
+const Comment = ({ avatarUrl, createdAt, text }: CommentProps) => {
   return (
     <StyledComment>
       <AvatarContainer>
-        <img
-          alt="user avatar"
-          src="https://lh4.googleusercontent.com/-8dPdj1_5_8I/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucliLTUwmZKoDHXKqKQztraa2HWHWg/s96-c/photo.jpg"
-        />
+        <img alt="user avatar" src={avatarUrl} />
       </AvatarContainer>
-
       <CommentContainer>
-        <Info>Starea commented 2 days ago</Info>
-        <Content>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Dolores eaque necessitatibus deleniti sed, culpa nobis
-          obcaecati et magnam reprehenderit nostrum vitae minima porro
-          natus ducimus quisquam voluptas sequi. Officiis, repellat!
-        </Content>
+        <Info>{moment(createdAt).fromNow()}</Info>
+        <Content dangerouslySetInnerHTML={{ __html: text }} />
       </CommentContainer>
     </StyledComment>
   );
@@ -65,7 +63,7 @@ const Info = styled.div`
 `;
 
 const Content = styled.div`
-  padding: 0.7rem;
+  padding: 0rem 0.5rem;
 `;
 
 export default Comment;

@@ -64,7 +64,7 @@ const TimeTable = ({
             >
               {usages.map((usage) => (
                 <Usage
-                  id={usage._id}
+                  id={usage._id!}
                   onEditLabUsage={onEditLabUsage}
                   onRequestModifyLabUsage={onRequestModifyLabUsage}
                   key={usage._id}

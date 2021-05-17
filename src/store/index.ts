@@ -15,6 +15,7 @@ import searchReducer from "../reducers/searchSlice";
 import labReducer from "../reducers/labSlice";
 import scheduleReducer from "../reducers/scheduleSlice";
 import requestReducer from "../reducers/requestSlice";
+import commentReducer from "../reducers/commentSlice";
 import {
   useDispatch,
   useSelector,
@@ -35,6 +36,7 @@ export const store = configureStore({
     labs: labReducer,
     schedule: scheduleReducer,
     requests: requestReducer,
+    comments: commentReducer,
   },
   devTools: process.env.NODE_ENV === "development",
 });

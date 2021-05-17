@@ -1,21 +1,25 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import {
+  Comment,
+  Course,
   Lab,
   REQUEST_STATUSES,
   REQUEST_TYPES,
   ROLES,
   Teaching,
+  User,
 } from "../types/model";
+import { Skeleton } from "@material-ui/core";
 import SimpleBar from "simplebar-react";
 import Button from "../components/common/Button";
-import Comment from "../components/request-detail-page/Comment";
+import CommentComponent from "../components/request-detail-page/Comment";
 import "simplebar/dist/simplebar.min.css";
 import AddComment from "../components/request-detail-page/AddComment";
 import { useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store";
 import { editRequest } from "../reducers/requestSlice";
-import { editLabUsage } from "../reducers/scheduleSlice";
+import { editLabUsage, newLabUsage } from "../reducers/scheduleSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 import {
   setShowErrorSnackBar,
@@ -27,18 +31,30 @@ import UsageInfo from "../components/request-detail-page/UsageInfo";
 import useGetAllTeaching from "../hooks/teaching/useGetAllTeachings";
 import useGetAllLabs from "../hooks/lab/useGetAllLabs";
 import _ from "lodash";
+import useGetCommentsByRequest from "../hooks/comment/useGetCommentsByRequest";
+import moment from "moment";
+import useGetAllRequests from "../hooks/request/useGetAllRequests";
+import useGetAllUsers from "../hooks/user/useGetAllUsers";
+import useGetAllCourses from "../hooks/course/useGetAllCourses";
 
 const RequestDetailPage = () => {
   const { id } = useParams<{ id: string }>();
 
+  useGetAllRequests();
+
   const request = useAppSelector((state) =>
     state.requests.requests.find((item) => item._id === id)
   );
+
   const role = useAppSelector((state) => state.auth.verifiedRole);
-  const users = useAppSelector((state) => state.users.users);
-  const courses = useAppSelector((state) => state.courses.courses);
+  const semester = useAppSelector(
+    (state) => state.semesters.semesters[0]
+  );
+  const [users] = useGetAllUsers();
+  const [courses] = useGetAllCourses();
   const [labUsages] = useGetAllLabUsages();
   const [teachings] = useGetAllTeaching();
+  const [comments, commentStatus] = useGetCommentsByRequest(request);
   const [labs] = useGetAllLabs();
 
   const [approveStatus, setApproveStatus] = useState("idle");
@@ -78,6 +94,28 @@ const RequestDetailPage = () => {
         }
 
         // TODO: IF TYPE == ADD: CREATE LAB USAGE
+        if (request.type === REQUEST_TYPES.ADD_EXTRA_CLASS) {
+          const teaching = teachings.find(
+            (item) => item._id === request.teaching
+          );
+          if (teaching) {
+            const labUsage = {
+              lab: request.lab,
+              teaching: teaching._id,
+              weekNo: request.weekNo,
+              dayOfWeek: request.dayOfWeek,
+              startPeriod: request.startPeriod,
+              endPeriod: request.endPeriod,
+              semester: semester._id,
+              isHidden: false,
+            };
+
+            const actionResult = await dispatch(
+              newLabUsage(labUsage)
+            );
+            unwrapResult(actionResult);
+          }
+        }
 
         dispatch(setSnackBarContent("Approve request successfully"));
         dispatch(setShowSuccessSnackBar(true));
@@ -128,22 +166,24 @@ const RequestDetailPage = () => {
           (item) => item._id === labUsage.teaching
         );
         if (teaching) {
-          const course = courses.find(
+          const course = (courses as Course[]).find(
             (item) => item._id === teaching.course
           );
           const lab = (labs as Lab[]).find(
             (item) => item._id === labUsage.lab
           );
-          return (
-            <UsageInfo
-              courseName={course!.courseName}
-              startPeriod={labUsage.startPeriod}
-              endPeriod={labUsage.endPeriod}
-              labName={lab!.labName}
-              weekNo={labUsage.weekNo}
-              dayOfWeek={labUsage.dayOfWeek}
-            />
-          );
+          if (lab && course) {
+            return (
+              <UsageInfo
+                courseName={course.courseName}
+                startPeriod={labUsage.startPeriod}
+                endPeriod={labUsage.endPeriod}
+                labName={lab.labName}
+                weekNo={labUsage.weekNo}
+                dayOfWeek={labUsage.dayOfWeek}
+              />
+            );
+          }
         }
       }
     }
@@ -151,8 +191,10 @@ const RequestDetailPage = () => {
 
   const renderNewUsage = () => {
     let teaching: Teaching | undefined;
-    if (request && labUsages.length > 0 && courses.length > 0) {
+    if (request && courses.length > 0) {
       if (request.type === REQUEST_TYPES.MODIFY_LAB_USAGE) {
+        if (labUsages.length > 0) {
+        }
         const labUsage = labUsages.find(
           (item) => item._id === request.labUsage
         );
@@ -168,22 +210,24 @@ const RequestDetailPage = () => {
         );
       }
       if (teaching) {
-        const course = courses.find(
+        const course = (courses as Course[]).find(
           (item) => item._id === teaching!.course
         );
         const lab = (labs as Lab[]).find(
           (item) => item._id === request.lab
         );
-        return (
-          <UsageInfo
-            courseName={course!.courseName}
-            startPeriod={request.startPeriod}
-            endPeriod={request.endPeriod}
-            labName={lab!.labName}
-            weekNo={request.weekNo}
-            dayOfWeek={request.dayOfWeek}
-          />
-        );
+        if (lab && course) {
+          return (
+            <UsageInfo
+              courseName={course!.courseName}
+              startPeriod={request.startPeriod}
+              endPeriod={request.endPeriod}
+              labName={lab!.labName}
+              weekNo={request.weekNo}
+              dayOfWeek={request.dayOfWeek}
+            />
+          );
+        }
       }
     }
   };
@@ -195,15 +239,23 @@ const RequestDetailPage = () => {
       }}
     >
       <StyledRequestDetailPage>
-        {request && users.length > 0 && labUsages.length > 0 && (
+        {request && users.length > 0 && (
           <>
             <Header>
               <RequestInfo>
                 <RequestTitle>{request.title}</RequestTitle>
                 <Info>
-                  <TypeBadge>{request.type}</TypeBadge>
+                  <TypeBadge>
+                    {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE
+                      ? "MODIFY LAB USAGE"
+                      : "ADD EXTRA CLASS"}
+                  </TypeBadge>
                   <StatusBadge status={request.status}>
-                    {request.status}
+                    {request.status === REQUEST_STATUSES.PENDING
+                      ? "PENDING"
+                      : REQUEST_STATUSES.APPROVED
+                      ? "APPROVED"
+                      : "DENIED"}
                   </StatusBadge>
                   <span>
                     {new Date(
@@ -223,11 +275,11 @@ const RequestDetailPage = () => {
                       ).getSeconds() +
                       " " +
                       `by ${
-                        users.find(
+                        (users as User[]).find(
                           (user) => user._id === request.user
                         )!.fullName
                       } ${
-                        users.find(
+                        (users as User[]).find(
                           (user) => user._id === request.user
                         )!.email
                       }`}
@@ -268,12 +320,51 @@ const RequestDetailPage = () => {
                   )}
               </Action>
             </Header>
+            {commentStatus === "pending" ? (
+              <SkeletonContainer>
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
+              </SkeletonContainer>
+            ) : commentStatus === "succeeded" ? (
+              <CommentListContainer>
+                {(comments as Comment[]).map((comment) => (
+                  <CommentComponent
+                    key={comment._id}
+                    avatarUrl={
+                      (users as User[]).find(
+                        (user) => user._id === comment.user
+                      )!.avatarUrl
+                    }
+                    createdAt={comment.createdAt!}
+                    text={comment.text}
+                  />
+                ))}
+              </CommentListContainer>
+            ) : (
+              <CommentListContainer>
+                No comments yet
+              </CommentListContainer>
+            )}
 
-            <CommentListContainer>
-              <Comment />
-              <Comment />
-            </CommentListContainer>
-            <AddComment />
+            <AddComment request={request._id} />
           </>
         )}
       </StyledRequestDetailPage>
@@ -405,6 +496,13 @@ const CommentListContainer = styled.div`
 
 const SmallText = styled.div`
   font-size: 12px;
+`;
+
+const SkeletonContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-row-gap: 1rem;
 `;
 
 export default RequestDetailPage;

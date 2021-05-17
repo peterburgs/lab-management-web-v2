@@ -58,12 +58,12 @@ const ModifyLabUsageRequestModal = (props: ModalProps) => {
     startB: number,
     endB: number
   ) => {
-    for (let i = startA; i <= endA; i++) {
-      for (let j = startB; j <= endB; j++) {
-        if (i === j) return false;
-      }
-    }
-    return true;
+    if (startB >= startA && endB <= endA) return true;
+    if (startB >= startA && startB <= endA && endB >= endA)
+      return true;
+    if (startB <= startA && endB >= startA && endB <= endA)
+      return true;
+    return false;
   };
 
   const isValidLabUsage = (
@@ -74,6 +74,21 @@ const ModifyLabUsageRequestModal = (props: ModalProps) => {
     labId: string
   ) => {
     if (labUsages.length > 0) {
+      console.log(labUsages);
+      console.log(
+        labUsages.filter(
+          (item) =>
+            item.weekNo === weekNo &&
+            item.dayOfWeek === dayOfWeek &&
+            checkPeriod(
+              item.startPeriod,
+              item.endPeriod,
+              startPeriod,
+              endPeriod
+            ) &&
+            item.lab === labId
+        )
+      );
       if (
         labUsages.filter(
           (item) =>
@@ -88,6 +103,7 @@ const ModifyLabUsageRequestModal = (props: ModalProps) => {
             item.lab === labId
         ).length === 0
       ) {
+        console.log("Hello");
         return true;
       } else {
         return false;
@@ -107,6 +123,7 @@ const ModifyLabUsageRequestModal = (props: ModalProps) => {
           labUsages.length > 0 &&
           labs.find((item) => item._id === data.lab)
         ) {
+          console.log(data);
           if (
             isValidLabUsage(
               data.weekNo,
@@ -118,16 +135,13 @@ const ModifyLabUsageRequestModal = (props: ModalProps) => {
           ) {
             try {
               data.isHidden = false;
-              data.user = verifiedUser!._id;
+              data.uId = verifiedUser!._id;
               data.status = REQUEST_STATUSES.PENDING;
               data.type = REQUEST_TYPES.ADD_EXTRA_CLASS;
-
               console.log(data);
-
               setStatus("pending");
               const actionResult = await dispatch(newRequest(data));
               unwrapResult(actionResult);
-
               setStatus("idle");
               dispatch(
                 setSnackBarContent("Create new request successfully")
@@ -152,7 +166,7 @@ const ModifyLabUsageRequestModal = (props: ModalProps) => {
           } else {
             dispatch(
               setSnackBarContent(
-                "The lab you choose is not free at the moment"
+                "The lab you choose is not idle at the present"
               )
             );
             dispatch(setShowErrorSnackBar(true));

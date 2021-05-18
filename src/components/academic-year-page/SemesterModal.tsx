@@ -2,11 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
-import { Semester, ROLES } from "../../types/model";
+import { ROLES } from "../../types/model";
 import { useAppSelector } from "../../store";
+import { Redirect, useParams } from "react-router";
 
 interface SemesterModalProps extends ModalProps {
-  semester: Semester;
   setShowEditSemesterModal: (a: boolean) => void;
   setShowCloseSemesterModal: (a: boolean) => void;
 }
@@ -14,32 +14,41 @@ interface SemesterModalProps extends ModalProps {
 const SemesterModal = (props: SemesterModalProps) => {
   const role = useAppSelector((state) => state.auth.verifiedRole);
 
+  const { id } = useParams<{ id: string }>();
+  const semester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item._id === id)
+  );
+
   return (
     <>
-      <Modal {...props}>
-        <SemesterInfo>
-          <Header>Semester Info</Header>
-          <span>
-            Start date:{" "}
-            {new Date(props.semester.startDate).toDateString()}
-          </span>
-          <span>Number of weeks: {props.semester.numberOfWeeks}</span>
-          {role === ROLES.ADMIN ? (
-            <EditButton
-              onClick={() => props.setShowEditSemesterModal(true)}
+      {semester ? (
+        <Modal {...props}>
+          <SemesterInfo>
+            <Header>Semester Info</Header>
+            <span>
+              Start date:{" "}
+              {new Date(semester.startDate).toDateString()}
+            </span>
+            <span>Number of weeks: {semester.numberOfWeeks}</span>
+            {role === ROLES.ADMIN ? (
+              <EditButton
+                onClick={() => props.setShowEditSemesterModal(true)}
+              >
+                Edit
+              </EditButton>
+            ) : null}
+          </SemesterInfo>
+          {role === ROLES.ADMIN && semester.isOpening === true ? (
+            <CloseRegistrationButton
+              onClick={() => props.setShowCloseSemesterModal(true)}
             >
-              Edit
-            </EditButton>
+              Close Semester
+            </CloseRegistrationButton>
           ) : null}
-        </SemesterInfo>
-        {role === ROLES.ADMIN ? (
-          <CloseRegistrationButton
-            onClick={() => props.setShowCloseSemesterModal(true)}
-          >
-            Close Semester
-          </CloseRegistrationButton>
-        ) : null}
-      </Modal>
+        </Modal>
+      ) : (
+        <Redirect to="/academic-years" />
+      )}
     </>
   );
 };

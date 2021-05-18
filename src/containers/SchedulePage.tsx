@@ -18,7 +18,6 @@ import useGetLabUsagesBySemester from "../hooks/schedule/useGetLabUsagesBySemest
 import useGetAllLabs from "../hooks/lab/useGetAllLabs";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
-import useGetAllSemester from "../hooks/semester/useGetAllSemester";
 import useGetAllTeaching from "../hooks/teaching/useGetAllTeachings";
 
 // import model
@@ -69,10 +68,12 @@ const SchedulePage = () => {
   const [courses] = useGetAllCourses();
   const [users] = useGetAllUsers();
   const [labs] = useGetAllLabs();
-  const openingSemester = useAppSelector(
-    (state) => state.semesters.semesters[0]
+  const openSemester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item.isOpening === true)
   );
-  const [semesters] = useGetAllSemester();
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
+  );
   const [teachings] = useGetAllTeaching();
   const [labUsages, labUsageSchedule] =
     useGetLabUsagesBySemester(selectedSemester);
@@ -83,10 +84,10 @@ const SchedulePage = () => {
 
   // initialize selected semester
   useEffect(() => {
-    if (semesters.length > 0 && openingSemester) {
-      setSelectedSemester(openingSemester);
+    if (semesters.length > 0 && openSemester) {
+      setSelectedSemester(openSemester);
     }
-  }, [semesters, openingSemester]);
+  }, [semesters, openSemester]);
 
   // Filter lab usages
   useEffect(() => {
@@ -236,6 +237,7 @@ const SchedulePage = () => {
     <>
       {labUsageToChange && (
         <ModifyLabUsageRequestModal
+          semester={selectedSemester._id}
           showModal={showModifyLabUsageRequestModal}
           setShowModal={setShowModifyLabUsageRequestModal}
           name="Make request to change lab usage"
@@ -243,6 +245,7 @@ const SchedulePage = () => {
         />
       )}
       <AddExtraClassRequestModal
+        semester={selectedSemester._id}
         showModal={showAddExtraClassRequestModal}
         setShowModal={setShowAddExtraClassRequestModal}
         name="Make request to add lab usage"
@@ -253,6 +256,7 @@ const SchedulePage = () => {
         exact={false}
         component={
           <EditLabUsageModal
+            semester={selectedSemester._id}
             showModal={true}
             setShowModal={() => history.goBack()}
             name="Edit lab usage"

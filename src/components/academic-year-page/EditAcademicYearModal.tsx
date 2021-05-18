@@ -4,20 +4,16 @@ import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
 import { useForm, Controller } from "react-hook-form";
-import {
-  TextField,
-  FormControlLabel,
-  Checkbox,
-} from "@material-ui/core";
+import { TextField } from "@material-ui/core";
 import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
 import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { Semester } from "../../types/model";
+import { AcademicYear } from "../../types/model";
 // import reducers
-import { editSemester } from "../../reducers/semesterSlice";
+import { editAcademicYear } from "../../reducers/academicYearSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
@@ -25,46 +21,51 @@ import {
 } from "../../reducers/notificationSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
+import { useParams } from "react-router";
 
-
-const EditSemesterModal = (props: ModalProps) => {
-  const {
-    register,
-    handleSubmit,
-    errors,
-    control,
-  } = useForm<Semester>();
+const EditAcademicYearModal = (props: ModalProps) => {
+  const { register, handleSubmit, errors, control } =
+    useForm<AcademicYear>();
 
   const dispatch = useAppDispatch();
-  const semester = useAppSelector((state) => state.semesters.semesters[0]);
-  const [status, setStatus] = useState("idle");
-  const [isEditNumberOfWeeks, setIsEditNumberOfWeeks] = useState(
-    false
-  );
+  const { id } = useParams<{ id: string }>();
 
-  const onSubmit = async (data: Semester) => {
-    if (semester) {
+  const academicYear = useAppSelector(
+    (state) =>
+      state.academicYears.academicYears.filter(
+        (academicYear) => academicYear._id === id
+      )[0]
+  );
+  const [status, setStatus] = useState("idle");
+
+  const onSubmit = async (data: AcademicYear) => {
+    if (academicYear) {
       try {
-        const clonedSemester = _.cloneDeep(semester);
-        clonedSemester.semesterName = data.semesterName;
-        clonedSemester.startDate = data.startDate;
-        clonedSemester.numberOfWeeks = data.numberOfWeeks;
+        const clonedAcademicYear = _.cloneDeep(academicYear);
+        clonedAcademicYear.name = data.name;
+        clonedAcademicYear.startDate = data.startDate;
+        clonedAcademicYear.numberOfWeeks = data.numberOfWeeks;
         setStatus("pending");
+        console.log(data);
         const actionResult = await dispatch(
-          editSemester(clonedSemester)
+          editAcademicYear(clonedAcademicYear)
         );
         unwrapResult(actionResult);
 
         setStatus("idle");
-        dispatch(setSnackBarContent("Edit semester successfully"));
+        dispatch(
+          setSnackBarContent("Edit academic year successfully")
+        );
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to edit semester", err);
+        console.log("Failed to edit academic year", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {
-          dispatch(setSnackBarContent("Failed to edit semester"));
+          dispatch(
+            setSnackBarContent("Failed to edit academic year")
+          );
         }
         setStatus("idle");
         dispatch(setShowErrorSnackBar(true));
@@ -77,20 +78,18 @@ const EditSemesterModal = (props: ModalProps) => {
     <Modal {...props} style={{ overlay: { zIndex: 1000 } }}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledTextField
-          label="Semester name"
+          label="Name"
           inputRef={register({ required: true })}
-          name="semesterName"
-          defaultValue={semester ? semester.semesterName : null}
-          error={Boolean(errors.semesterName)}
-          helperText={
-            errors.semesterName && "*This field is required"
-          }
+          name="name"
+          defaultValue={academicYear ? academicYear.name : null}
+          error={Boolean(errors.name)}
+          helperText={errors.name && "*This field is required"}
         />
         <Controller
           name="startDate"
           control={control}
           rules={{ required: true }}
-          defaultValue={semester ? semester.startDate : null}
+          defaultValue={academicYear ? academicYear.startDate : null}
           render={(props) => (
             <DateTimePicker
               label="Start date"
@@ -101,34 +100,19 @@ const EditSemesterModal = (props: ModalProps) => {
             />
           )}
         />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={isEditNumberOfWeeks}
-              onChange={(e) => {
-                setIsEditNumberOfWeeks(e.target.checked);
-              }}
-            />
-          }
-          label="Change the number of Weeks"
-        />
         <StyledTextField
           label="Number of weeks"
           inputRef={register({ required: true })}
           name="numberOfWeeks"
-          disabled={!isEditNumberOfWeeks}
-          defaultValue={semester ? semester.numberOfWeeks : null}
+          defaultValue={
+            academicYear ? academicYear.numberOfWeeks : null
+          }
           error={Boolean(errors.numberOfWeeks)}
           type="number"
           helperText={
             errors.numberOfWeeks && "*This field is required"
           }
         />
-        {isEditNumberOfWeeks ? (
-          <Warning>
-            The existing schedule will be removed due to this change!
-          </Warning>
-        ) : null}
         <StyledButton
           disabled={status === "pending"}
           loading={status === "pending"}
@@ -145,12 +129,6 @@ const EditSemesterModal = (props: ModalProps) => {
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-`;
-
-const Warning = styled.div`
-  color: ${({ theme }) => theme.red};
-  font-size: 13px;
-  margin-bottom: 1rem;
 `;
 
 const StyledButton = styled(Button)`
@@ -176,4 +154,4 @@ const StyledTextField = materialStyled(TextField)({
   marginTop: "0.5rem",
 });
 
-export default EditSemesterModal;
+export default EditAcademicYearModal;

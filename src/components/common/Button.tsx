@@ -78,6 +78,16 @@ const StyledButton = styled.button<StyledButtonProps>`
     background-color: ${({ theme }) => theme.lightBlue};
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    &:hover {
+      background-color: ${({ theme }) => theme.grey};
+    }
+    &:active {
+      transform: none;
+    }
+  }
+
   /* &:focus {
     outline: 1px solid blue;
   } */

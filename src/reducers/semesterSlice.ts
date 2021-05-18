@@ -20,6 +20,7 @@ interface GETFilter {
   semesterName?: string;
   startDate?: Date;
   numberOfWeeks?: number;
+  academicYear?: string;
   isOpening?: boolean;
 }
 

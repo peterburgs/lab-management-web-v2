@@ -4,7 +4,6 @@ import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
 import {
-  TextField,
   InputLabel,
   Select,
   MenuItem,
@@ -15,7 +14,7 @@ import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { LabUsage, Lab } from "../../types/model";
+import { LabUsage } from "../../types/model";
 // import reducers
 import { editLabUsage } from "../../reducers/scheduleSlice";
 import {
@@ -27,9 +26,12 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useForm, Controller } from "react-hook-form";
 import { useParams } from "react-router";
-import useGetAllLabs from "../../hooks/lab/useGetAllLabs";
 
-const EditLabUsageModal = (props: ModalProps) => {
+interface EditLabUsageModalProps extends ModalProps {
+  semester: string;
+}
+
+const EditLabUsageModal = (props: EditLabUsageModalProps) => {
   // call hooks
   const { register, handleSubmit, errors, control } =
     useForm<LabUsage>();
@@ -40,8 +42,10 @@ const EditLabUsageModal = (props: ModalProps) => {
   );
 
   const labs = useAppSelector((state) => state.labs.labs);
-  const semester = useAppSelector(
-    (state) => state.semesters.semesters[0]
+  const semester = useAppSelector((state) =>
+    state.semesters.semesters.find(
+      (item) => item._id === props.semester
+    )
   );
 
   // useState
@@ -248,11 +252,6 @@ const StyledButton = styled(Button)`
     background-color: ${({ theme }) => theme.veryLightBlue};
   }
 `;
-
-const StyledTextField = materialStyled(TextField)({
-  marginBottom: "1rem",
-  marginTop: "0.5rem",
-});
 
 const StyledFormControl = materialStyled(FormControl)({
   marginBottom: "1rem",

@@ -100,8 +100,13 @@ const LecturerRegistrationPage = () => {
     useState(false);
 
   // call hooks
-  const semesterStatus = useAppSelector(
-    (state) => state.semesters.status
+  const openSemester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item.isOpening === true)
+  );
+  const openAcademicYear = useAppSelector((state) =>
+    state.academicYears.academicYears.find(
+      (item) => item.isOpening === true
+    )
   );
   const openRegistration = useAppSelector((state) =>
     state.registrations.registrations.find(
@@ -277,7 +282,7 @@ const LecturerRegistrationPage = () => {
   };
 
   const renderContent = () => {
-    if (semesterStatus === "succeeded") {
+    if (openSemester && openAcademicYear) {
       if (registrationStatus === "pending") {
         return (
           <Skeleton
@@ -356,7 +361,7 @@ const LecturerRegistrationPage = () => {
           );
         }
       }
-    } else if (semesterStatus === "failed") {
+    } else if (!openSemester) {
       return (
         <NotFoundContainer>
           <NothingImage />

@@ -143,7 +143,7 @@ const Login = () => {
       rightBackground={RightBackground}
     >
       <HeaderContainer>
-        <Header>Laboratory management</Header>
+        <Header>Lab management</Header>
       </HeaderContainer>
       <Action>
         {transition((style, item) => {
@@ -202,7 +202,7 @@ const Header = styled.h1`
     "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
   text-align: center;
-  color: black;
+  color: ${({ theme }) => theme.blue};
 `;
 
 const Action = styled.div`

@@ -32,10 +32,10 @@ import useGetAllTeaching from "../hooks/teaching/useGetAllTeachings";
 import useGetAllLabs from "../hooks/lab/useGetAllLabs";
 import _ from "lodash";
 import useGetCommentsByRequest from "../hooks/comment/useGetCommentsByRequest";
-import moment from "moment";
 import useGetAllRequests from "../hooks/request/useGetAllRequests";
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
+import useGetAllRegistrations from "../hooks/registration/useGetAllRegistrations";
 
 const RequestDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -47,13 +47,14 @@ const RequestDetailPage = () => {
   );
 
   const role = useAppSelector((state) => state.auth.verifiedRole);
-  const semester = useAppSelector(
-    (state) => state.semesters.semesters[0]
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
   );
   const [users] = useGetAllUsers();
   const [courses] = useGetAllCourses();
   const [labUsages] = useGetAllLabUsages();
   const [teachings] = useGetAllTeaching();
+  const [registrations] = useGetAllRegistrations();
   const [comments, commentStatus] = useGetCommentsByRequest(request);
   const [labs] = useGetAllLabs();
 
@@ -72,7 +73,7 @@ const RequestDetailPage = () => {
         );
         unwrapResult(actionResult);
 
-        // TODO: IF TYPE == MODIFY: UPDATE LAB USAGE
+        // UPDATE LAB USAGE
         if (request.type === REQUEST_TYPES.MODIFY_LAB_USAGE) {
           if (labUsages.length > 0) {
             const labUsage = labUsages.filter(
@@ -93,27 +94,38 @@ const RequestDetailPage = () => {
           }
         }
 
-        // TODO: IF TYPE == ADD: CREATE LAB USAGE
+        // CREATE LAB USAGE
         if (request.type === REQUEST_TYPES.ADD_EXTRA_CLASS) {
           const teaching = teachings.find(
             (item) => item._id === request.teaching
           );
-          if (teaching) {
-            const labUsage = {
-              lab: request.lab,
-              teaching: teaching._id,
-              weekNo: request.weekNo,
-              dayOfWeek: request.dayOfWeek,
-              startPeriod: request.startPeriod,
-              endPeriod: request.endPeriod,
-              semester: semester._id,
-              isHidden: false,
-            };
-
-            const actionResult = await dispatch(
-              newLabUsage(labUsage)
+          const reg = registrations.find(
+            (item) => item._id === teaching?.registration
+          );
+          if (teaching && reg) {
+            const semester = semesters.find(
+              (item) => item._id === reg.semester
             );
-            unwrapResult(actionResult);
+            if (semester) {
+              const labUsage = {
+                lab: request.lab,
+                teaching: teaching._id,
+                weekNo: request.weekNo,
+                dayOfWeek: request.dayOfWeek,
+                startPeriod: request.startPeriod,
+                endPeriod: request.endPeriod,
+                semester: semester._id,
+                isHidden: false,
+              };
+
+              const actionResult = await dispatch(
+                newLabUsage(labUsage)
+              );
+              unwrapResult(actionResult);
+            } else {
+              dispatch(setSnackBarContent("Cannot find semester"));
+              return;
+            }
           }
         }
 

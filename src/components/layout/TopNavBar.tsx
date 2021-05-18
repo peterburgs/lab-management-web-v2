@@ -4,12 +4,9 @@ import AvatarButton from "./AvatarButton";
 import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
-import { Box, Skeleton } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import { Semester, Registration } from "../../types/model";
-import SemesterModal from "./SemesterModal";
 import Countdown from "react-countdown";
-import EditSemesterModal from "./EditSemesterModal";
-import CloseSemesterModal from "./CloseSemesterModal";
 import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
 
@@ -22,8 +19,7 @@ import {
 import { editRegistration } from "../../reducers/registrationSlice";
 // import hooks
 import useGetRegistrationBySemester from "../../hooks/registration/useGetRegistrationBySemester";
-import useGetOpenSemester from "../../hooks/semester/useGetOpenSemester";
-import { useAppDispatch } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { useLocation } from "react-router";
 import AppSearchBar from "./AppSearchBar";
 
@@ -43,20 +39,15 @@ const TopNavBar = ({
   setIsShowAvatarPanel,
   handleClosePanel,
 }: TopNavBarProps) => {
-  // useState
-  const [showSemesterModal, setShowSemesterModal] = useState(false);
-  const [showEditSemesterModal, setShowEditSemesterModal] =
-    useState(false);
-  const [showCloseSemesterModal, setShowCloseSemesterModal] =
-    useState(false);
-  const [closeRegistrationStatus, setCloseRegistrationStatus] =
-    useState("idle");
   const dispatch = useAppDispatch();
-
   // * Call hooks
-  const [semester, semesterStatus] = useGetOpenSemester();
+
+  const openSemester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item.isOpening === true)
+  );
+  
   const [registrations, registrationStatus] =
-    useGetRegistrationBySemester((semester as Semester)?._id);
+    useGetRegistrationBySemester(openSemester?._id);
   const location = useLocation();
 
   // event handler
@@ -71,7 +62,6 @@ const TopNavBar = ({
     if (clonedRegistration) {
       try {
         clonedRegistration.isOpening = false;
-        setCloseRegistrationStatus("pending");
         const actionResult = await dispatch(
           editRegistration(clonedRegistration)
         );
@@ -88,63 +78,8 @@ const TopNavBar = ({
           );
         }
         dispatch(setShowErrorSnackBar(true));
-      } finally {
-        setCloseRegistrationStatus("idle");
       }
     }
-  };
-
-  // conditional renderer
-  const renderSemester = () => {
-    if (semesterStatus === "pending") {
-      return (
-        <Skeleton
-          variant="rectangular"
-          animation="wave"
-          width={200}
-        />
-      );
-    }
-    if (semesterStatus === "succeeded") {
-      // TODO: Delete semester link
-      return (
-        <SemesterLink onClick={() => setShowSemesterModal(true)}>
-          {(semester as Semester).semesterName}
-        </SemesterLink>
-      );
-    }
-    return null;
-  };
-
-  const renderSemesterModal = () => {
-    if (semesterStatus === "succeeded") {
-      return (
-        <>
-          <CloseSemesterModal
-            name={`Do you want you close ${
-              (semester as Semester).semesterName
-            }`}
-            showModal={showCloseSemesterModal}
-            setShowModal={setShowCloseSemesterModal}
-            setShowSemesterModal={setShowSemesterModal}
-          />
-          <EditSemesterModal
-            name={"Edit Semester"}
-            showModal={showEditSemesterModal}
-            setShowModal={setShowEditSemesterModal}
-          />
-          <SemesterModal
-            showModal={showSemesterModal}
-            setShowModal={setShowSemesterModal}
-            name={(semester as Semester).semesterName}
-            semester={semester as Semester}
-            setShowEditSemesterModal={setShowEditSemesterModal}
-            setShowCloseSemesterModal={setShowCloseSemesterModal}
-          />
-        </>
-      );
-    }
-    return null;
   };
 
   const renderCountdown = () => {
@@ -170,14 +105,13 @@ const TopNavBar = ({
   return (
     <>
       {renderCountdown()}
-      {renderSemesterModal()}
       <StyledTopNavBar>
-        <SemesterContainer>{renderSemester()}</SemesterContainer>
         <SearchBarContainer onClick={handleClosePanel}>
           {location.pathname !== "/registration" ? (
             <AppSearchBar />
           ) : (
-            registrations.length > 0 && semester && <AppSearchBar />
+            registrations.length > 0 &&
+            openSemester && <AppSearchBar />
           )}
         </SearchBarContainer>
 
@@ -211,10 +145,10 @@ const SearchBarContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 5rem;
+  margin-right: 10rem;
 
   @media (max-width: 500px) {
-    margin: 0 0.5rem;
+    margin-right: 1rem;
   }
 `;
 
@@ -238,21 +172,6 @@ const AvatarPanelContainer = styled.div`
   right: 0px;
   transform: translate(-20px, 65px);
   z-index: 3;
-`;
-
-const SemesterLink = styled.a`
-  font-size: 18px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  text-decoration: underline;
-  color: ${({ theme }) => theme.blue};
-`;
-
-const SemesterContainer = styled.div`
-  display: flex;
-  justify-content: center;
 `;
 
 export default TopNavBar;

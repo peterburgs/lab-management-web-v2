@@ -1,40 +1,31 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
-import { getSemesters } from "../../reducers/semesterSlice";
+import { getAcademicYears } from "../../reducers/academicYearSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 
-const useGetAllSemesters = () => {
+const useGetAllAcademicYears = () => {
   const dispatch = useAppDispatch();
-  const semesters = useAppSelector(
-    (state) => state.semesters.semesters
-  );
   const academicYears = useAppSelector(
     (state) => state.academicYears.academicYears
   );
   const academicYearStatus = useAppSelector(
     (state) => state.academicYears.status
   );
-  const semesterStatus = useAppSelector(
-    (state) => state.semesters.status
-  );
 
   useEffect(() => {
-    if (
-      semesterStatus === "idle" &&
-      academicYearStatus === "succeeded"
-    ) {
+    if (academicYearStatus === "idle") {
       (async () => {
         try {
-          const actionResult = await dispatch(getSemesters({}));
+          const actionResult = await dispatch(getAcademicYears({}));
           unwrapResult(actionResult);
         } catch (err) {
           console.log(err);
         }
       })();
     }
-  }, [semesterStatus, dispatch, academicYearStatus]);
+  }, [academicYearStatus, dispatch]);
 
-  return [semesters, semesterStatus];
+  return [academicYears, academicYearStatus];
 };
 
-export default useGetAllSemesters;
+export default useGetAllAcademicYears;

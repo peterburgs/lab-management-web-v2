@@ -26,11 +26,13 @@ export enum ACTIONS {
 export type Semester = {
   _id: string;
   semesterName: string;
+  index: number;
   startDate: Date;
   numberOfWeeks: number;
   isOpening: boolean;
   updatedAt: Date;
   createdAt: Date;
+  academicYear: AcademicYear | string;
   labSchedule: number[][];
   isHidden: boolean;
 };
@@ -145,5 +147,11 @@ export type Comment = {
 };
 
 export type AcademicYear = {
-  
-}
+  _id: string;
+  name: string;
+  numberOfWeeks: number;
+  startDate: Date;
+  endDate: Date;
+  isOpening: boolean;
+  isHidden: boolean;
+};

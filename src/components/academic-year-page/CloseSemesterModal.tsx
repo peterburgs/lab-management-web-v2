@@ -20,6 +20,7 @@ import { resetState as resetRegistrationState } from "../../reducers/registratio
 import { resetState as resetTeachingState } from "../../reducers/teachingSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
+import { useParams } from "react-router";
 
 // component props
 interface CloseSemesterModalProps extends ModalProps {
@@ -28,8 +29,10 @@ interface CloseSemesterModalProps extends ModalProps {
 
 const CloseSemesterModal = (props: CloseSemesterModalProps) => {
   const [status, setStatus] = useState("idle");
+  const { id } = useParams<{ id: string }>();
   const semester = useAppSelector(
-    (state) => state.semesters.semesters[0]
+    (state) =>
+      state.semesters.semesters.find((item) => item._id === id)
   );
   const dispatch = useAppDispatch();
   const { handleSubmit } = useForm<Semester>();

@@ -19,39 +19,54 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 // import hooks
-import { useAppDispatch } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 
 const StartSemesterModal = (props: ModalProps) => {
   const [status, setStatus] = useState("idle");
   const dispatch = useAppDispatch();
-  const {
-    register,
-    handleSubmit,
-    errors,
-    control,
-  } = useForm<Semester>();
+  const { register, handleSubmit, errors, control } =
+    useForm<Semester>();
+
+  const academicYear = useAppSelector((state) =>
+    state.academicYears.academicYears.find(
+      (item) => item.isOpening === true
+    )!
+  );
+
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
+  );
 
   const onSubmit = async (data: Semester) => {
-    try {
-      data.isOpening = true;
-      data.isHidden = false;
-      setStatus("pending");
-      const actionResult = await dispatch(startSemester(data));
-      unwrapResult(actionResult);
-      dispatch(setSnackBarContent("Start semester successfully"));
-      dispatch(setShowSuccessSnackBar(true));
-      props.setShowModal(false);
-    } catch (err) {
-      console.log("Failed to start semester", err);
-      if (err.response) {
-        dispatch(setSnackBarContent(err.response.data.message));
-      } else {
-        dispatch(setSnackBarContent("Failed to start semester"));
+    if (academicYear && semesters) {
+      try {
+        data.isOpening = true;
+        data.academicYear = academicYear._id;
+        data.isHidden = false;
+        data.index =
+          semesters.filter(
+            (semester) => semester.academicYear === academicYear._id
+          ).length + 1;
+
+        console.log(data);
+        setStatus("pending");
+        const actionResult = await dispatch(startSemester(data));
+        unwrapResult(actionResult);
+        dispatch(setSnackBarContent("Start semester successfully"));
+        dispatch(setShowSuccessSnackBar(true));
+        props.setShowModal(false);
+      } catch (err) {
+        console.log("Failed to start semester", err);
+        if (err.response) {
+          dispatch(setSnackBarContent(err.response.data.message));
+        } else {
+          dispatch(setSnackBarContent("Failed to start semester"));
+        }
+        dispatch(setShowErrorSnackBar(true));
+      } finally {
+        setStatus("idle");
+        props.setShowModal(false);
       }
-      dispatch(setShowErrorSnackBar(true));
-    } finally {
-      setStatus("idle");
-      props.setShowModal(false);
     }
   };
 
@@ -62,6 +77,11 @@ const StartSemesterModal = (props: ModalProps) => {
           label="Semester name"
           inputRef={register({ required: true })}
           name="semesterName"
+          defaultValue={`Semester ${
+            semesters.filter(
+              (semester) => semester.academicYear === academicYear._id
+            ).length + 1
+          }`}
           error={Boolean(errors.semesterName)}
           helperText={
             errors.semesterName && "*This field is required"
@@ -87,6 +107,7 @@ const StartSemesterModal = (props: ModalProps) => {
           inputRef={register({ required: true })}
           name="numberOfWeeks"
           error={Boolean(errors.numberOfWeeks)}
+          defaultValue={15}
           type="number"
           helperText={
             errors.numberOfWeeks && "*This field is required"

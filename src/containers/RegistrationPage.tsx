@@ -19,7 +19,6 @@ import RefreshIcon from "@material-ui/icons/Refresh";
 import _ from "lodash";
 
 // Import modals
-import StartSemesterModal from "../components/registration-page/StartSemesterModal";
 import OpenRegistrationModal from "../components/registration-page/OpenRegistrationModal";
 import SelectCourseModal from "../components/registration-page/SelectCourseModal";
 import CloseRegistrationModal from "../components/registration-page/CloseRegistration";
@@ -84,8 +83,6 @@ const prepareData = (
 
 const RegistrationPage = () => {
   // useState
-  const [showStartSemesterModal, setShowStartSemesterModal] =
-    useState(false);
   const [showOpenRegistrationModal, setShowOpenRegistrationModal] =
     useState(false);
   const [showSelectCourseModal, setShowSelectCourseModal] =
@@ -100,8 +97,13 @@ const RegistrationPage = () => {
   const [batch, setBatch] = useState(1);
 
   // call hooks
-  const semesterStatus = useAppSelector(
-    (state) => state.semesters.status
+  const openSemester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item.isOpening === true)
+  );
+  const openAcademicYear = useAppSelector((state) =>
+    state.academicYears.academicYears.find(
+      (item) => item.isOpening === true
+    )
   );
 
   const registrations = useAppSelector(
@@ -292,7 +294,7 @@ const RegistrationPage = () => {
   };
 
   const renderContent = () => {
-    if (semesterStatus === "succeeded") {
+    if (openSemester && openAcademicYear) {
       if (registrationStatus === "pending") {
         return (
           <Skeleton
@@ -397,14 +399,11 @@ const RegistrationPage = () => {
           </>
         );
       }
-    } else if (semesterStatus === "failed") {
+    } else if (!openSemester || !openAcademicYear) {
       return (
         <NotFoundContainer>
           <NothingImage />
-          <span>There is no semester</span>
-          <Button onClick={() => setShowStartSemesterModal(true)}>
-            Start semester
-          </Button>
+          <span>There is no open academic year or open semester</span>
         </NotFoundContainer>
       );
     }
@@ -412,11 +411,6 @@ const RegistrationPage = () => {
 
   return (
     <>
-      <StartSemesterModal
-        name="Start semester"
-        showModal={showStartSemesterModal}
-        setShowModal={setShowStartSemesterModal}
-      />
       <SelectCourseModal
         name="Select course"
         selectedCourses={selectedCourses}

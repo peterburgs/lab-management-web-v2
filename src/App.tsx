@@ -392,7 +392,7 @@ const App = () => {
               />
               <PrivateRoute
                 roles={[ROLES.ADMIN]}
-                path="/academic-year"
+                path="/academic-years"
                 exact={false}
                 component={
                   <Layout

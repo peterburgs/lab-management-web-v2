@@ -12,7 +12,10 @@ import { ReactComponent as AcademicYearIcon } from "../../assets/images/academic
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
 import { useAppSelector } from "../../store";
-import { ROLES } from "../../types/model";
+import { AcademicYear, ROLES, Semester } from "../../types/model";
+import { Skeleton } from "@material-ui/core";
+import useGetAllSemester from "../../hooks/semester/useGetAllSemester";
+import useGetAllAcademicYears from "../../hooks/academicYear/useGetAllAcademicYears";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -22,6 +25,57 @@ interface SidebarProps {
 const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const role = useAppSelector((state) => state.auth.verifiedRole);
 
+
+  const [semesters, semesterStatus] = useGetAllSemester();
+  const [academicYears, academicYearStatus] =
+    useGetAllAcademicYears();
+
+  // conditional renderer
+  const renderBreadcrumbs = () => {
+    if (
+      semesterStatus === "pending" ||
+      academicYearStatus === "pending"
+    ) {
+      return (
+        <Breadcrumbs isCollapsed={isCollapsed}>
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            width={200}
+          />
+        </Breadcrumbs>
+      );
+    }
+    if (
+      semesterStatus === "succeeded" &&
+      academicYearStatus === "succeeded"
+    ) {
+      const openAcademicYear = (academicYears as AcademicYear[]).find(
+        (item) => item.isOpening === true
+      );
+      const openSemester = (semesters as Semester[]).find(
+        (item) => item.isOpening === true
+      );
+      if (openAcademicYear && openSemester) {
+        return (
+          <Breadcrumbs isCollapsed={isCollapsed}>
+            <span>{(openAcademicYear as AcademicYear).name}</span> /{" "}
+            <span>{(openSemester as Semester).semesterName}</span>
+          </Breadcrumbs>
+        );
+      } else {
+        <Breadcrumbs isCollapsed={isCollapsed}>
+          <span>...</span> / <span>...</span>
+        </Breadcrumbs>;
+      }
+    }
+    return (
+      <Breadcrumbs isCollapsed={isCollapsed}>
+        <span>...</span> / <span>...</span>
+      </Breadcrumbs>
+    );
+  };
+
   return (
     <StyledSidebar>
       <Header>
@@ -30,15 +84,13 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           <AppName>Lab Management</AppName>
         </Container>
       </Header>
-      <Breadcrumbs isCollapsed={isCollapsed}>
-        <span>2020 - 2021</span> / <span>Semester 1</span>
-      </Breadcrumbs>
+      {renderBreadcrumbs()}
       <NavItemContainer>
         {role === ROLES.ADMIN ? (
           <>
             <NavItem
               isCollapsed={isCollapsed}
-              path="/academic-year"
+              path="/academic-years"
               name="Academic years"
               icon={<AcademicYearIcon />}
             />

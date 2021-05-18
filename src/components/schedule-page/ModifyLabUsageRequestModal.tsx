@@ -33,6 +33,7 @@ import { useForm, Controller } from "react-hook-form";
 
 interface ModifyLabUsageRequestProps extends ModalProps {
   labUsageId: string;
+  semester: string;
 }
 
 const ModifyLabUsageRequestModal = (
@@ -43,8 +44,9 @@ const ModifyLabUsageRequestModal = (
     useForm<Request>();
   const dispatch = useAppDispatch();
   const labs = useAppSelector((state) => state.labs.labs);
-  const semester = useAppSelector(
-    (state) => state.semesters.semesters[0]
+  // TODO: NOT OPEN SEMESTER
+  const semester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item._id === props.semester)
   );
   const verifiedUser = useAppSelector(
     (state) => state.auth.verifiedUser

@@ -32,14 +32,22 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { useForm, Controller } from "react-hook-form";
 import useGetAllTeaching from "../../hooks/teaching/useGetAllTeachings";
 
-const ModifyLabUsageRequestModal = (props: ModalProps) => {
+interface ModifyLabUsageRequestModalProps extends ModalProps {
+  semester: string;
+}
+
+const ModifyLabUsageRequestModal = (
+  props: ModifyLabUsageRequestModalProps
+) => {
   // call hooks
   const { register, handleSubmit, errors, control } =
     useForm<Request>();
   const dispatch = useAppDispatch();
   const labs = useAppSelector((state) => state.labs.labs);
-  const semester = useAppSelector(
-    (state) => state.semesters.semesters[0]
+  const semester = useAppSelector((state) =>
+    state.semesters.semesters.find(
+      (item) => item._id === props.semester
+    )
   );
   const verifiedUser = useAppSelector(
     (state) => state.auth.verifiedUser
@@ -103,7 +111,6 @@ const ModifyLabUsageRequestModal = (props: ModalProps) => {
             item.lab === labId
         ).length === 0
       ) {
-        console.log("Hello");
         return true;
       } else {
         return false;

@@ -10,7 +10,7 @@ interface RegistrationState {
   message?: string;
 }
 
-interface GETResponse {
+export interface GETResponse {
   registrations: Registration[];
   count: number;
   message: string;

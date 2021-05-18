@@ -31,7 +31,7 @@ const CloseRegistrationModal = (props: ModalProps) => {
   const dispatch = useAppDispatch();
   const { handleSubmit } = useForm<Registration>();
 
-  // handle close semester submit
+  // handle close registration submit
   const onSubmit = async () => {
     if (registration) {
       try {
@@ -54,7 +54,7 @@ const CloseRegistrationModal = (props: ModalProps) => {
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {
-          dispatch(setSnackBarContent("Failed to close semester"));
+          dispatch(setSnackBarContent("Failed to close registration"));
         }
         dispatch(setShowErrorSnackBar(true));
         props.setShowModal(false);

@@ -45,31 +45,32 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
   const registrations = useAppSelector(
     (state) => state.registrations.registrations
   );
-  const semester = useAppSelector(
-    (state) => state.semesters.semesters[0]
+  const openSemester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item.isOpening === true)
   );
   const [status, setStatus] = useState("idle");
   const [isAllCoursesApplied, setIsAllCoursesApplied] =
     useState(true);
 
   const onSubmit = async (data: Registration) => {
-    if (courses.length > 0 && semester) {
+    if (courses.length > 0 && openSemester) {
       try {
         data.batch = registrations.length + 1;
         data.isOpening = true;
         data.isHidden = false;
-        data.semester = semester._id;
+        data.semester = openSemester._id;
         setStatus("pending");
         const actionResult = await dispatch(openRegistration(data));
         const regResult = actionResult.payload?.registration;
         if (regResult) {
           if (isAllCoursesApplied) {
-            const registrableCourses: RegistrableCourse[] = courses.map((course) => {
-              return {
-                registration: regResult._id,
-                course: course._id,
-              };
-            });
+            const registrableCourses: RegistrableCourse[] =
+              courses.map((course) => {
+                return {
+                  registration: regResult._id,
+                  course: course._id,
+                };
+              });
             console.log(registrableCourses);
             const actionResult = await dispatch(
               createBulkOfRegistrableCourses(registrableCourses)

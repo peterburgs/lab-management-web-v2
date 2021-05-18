@@ -1,0 +1,130 @@
+import React, { useState } from "react";
+import styled from "styled-components";
+import { styled as materialStyled } from "@material-ui/styles";
+import Modal from "../common/Modal";
+import { ModalProps } from "../../types/modal";
+import { useForm, Controller } from "react-hook-form";
+import { TextField } from "@material-ui/core";
+import Button from "../common/Button";
+import { DateTimePicker } from "@material-ui/lab";
+import { unwrapResult } from "@reduxjs/toolkit";
+
+// import models
+import { AcademicYear } from "../../types/model";
+// import reducers
+import { startAcademicYear } from "../../reducers/academicYearSlice";
+import {
+  setShowSuccessSnackBar,
+  setShowErrorSnackBar,
+  setSnackBarContent,
+} from "../../reducers/notificationSlice";
+// import hooks
+import { useAppDispatch } from "../../store";
+import moment from "moment";
+
+const StartAcademicYearModal = (props: ModalProps) => {
+  const [status, setStatus] = useState("idle");
+  const dispatch = useAppDispatch();
+  const { register, handleSubmit, errors, control } =
+    useForm<AcademicYear>();
+
+  const onSubmit = async (data: AcademicYear) => {
+    try {
+      let startYear = moment(data.startDate).year();
+      let endYear = moment(data.startDate)
+        .add(data.numberOfWeeks, "weeks")
+        .year();
+      data.name = `${startYear} - ${endYear}`;
+      data.isOpening = true;
+      data.isHidden = false;
+      console.log(data);
+      setStatus("pending");
+      const actionResult = await dispatch(startAcademicYear(data));
+      unwrapResult(actionResult);
+      dispatch(
+        setSnackBarContent("Start academic year successfully")
+      );
+      dispatch(setShowSuccessSnackBar(true));
+      props.setShowModal(false);
+    } catch (err) {
+      console.log("Failed to start academic year", err);
+      if (err.response) {
+        dispatch(setSnackBarContent(err.response.data.message));
+      } else {
+        dispatch(setSnackBarContent("Failed to start academic year"));
+      }
+      dispatch(setShowErrorSnackBar(true));
+    } finally {
+      setStatus("idle");
+      props.setShowModal(false);
+    }
+  };
+
+  return (
+    <Modal {...props}>
+      <StyledForm onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="startDate"
+          control={control}
+          rules={{ required: true }}
+          defaultValue={new Date()}
+          render={(props) => (
+            <DateTimePicker
+              label="Start date"
+              inputFormat="dd/MM/yyyy hh:mm a"
+              renderInput={(props) => <StyledTextField {...props} />}
+              onChange={(value) => props.onChange(value)}
+              value={props.value}
+            />
+          )}
+        />
+        <StyledTextField
+          label="Number of weeks (estimate)"
+          inputRef={register({ required: true })}
+          name="numberOfWeeks"
+          defaultValue={45}
+          error={Boolean(errors.numberOfWeeks)}
+          type="number"
+          helperText={
+            errors.numberOfWeeks && "*This field is required"
+          }
+        />
+        <StyledButton
+          disabled={status === "pending"}
+          loading={status === "pending"}
+          type="submit"
+        >
+          Submit
+        </StyledButton>
+      </StyledForm>
+    </Modal>
+  );
+};
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledButton = styled(Button)`
+  background-color: #e7f3ff;
+  box-shadow: none;
+  color: #1877f2;
+  font-weight: 500;
+  font-size: 18px;
+  &:hover {
+    background-color: #dbe7f2;
+  }
+  &:active {
+    background-color: #e7f3ff;
+    &:hover {
+      background-color: #e7f3ff;
+    }
+  }
+`;
+
+const StyledTextField = materialStyled(TextField)({
+  marginBottom: "1rem",
+});
+
+export default StartAcademicYearModal;

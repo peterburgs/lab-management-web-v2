@@ -8,7 +8,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
 
 // import model
-import { Semester } from "../../types/model";
+import { Semester, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
 import {
   setShowSuccessSnackBar,
@@ -22,17 +22,11 @@ import { resetState as resetTeachingState } from "../../reducers/teachingSlice";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useParams } from "react-router";
 
-// component props
-interface CloseSemesterModalProps extends ModalProps {
-  setShowSemesterModal: (a: boolean) => void;
-}
-
-const CloseSemesterModal = (props: CloseSemesterModalProps) => {
+const CloseSemesterModal = (props: ModalProps) => {
   const [status, setStatus] = useState("idle");
   const { id } = useParams<{ id: string }>();
-  const semester = useAppSelector(
-    (state) =>
-      state.semesters.semesters.find((item) => item._id === id)
+  const semester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item._id === id)
   );
   const dispatch = useAppDispatch();
   const { handleSubmit } = useForm<Semester>();
@@ -42,7 +36,7 @@ const CloseSemesterModal = (props: CloseSemesterModalProps) => {
     if (semester) {
       try {
         const clonedSemester = _.cloneDeep(semester);
-        clonedSemester.isOpening = false;
+        clonedSemester.status = SEMESTER_STATUSES.CLOSED;
         setStatus("pending");
         const actionResult = await dispatch(
           editSemester(clonedSemester)
@@ -54,17 +48,15 @@ const CloseSemesterModal = (props: CloseSemesterModalProps) => {
         dispatch(setSnackBarContent("Close semester successfully"));
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
-        props.setShowSemesterModal(false);
-      } catch (err) {
-        console.log("Failed to close semester", err);
-        if (err.response) {
-          dispatch(setSnackBarContent(err.response.data.message));
+      } catch (error) {
+        console.log("Failed to close semester", error);
+        if (error.response) {
+          dispatch(setSnackBarContent(error.response.data.message));
         } else {
           dispatch(setSnackBarContent("Failed to close semester"));
         }
         dispatch(setShowErrorSnackBar(true));
         props.setShowModal(false);
-        props.setShowSemesterModal(false);
       }
     }
   };

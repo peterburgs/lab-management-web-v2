@@ -5,16 +5,8 @@ import { store } from "./store";
 import { Provider } from "react-redux";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
-import makeServer from "./mock/server";
 import { ThemeProvider } from "styled-components";
 import theme from "./styles/theme";
-
-// if (
-//   process.env.NODE_ENV === "development" &&
-//   typeof makeServer === "function"
-// ) {
-//   makeServer();
-// }
 
 ReactDOM.render(
   <React.StrictMode>

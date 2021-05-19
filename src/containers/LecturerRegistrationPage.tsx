@@ -19,7 +19,7 @@ import DeleteTeachingModal from "../components/lecturer-registration-page/Delete
 import ImportTeachingModal from "../components/lecturer-registration-page/ImportTeachingModal";
 
 // import models
-import { Teaching, Course, ROLES } from "../types/model";
+import { Teaching, Course, ROLES, SEMESTER_STATUSES } from "../types/model";
 
 // import hooks
 import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";
@@ -101,7 +101,7 @@ const LecturerRegistrationPage = () => {
 
   // call hooks
   const openSemester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item.isOpening === true)
+    state.semesters.semesters.find((item) => item.status === SEMESTER_STATUSES.OPENING)
   );
   const openAcademicYear = useAppSelector((state) =>
     state.academicYears.academicYears.find(

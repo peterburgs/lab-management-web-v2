@@ -114,9 +114,9 @@ const RequestDetailPage = () => {
                 dayOfWeek: request.dayOfWeek,
                 startPeriod: request.startPeriod,
                 endPeriod: request.endPeriod,
-                semester: semester._id,
+                semester: semester._id!,
                 isHidden: false,
-              };
+            };
 
               const actionResult = await dispatch(
                 newLabUsage(labUsage)

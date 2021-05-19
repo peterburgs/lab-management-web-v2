@@ -19,13 +19,13 @@ const RegistrationStatus = ({
     <StyledRegistrationStatus isOpening={registration.isOpening}>
       {registration.isOpening ? (
         <>
-          <Text>Open - Auto close in </Text>
+          <Text>OPENING</Text>
           <Countdown
             date={registration.endDate}
             renderer={({ days, hours, minutes, seconds }) => (
               <TimeRemainContainer>
                 <span>
-                  {days} days {hours} hrs {minutes} min {seconds} sec
+                  Time left: {days} days {hours} hours {minutes} min {seconds} sec
                 </span>
               </TimeRemainContainer>
             )}
@@ -39,7 +39,7 @@ const RegistrationStatus = ({
           )}
         </>
       ) : (
-        <Text>Closed</Text>
+        <Text>CLOSED</Text>
       )}
     </StyledRegistrationStatus>
   );
@@ -106,7 +106,6 @@ const CloseRegistrationButton = styled.button`
 const StyledRegistrationStatus = styled.div<StyledRegistrationStatusProps>`
   border-radius: 4px;
   padding: 4px;
-  text-transform: uppercase;
   background-color: ${({ isOpening, theme }) =>
     isOpening ? theme.green : theme.red};
   margin-top: 1rem;

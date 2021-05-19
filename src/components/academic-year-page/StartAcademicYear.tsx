@@ -10,7 +10,11 @@ import { DateTimePicker } from "@material-ui/lab";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { AcademicYear } from "../../types/model";
+import {
+  AcademicYear,
+  Semester,
+  SEMESTER_STATUSES,
+} from "../../types/model";
 // import reducers
 import { startAcademicYear } from "../../reducers/academicYearSlice";
 import {
@@ -21,6 +25,7 @@ import {
 // import hooks
 import { useAppDispatch } from "../../store";
 import moment from "moment";
+import { startSemester } from "../../reducers/semesterSlice";
 
 const StartAcademicYearModal = (props: ModalProps) => {
   const [status, setStatus] = useState("idle");
@@ -40,7 +45,27 @@ const StartAcademicYearModal = (props: ModalProps) => {
       console.log(data);
       setStatus("pending");
       const actionResult = await dispatch(startAcademicYear(data));
-      unwrapResult(actionResult);
+
+      const res = unwrapResult(actionResult);
+
+      for (let i = 0; i < 3; i++) {
+        let semester: Semester = {
+          semesterName: `Semester ${i + 1}`,
+          index: i + 1,
+          startDate: i === 0 ? new Date() : undefined,
+          numberOfWeeks: i === 2 ? 8 : 17,
+          status:
+            i === 0
+              ? SEMESTER_STATUSES.OPENING
+              : SEMESTER_STATUSES.FUTURE,
+          academicYear: res.academicYear!._id,
+          isHidden: false,
+        };
+        const savedSemesterResult = await dispatch(
+          startSemester(semester)
+        );
+        unwrapResult(savedSemesterResult);
+      }
       dispatch(
         setSnackBarContent("Start academic year successfully")
       );
@@ -82,7 +107,7 @@ const StartAcademicYearModal = (props: ModalProps) => {
           label="Number of weeks (estimate)"
           inputRef={register({ required: true })}
           name="numberOfWeeks"
-          defaultValue={45}
+          defaultValue={42}
           error={Boolean(errors.numberOfWeeks)}
           type="number"
           helperText={

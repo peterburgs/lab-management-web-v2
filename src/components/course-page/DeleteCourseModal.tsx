@@ -15,6 +15,7 @@ import {
 import { deleteCourse } from "../../reducers/courseSlice";
 // import hooks
 import { useAppDispatch } from "../../store";
+import useGetAllTeaching from "../../hooks/teaching/useGetAllTeachings";
 
 // component props
 interface DeleteCourseModalProps extends ModalProps {
@@ -26,30 +27,45 @@ const DeleteCourseModal = (props: DeleteCourseModalProps) => {
   const dispatch = useAppDispatch();
   const { handleSubmit } = useForm();
 
+  const [teachings] = useGetAllTeaching();
+
   // handle delete submit
   const onSubmit = async () => {
     if (props.courseId) {
-      try {
-        setStatus("pending");
-        const actionResult = await dispatch(
-          deleteCourse(props.courseId)
-        );
-        unwrapResult(actionResult);
-
-        dispatch(setSnackBarContent("Delete course successfully"));
-        dispatch(setShowSuccessSnackBar(true));
-        props.setShowModal(false);
-      } catch (err) {
-        console.log("Failed to delete course", err);
-        if (err.response) {
-          dispatch(setSnackBarContent(err.response.data.message));
-        } else {
-          dispatch(setSnackBarContent("Failed to delete course"));
-        }
+      if (
+        teachings.filter(
+          (teaching) => teaching.course === props.courseId
+        ).length > 0
+      ) {
         dispatch(setShowErrorSnackBar(true));
-        props.setShowModal(false);
-      } finally {
-        setStatus("idle");
+        dispatch(
+          setSnackBarContent(
+            "This course is being used in this semester. Cannot delete."
+          )
+        );
+      } else {
+        try {
+          setStatus("pending");
+          const actionResult = await dispatch(
+            deleteCourse(props.courseId)
+          );
+          unwrapResult(actionResult);
+
+          dispatch(setSnackBarContent("Delete course successfully"));
+          dispatch(setShowSuccessSnackBar(true));
+          props.setShowModal(false);
+        } catch (err) {
+          console.log("Failed to delete course", err);
+          if (err.response) {
+            dispatch(setSnackBarContent(err.response.data.message));
+          } else {
+            dispatch(setSnackBarContent("Failed to delete course"));
+          }
+          dispatch(setShowErrorSnackBar(true));
+          props.setShowModal(false);
+        } finally {
+          setStatus("idle");
+        }
       }
     }
   };

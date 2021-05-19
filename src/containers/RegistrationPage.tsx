@@ -25,7 +25,7 @@ import CloseRegistrationModal from "../components/registration-page/CloseRegistr
 import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
 
 // Import models
-import { Teaching, Registration, Course, User } from "../types/model";
+import { Teaching, Registration, Course, User, SEMESTER_STATUSES } from "../types/model";
 
 // Import hooks
 import useGetTeachingsByRegistrationBatch from "../hooks/teaching/useGetTeachingsByRegistrationBatch";
@@ -35,6 +35,11 @@ import { useAppDispatch, useAppSelector } from "../store";
 
 // Import reducers
 import { resetState as resetTeachingState } from "../reducers/teachingSlice";
+import getImage from "../api/image";
+import {
+  setShowErrorSnackBar,
+  setSnackBarContent,
+} from "../reducers/notificationSlice";
 
 // Table type
 type TeachingTable = {
@@ -98,12 +103,20 @@ const RegistrationPage = () => {
 
   // call hooks
   const openSemester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item.isOpening === true)
+    state.semesters.semesters.find((item) => item.status === SEMESTER_STATUSES.OPENING)
   );
+  const openSemesterStatus = useAppSelector(
+    (state) => state.semesters.status
+  );
+
   const openAcademicYear = useAppSelector((state) =>
     state.academicYears.academicYears.find(
       (item) => item.isOpening === true
     )
+  );
+
+  const openAcademicYearStatus = useAppSelector(
+    (state) => state.academicYears.status
   );
 
   const registrations = useAppSelector(
@@ -294,20 +307,65 @@ const RegistrationPage = () => {
   };
 
   const renderContent = () => {
-    if (openSemester && openAcademicYear) {
-      if (registrationStatus === "pending") {
-        return (
+    if (
+      openAcademicYearStatus === "pending" ||
+      openSemesterStatus === "pending"
+    ) {
+      return (
+        <>
           <Skeleton
             variant="rectangular"
             animation="wave"
-            width={250}
+            height={50}
+            style={{ marginBottom: "1rem" }}
           />
+
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            height={50}
+            style={{ marginBottom: "1rem" }}
+          />
+
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            height={200}
+            style={{ marginBottom: "1rem" }}
+          />
+        </>
+      );
+    } else if (openSemester && openAcademicYear) {
+      if (registrationStatus === "pending") {
+        return (
+          <>
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              height={50}
+              style={{ marginBottom: "1rem" }}
+            />
+
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              height={50}
+              style={{ marginBottom: "1rem" }}
+            />
+
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              height={200}
+              style={{ marginBottom: "1rem" }}
+            />
+          </>
         );
       }
       if (registrationStatus === "failed") {
         return (
           <NotFoundContainer>
-            <NothingImage />
+            <img alt="Nothing" src={getImage("Nothing.gif")} />
             <span>There is no registration</span>
             <Button
               onClick={() => setShowOpenRegistrationModal(true)}
@@ -367,12 +425,22 @@ const RegistrationPage = () => {
                   </IconButtonContainer>
                 </Tooltip>
                 <Button
-                  onClick={() => setShowOpenRegistrationModal(true)}
-                  disabled={
-                    (registrations as Registration[]).findIndex(
-                      (reg) => reg.isOpening === true
-                    ) !== -1
-                  }
+                  onClick={() => {
+                    if (
+                      (registrations as Registration[]).findIndex(
+                        (reg) => reg.isOpening === true
+                      ) !== -1
+                    ) {
+                      dispatch(setShowErrorSnackBar(true));
+                      dispatch(
+                        setSnackBarContent(
+                          "Close all registrations before creating new one"
+                        )
+                      );
+                    } else {
+                      setShowOpenRegistrationModal(true);
+                    }
+                  }}
                 >
                   Open registration
                 </Button>
@@ -402,7 +470,7 @@ const RegistrationPage = () => {
     } else if (!openSemester || !openAcademicYear) {
       return (
         <NotFoundContainer>
-          <NothingImage />
+          <img alt="Nothing" src={getImage("Nothing.gif")} />
           <span>There is no open academic year or open semester</span>
         </NotFoundContainer>
       );

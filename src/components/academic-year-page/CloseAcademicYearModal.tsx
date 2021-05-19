@@ -8,67 +8,67 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
 
 // import model
-import { Semester, SEMESTER_STATUSES } from "../../types/model";
+import { AcademicYear, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
 import {
   setShowSuccessSnackBar,
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
-import { editSemester } from "../../reducers/semesterSlice";
+import { editAcademicYear } from "../../reducers/academicYearSlice";
 import { resetState as resetRegistrationState } from "../../reducers/registrationSlice";
 import { resetState as resetTeachingState } from "../../reducers/teachingSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
 import { useParams } from "react-router";
-import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
 
-const StartSemesterModal = (props: ModalProps) => {
+const CloseAcademicYearModal = (props: ModalProps) => {
   const [status, setStatus] = useState("idle");
   const { id } = useParams<{ id: string }>();
-  const semester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item._id === id)
-  );
-  const academicYears = useAppSelector(
-    (state) => state.academicYears.academicYears
+  const academicYear = useAppSelector((state) =>
+    state.academicYears.academicYears.find((item) => item._id === id)
   );
   const semesters = useAppSelector(
     (state) => state.semesters.semesters
   );
   const dispatch = useAppDispatch();
-  const { handleSubmit } = useForm<Semester>();
+  const { handleSubmit } = useForm<AcademicYear>();
 
   // handle close semester submit
   const onSubmit = async () => {
-    if (semester) {
-      const academicYear = academicYears.find(
-        (item) => item._id === semester.academicYear
-      );
-      const openSemester = semesters
-        .filter((item) => item.academicYear === academicYear?._id)
-        .find((item) => item.status === SEMESTER_STATUSES.OPENING);
-      if (!openSemester) {
+    if (academicYear) {
+      if (
+        semesters.filter(
+          (item) =>
+            item.academicYear === academicYear._id &&
+            item.status === SEMESTER_STATUSES.OPENING
+        ).length === 0
+      ) {
         try {
-          const clonedSemester = _.cloneDeep(semester);
-          clonedSemester.status = SEMESTER_STATUSES.OPENING;
-          clonedSemester.startDate = new Date();
+          const clonedAcademicYear = _.cloneDeep(academicYear);
+          clonedAcademicYear.endDate = new Date();
+          clonedAcademicYear.isOpening = false;
           setStatus("pending");
           const actionResult = await dispatch(
-            editSemester(clonedSemester)
+            editAcademicYear(clonedAcademicYear)
           );
           unwrapResult(actionResult);
 
           dispatch(resetRegistrationState());
           dispatch(resetTeachingState());
-          dispatch(setSnackBarContent("Start semester successfully"));
+          dispatch(
+            setSnackBarContent("Close academic year successfully")
+          );
           dispatch(setShowSuccessSnackBar(true));
           props.setShowModal(false);
         } catch (error) {
-          console.log("Failed to start semester", error);
+          console.log("Failed to close academic year", error);
           if (error.response) {
             dispatch(setSnackBarContent(error.response.data.message));
           } else {
-            dispatch(setSnackBarContent("Failed to start semester"));
+            dispatch(
+              setSnackBarContent("Failed to close academic year")
+            );
           }
           dispatch(setShowErrorSnackBar(true));
           props.setShowModal(false);
@@ -77,7 +77,7 @@ const StartSemesterModal = (props: ModalProps) => {
         dispatch(setShowErrorSnackBar(true));
         dispatch(
           setSnackBarContent(
-            "Close all semesters before starting new one"
+            "All opening semesters must be closed before closing academic year"
           )
         );
       }
@@ -86,16 +86,6 @@ const StartSemesterModal = (props: ModalProps) => {
 
   return (
     <Modal {...props} style={{ overlay: { zIndex: 1000 } }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <WarningImage style={{ height: "100px" }} />
-      </div>
-
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledButton
           disabled={status === "pending"}
@@ -116,21 +106,21 @@ const StyledForm = styled.form`
 `;
 
 const StyledButton = styled(Button)`
-  background-color: ${({ theme }) => theme.lightGreen};
+  background-color: ${({ theme }) => theme.lightRed};
   box-shadow: none;
-  color: ${({ theme }) => theme.green};
+  color: ${({ theme }) => theme.red};
   font-weight: 500;
   font-size: 18px;
   &:hover {
-    background-color: ${({ theme }) => theme.green};
+    background-color: ${({ theme }) => theme.red};
     color: white;
   }
   &:active {
-    background-color: ${({ theme }) => theme.green};
+    background-color: ${({ theme }) => theme.red};
     &:hover {
-      background-color: ${({ theme }) => theme.green};
+      background-color: ${({ theme }) => theme.red};
     }
   }
 `;
 
-export default StartSemesterModal;
+export default CloseAcademicYearModal;

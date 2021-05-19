@@ -12,10 +12,11 @@ import { ReactComponent as AcademicYearIcon } from "../../assets/images/academic
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
 import { useAppSelector } from "../../store";
-import { AcademicYear, ROLES, Semester } from "../../types/model";
+import { AcademicYear, ROLES, Semester, SEMESTER_STATUSES } from "../../types/model";
 import { Skeleton } from "@material-ui/core";
 import useGetAllSemester from "../../hooks/semester/useGetAllSemester";
 import useGetAllAcademicYears from "../../hooks/academicYear/useGetAllAcademicYears";
+import { useHistory } from "react-router";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -25,7 +26,7 @@ interface SidebarProps {
 const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
   const role = useAppSelector((state) => state.auth.verifiedRole);
 
-
+  const history = useHistory();
   const [semesters, semesterStatus] = useGetAllSemester();
   const [academicYears, academicYearStatus] =
     useGetAllAcademicYears();
@@ -54,24 +55,37 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         (item) => item.isOpening === true
       );
       const openSemester = (semesters as Semester[]).find(
-        (item) => item.isOpening === true
+        (item) => item.status === SEMESTER_STATUSES.OPENING
       );
       if (openAcademicYear && openSemester) {
         return (
           <Breadcrumbs isCollapsed={isCollapsed}>
-            <span>{(openAcademicYear as AcademicYear).name}</span> /{" "}
-            <span>{(openSemester as Semester).semesterName}</span>
+            <span onClick={() => history.push("/academic-years")}>
+              {(openAcademicYear as AcademicYear).name}
+            </span>{" "}
+            /{" "}
+            <span
+              onClick={() =>
+                history.push(
+                  `/academic-years/semesters/${
+                    (openSemester as Semester)._id
+                  }`
+                )
+              }
+            >
+              {(openSemester as Semester).semesterName}
+            </span>
           </Breadcrumbs>
         );
       } else {
         <Breadcrumbs isCollapsed={isCollapsed}>
-          <span>...</span> / <span>...</span>
+          <span>No opening semester</span>
         </Breadcrumbs>;
       }
     }
     return (
       <Breadcrumbs isCollapsed={isCollapsed}>
-        <span>...</span> / <span>...</span>
+        <span>No opening semester</span>
       </Breadcrumbs>
     );
   };
@@ -172,7 +186,7 @@ const Footer = styled.div`
 
 const AppName = styled.span`
   color: white;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 500;
   margin-left: 15px;
 

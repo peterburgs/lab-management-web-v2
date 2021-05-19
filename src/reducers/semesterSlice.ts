@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Semester } from "../types/model";
+import { Semester, SEMESTER_STATUSES } from "../types/model";
 import { api, auth } from "../api";
 import _ from "lodash";
 
@@ -44,7 +44,7 @@ export const getSemesters = createAsyncThunk<
       headers: auth(),
       params: { ...filter },
     });
-    console.log(data)
+    console.log(data);
     return data as GETResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as GETResponse);
@@ -129,20 +129,13 @@ export const semesterSlice = createSlice({
       state.message = action.payload.message;
     });
     builder.addCase(editSemester.fulfilled, (state, action) => {
-      if (action.payload.semester?.isOpening === false) {
-        state.semesters = [];
-        state.count = 0;
-        state.message = "";
-        state.status = "idle";
-      } else {
-        const currentIndex = state.semesters.findIndex(
-          (item) => item._id === action.payload.semester!._id
-        );
-        state.semesters[currentIndex] = _.cloneDeep(
-          action.payload.semester!
-        );
-        state.message = action.payload.message;
-      }
+      const currentIndex = state.semesters.findIndex(
+        (item) => item._id === action.payload.semester!._id
+      );
+      state.semesters[currentIndex] = _.cloneDeep(
+        action.payload.semester!
+      );
+      state.message = action.payload.message;
     });
   },
 });

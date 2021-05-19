@@ -15,7 +15,11 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { CheckboxItem } from "../common/CheckboxList";
 
 // import models
-import { RegistrableCourse, Registration } from "../../types/model";
+import {
+  RegistrableCourse,
+  Registration,
+  SEMESTER_STATUSES,
+} from "../../types/model";
 // import reducers
 import {
   setShowErrorSnackBar,
@@ -46,7 +50,9 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
     (state) => state.registrations.registrations
   );
   const openSemester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item.isOpening === true)
+    state.semesters.semesters.find(
+      (item) => item.status === SEMESTER_STATUSES.OPENING
+    )
   );
   const [status, setStatus] = useState("idle");
   const [isAllCoursesApplied, setIsAllCoursesApplied] =
@@ -58,7 +64,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
         data.batch = registrations.length + 1;
         data.isOpening = true;
         data.isHidden = false;
-        data.semester = openSemester._id;
+        data.semester = openSemester._id!;
         setStatus("pending");
         const actionResult = await dispatch(openRegistration(data));
         const regResult = actionResult.payload?.registration;

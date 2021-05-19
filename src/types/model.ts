@@ -23,17 +23,28 @@ export enum ACTIONS {
   REGISTER,
 }
 
+export enum COURSE_TYPES {
+  PRACTICAL,
+  THEORY,
+}
+
+export enum SEMESTER_STATUSES {
+  CLOSED,
+  OPENING,
+  FUTURE,
+}
+
 export type Semester = {
-  _id: string;
+  _id?: string;
   semesterName: string;
   index: number;
-  startDate: Date;
+  startDate?: Date;
   numberOfWeeks: number;
-  isOpening: boolean;
-  updatedAt: Date;
-  createdAt: Date;
+  status: SEMESTER_STATUSES;
+  updatedAt?: Date;
+  createdAt?: Date;
   academicYear: AcademicYear | string;
-  labSchedule: number[][];
+  labSchedule?: number[][];
   isHidden: boolean;
 };
 
@@ -42,6 +53,7 @@ export type Teaching = {
   uId: string;
   user: string | User;
   course: string | Course;
+  class: string;
   group: number;
   dayOfWeek: number;
   startPeriod: number;
@@ -50,8 +62,8 @@ export type Teaching = {
   theoryRoom: string;
   numberOfPracticalWeeks: number;
   registration: string | Registration;
-  updatedAt: Date;
-  createdAt: Date;
+  updatedAt?: Date;
+  createdAt?: Date;
   isHidden: boolean;
 };
 
@@ -71,8 +83,9 @@ export type Course = {
   _id: string;
   courseName: string;
   numberOfCredits: number;
-  createdAt: Date;
-  updatedAt: Date;
+  type: COURSE_TYPES;
+  createdAt?: Date;
+  updatedAt?: Date;
   isHidden: boolean;
 };
 
@@ -113,6 +126,7 @@ export type LabUsage = {
   createdAt?: Date;
   updatedAt?: Date;
   isHidden: boolean;
+  semester: string;
 };
 
 export type Request = {

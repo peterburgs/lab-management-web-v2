@@ -42,85 +42,168 @@ const ImportTeachingModal = (props: ModalProps) => {
   const [registrableCourses, registrableCourseStatus] =
     useGetRegistrableCoursesByRegistration(openRegistration?._id);
 
+  const findStartPeriod = (str: string) => {
+    for (let i = 0; i <= str.length; i++) {
+      if (str[i] !== "-") return i + 1;
+    }
+  };
+
+  const findEndPeriod = (str: string) => {
+    for (let i = str.length - 1; i >= 0; i--) {
+      if (str[i] !== "-") return i + 1;
+    }
+  };
+
   // handle new course submit
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (registrableCourseStatus === "succeeded") {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const data = new Uint8Array(e.target!.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
-        const teachings = [
-          ...XLSX.utils.sheet_to_json(workbook.Sheets["data"]),
-        ] as Teaching[];
-        console.log(teachings);
+        const workbook = XLSX.read(e.target!.result, {
+          type: "binary",
+        });
+
+        let teachings: Teaching[] = [];
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        let data = XLSX.utils.sheet_to_json(sheet);
 
         const attrs = [
-          "course",
-          "group",
-          "dayOfWeek",
-          "startPeriod",
-          "endPeriod",
-          "numberOfStudents",
-          "theoryRoom",
-          "numberOfPracticalWeeks",
+          "TT",
+          "Mã LHP",
+          "Tên HP",
+          "Số TC",
+          "Loại HP",
+          "Lớp",
+          "SL",
+          "CBGD",
+          "Tên Cán Bộ Giáng Dạy",
+          "Thứ",
+          "Tiết        1234567890123456",
+          "Phòng",
+          "Tuần học 234567890123456",
         ];
 
-        const attrsDataType = {
-          course: "string",
-          group: "number",
-          dayOfWeek: "number",
-          startPeriod: "number",
-          endPeriod: "number",
-          numberOfStudents: "number",
-          theoryRoom: "string",
-          numberOfPracticalWeeks: "number",
-        } as { [index: string]: string };
-
-        for (const teaching of teachings) {
-          for (let [key, value] of Object.entries(teaching)) {
+        data.forEach((item, i) => {
+          // Convert to teaching model
+          let teaching: Teaching = {
+            _id: "",
+            uId: "",
+            user: "",
+            course: "",
+            group: 0,
+            dayOfWeek: 0,
+            startPeriod: 0,
+            endPeriod: 0,
+            numberOfStudents: 0,
+            numberOfPracticalWeeks: 0,
+            registration: "",
+            theoryRoom: "",
+            isHidden: false,
+            class: "",
+          };
+          for (let [key, value] of Object.entries(
+            item as { [index: string]: string }
+          )) {
             // check if right format
             if (!attrs.find((attr) => attr === key)) {
               dispatch(
                 setSnackBarContent(
-                  "Failed to convert your file. Please check out the template again"
+                  "Incorrect format. Please refer template file."
                 )
               );
               dispatch(setShowErrorSnackBar(true));
               return;
             }
 
-            // check if right data type
-            if (key === "course") value = value.toString();
-            if (typeof value !== attrsDataType[key]) {
-              console.log(typeof value);
+            let strValue = value as string;
+
+            if (strValue.length === 0) {
               dispatch(
                 setSnackBarContent(
-                  "Your data does not have correct type"
+                  `${key} at row ${i} is missing. This teaching will be skipped`
                 )
               );
               dispatch(setShowErrorSnackBar(true));
-              return;
+              continue;
+            }
+
+            switch (key) {
+              case "Mã LHP":
+                teaching._id = strValue;
+                teaching.course = strValue.split("_")[0];
+                teaching.group = Number(strValue.split("_")[1]);
+                teaching.registration = openRegistration!._id;
+                break;
+              case "Lớp":
+                teaching.class = strValue;
+                break;
+              case "SL":
+                teaching.numberOfStudents = Number(strValue);
+                break;
+              case "Phòng":
+                teaching.theoryRoom = strValue;
+                break;
+              case "CBGD":
+                teaching.uId = strValue;
+                break;
+              case "Thứ":
+                switch (strValue) {
+                  case "Thứ Hai":
+                    teaching.dayOfWeek = 0;
+                    break;
+                  case "Thứ Ba":
+                    teaching.dayOfWeek = 1;
+                    break;
+                  case "Thứ Tư":
+                    teaching.dayOfWeek = 2;
+                    break;
+                  case "Thứ Năm":
+                    teaching.dayOfWeek = 3;
+                    break;
+                  case "Thứ Sáu":
+                    teaching.dayOfWeek = 4;
+                    break;
+                  case "Thứ Bảy":
+                    teaching.dayOfWeek = 5;
+                    break;
+                  case "Chủ Nhật":
+                    teaching.dayOfWeek = 6;
+                    break;
+                }
+                break;
+              case "Tiết        1234567890123456":
+                teaching.startPeriod = findStartPeriod(strValue)!;
+                teaching.endPeriod = findEndPeriod(strValue)!;
+                break;
+              case "Tuần học 234567890123456":
+                teaching.numberOfPracticalWeeks = Math.floor(
+                  strValue.length / 2
+                );
+                break;
             }
 
             // check if courses are in registrable courses
-            if (key === "course") {
+            if (key === "Mã LHP") {
               if (
                 !(registrableCourses as RegistrableCourse[]).find(
-                  (item) => item.course === value
+                  (item) => item.course === teaching.course
                 )
               ) {
                 dispatch(
                   setSnackBarContent(
-                    `${value} is not in registrable courses`
+                    `${teaching.course} is not in registrable courses`
                   )
                 );
                 dispatch(setShowErrorSnackBar(true));
-                return;
+                continue;
               }
             }
           }
-        }
+          teachings.push(teaching);
+        });
+
+        console.log(teachings);
 
         // send data to server
         setStatus("pending");
@@ -159,7 +242,7 @@ const ImportTeachingModal = (props: ModalProps) => {
           props.setShowModal(false);
         }
       };
-      reader.readAsArrayBuffer(fileSelected[0]);
+      reader.readAsBinaryString(fileSelected[0]);
     }
   };
 

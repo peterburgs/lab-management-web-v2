@@ -6,6 +6,7 @@ interface SearchState {
   userSearchText: string;
   labSearchText: string;
   requestSearchText: string;
+  academicYearSearchText: string;
 }
 
 const initialState: SearchState = {
@@ -14,6 +15,8 @@ const initialState: SearchState = {
   userSearchText: "",
   labSearchText: "",
   requestSearchText: "",
+  academicYearSearchText: "",
+
 };
 
 export const SearchSlice = createSlice({
@@ -26,6 +29,7 @@ export const SearchSlice = createSlice({
       state.userSearchText = "";
       state.labSearchText = "";
       state.requestSearchText = "";
+      state.academicYearSearchText="";
     },
     setTeachingSearch: (state, action: PayloadAction<string>) => {
       state.teachingSearchText = action.payload;
@@ -42,6 +46,9 @@ export const SearchSlice = createSlice({
     setRequestSearch: (state, action: PayloadAction<string>) => {
       state.requestSearchText = action.payload;
     },
+    setAcademicYearSearch: (state, action: PayloadAction<string>) => {
+      state.academicYearSearchText = action.payload;
+    },
   },
 });
 
@@ -51,6 +58,7 @@ export const {
   setUserSearch,
   setLabSearch,
   setRequestSearch,
+  setAcademicYearSearch,
   resetState,
 } = SearchSlice.actions;
 

@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as GoogleIcon } from "../assets/images/google.svg";
-import LeftBackground from "../assets/images/login-background-left.svg";
-import RightBackground from "../assets/images/login-background-right.svg";
 import {
   FormControl,
   InputLabel,
   Select,
   MenuItem,
 } from "@material-ui/core";
+import { Theme, makeStyles } from "@material-ui/core/styles";
 import { styled as materialStyled } from "@material-ui/styles";
 import { useTransition, animated } from "@react-spring/web";
 import { SpringValue } from "@react-spring/core";
@@ -28,8 +27,48 @@ import {
   setSnackBarContent,
 } from "../reducers/notificationSlice";
 import { ROLES } from "../types/model";
+import backgroundVideo from "../assets/video/Computer-Lab.mp4";
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    width: 300,
+    "& .MuiOutlinedInput-input": {
+      color: "white",
+    },
+    "& .MuiInputLabel-root": {
+      color: "white",
+    },
+    "& .MuiSvgIcon-root": {
+      color: "white",
+    },
+    "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+      borderColor: "white",
+    },
+    "&:hover .MuiOutlinedInput-input": {
+      color: "white",
+    },
+    "&:hover .MuiInputLabel-root": {
+      color: "white",
+    },
+    "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+      {
+        borderColor: "white",
+      },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-input": {
+      color: "white",
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "white",
+    },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+      {
+        borderColor: "white",
+      },
+  },
+}));
 
 const Login = () => {
+  const classes = useStyles();
   const [role, setRole] = useState(ROLES.LECTURER);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -62,7 +101,7 @@ const Login = () => {
 
       dispatch(setShowSuccessSnackBar(true));
       dispatch(setSnackBarContent("Welcome back!"));
-      history.replace("academic-year");
+      history.replace("/academic-years");
     } catch (err) {
       setLoading(false);
       dispatch(setShowErrorSnackBar(true));
@@ -105,7 +144,7 @@ const Login = () => {
   > = [
     ({ style }) => (
       <animated.div style={{ ...style }}>
-        <StyledFormControl variant="outlined">
+        <FormControl className={classes.root} variant="outlined">
           <InputLabel id="role-label">Select role</InputLabel>
           <Select
             labelId="role-label"
@@ -116,7 +155,7 @@ const Login = () => {
             <MenuItem value={ROLES.ADMIN}>Admin</MenuItem>
             <MenuItem value={ROLES.LECTURER}>Lecturer</MenuItem>
           </Select>
-        </StyledFormControl>
+        </FormControl>
       </animated.div>
     ),
     ({ style }) => (
@@ -138,10 +177,11 @@ const Login = () => {
   ];
 
   return (
-    <StyledLogin
-      leftBackground={LeftBackground}
-      rightBackground={RightBackground}
-    >
+    <StyledLogin>
+      <Overlay />
+      <StyledVideo autoPlay muted loop>
+        <source src={backgroundVideo} type="video/mp4" />
+      </StyledVideo>
       <HeaderContainer>
         <Header>Lab management</Header>
       </HeaderContainer>
@@ -158,40 +198,39 @@ const Login = () => {
   );
 };
 
-interface StyledLogonProps {
-  leftBackground: string;
-  rightBackground: string;
-}
-
-const StyledLogin = styled.div<StyledLogonProps>`
-  display: flex;
-  flex-direction: column;
+const StyledLogin = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: rgb(250, 251, 252);
-  background-image: ${({ leftBackground, rightBackground }) =>
-    `url(${leftBackground}), url(${rightBackground})`};
+`;
 
-  background-repeat: no-repeat, no-repeat;
-  background-attachment: fixed, fixed;
-  background-size: 450px, 450px;
-  background-position: left bottom, right bottom;
+const Overlay = styled.div`
+  background: black;
+  opacity: 0.7;
+  position: absolute;
+  z-index: 1;
+  text-align: center;
+  margin: 0%;
+  min-width: 100%;
+  min-height: 100%;
+`;
 
-  @media (max-width: 1000px) {
-    background-size: 300px, 300px;
-  }
-  @media (max-width: 600px) {
-    background-size: 200px, 200px;
-  }
+const StyledVideo = styled.video`
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
 `;
 
 const HeaderContainer = styled.div`
+  position: fixed;
+  top: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 70%;
-  margin: 1rem auto;
-  margin-top: 6rem;
+  width: 100%;
+  margin: auto;
+  z-index: 2;
 `;
 
 const Header = styled.h1`
@@ -202,10 +241,14 @@ const Header = styled.h1`
     "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
   text-align: center;
-  color: ${({ theme }) => theme.blue};
+  color: white;
 `;
 
 const Action = styled.div`
+  z-index: 2;
+  position: fixed;
+  top: 300px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -236,16 +279,9 @@ const NavigateButton = styled.button`
   margin-top: 76px;
   min-width: 150px;
 
-  &:hover {
-    background-color: rgba(9, 30, 66, 0.02);
-  }
-
   &:active {
     background-color: rgba(9, 30, 66, 0.02);
     transform: scale(0.98);
-    &:hover {
-      background-color: rgba(9, 30, 66, 0.02);
-    }
   }
 `;
 
@@ -266,10 +302,5 @@ const Icon = styled.span`
     height: 20px;
   }
 `;
-
-const StyledFormControl = materialStyled(FormControl)({
-  marginBottom: "1rem",
-  width: "300px",
-});
 
 export default Login;

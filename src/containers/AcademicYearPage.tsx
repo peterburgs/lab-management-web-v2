@@ -10,15 +10,17 @@ import {
   Select,
   Skeleton,
   MenuItem,
-  Tooltip,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import { useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import CloseSemesterModal from "../components/academic-year-page/CloseSemesterModal";
 import EditSemesterModal from "../components/academic-year-page/EditSemesterModal";
-import SemesterModal from "../components/academic-year-page/SemesterModal";
-import { AcademicYear, ROLES } from "../types/model";
+import {
+  AcademicYear,
+  ROLES,
+  SEMESTER_STATUSES,
+} from "../types/model";
 import AddIcon from "@material-ui/icons/Add";
 import moment from "moment";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
@@ -27,20 +29,27 @@ import StartSemesterModal from "../components/academic-year-page/StartSemesterMo
 import EditAcademicYearModal from "../components/academic-year-page/EditAcademicYearModal";
 import { useHistory } from "react-router";
 import PrivateRoute from "../containers/PrivateRoute";
+import CloseAcademicYearModal from "../components/academic-year-page/CloseAcademicYearModal";
+import _ from "lodash";
+import "simplebar/dist/simplebar.min.css";
+import SimpleBar from "simplebar-react";
+import {
+  setShowErrorSnackBar,
+  setSnackBarContent,
+} from "../reducers/notificationSlice";
 
 const AcademicYearPage = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showEditSemesterModal, setShowEditSemesterModal] =
-    useState(false);
-  const [showCloseSemesterModal, setShowCloseSemesterModal] =
-    useState(false);
   const [showStartAcademicYearModal, setShowStartAcademicYearModal] =
     useState(false);
   const [showStartSemesterModal, setShowStartSemesterModal] =
     useState(false);
   const [academicYearType, setAcademicYearType] = useState(0);
+  const [currentExpanding, setCurrentExpanding] =
+    useState<string>("");
 
   const history = useHistory();
+  const dispatch = useAppDispatch();
 
   const [filteredAcademicYears, setFilteredAcademicYears] = useState<
     AcademicYear[]
@@ -60,32 +69,47 @@ const AcademicYearPage = () => {
     (state) => state.academicYears.status
   );
 
+  const academicYearSearchText = useAppSelector(
+    (state) => state.search.academicYearSearchText
+  );
+
   const renderSemesterModal = () => {
     if (semesterStatus === "succeeded") {
       return (
         <>
-          <CloseSemesterModal
-            name={"Do you want you close this semester"}
-            showModal={showCloseSemesterModal}
-            setShowModal={setShowCloseSemesterModal}
-            setShowSemesterModal={() => history.goBack()}
-          />
-          <EditSemesterModal
-            name={"Edit Semester"}
-            showModal={showEditSemesterModal}
-            setShowModal={setShowEditSemesterModal}
+          <PrivateRoute
+            roles={[ROLES.ADMIN]}
+            path="/academic-years/semesters/:id/close"
+            exact={true}
+            component={
+              <CloseSemesterModal
+                name={"Do you want you close this semester"}
+                showModal={true}
+                setShowModal={() => history.goBack()}
+              />
+            }
           />
           <PrivateRoute
             roles={[ROLES.ADMIN]}
             path="/academic-years/semesters/:id"
-            exact={false}
+            exact={true}
             component={
-              <SemesterModal
-                name="Semester"
+              <EditSemesterModal
+                name={"Edit Semester"}
                 showModal={true}
                 setShowModal={() => history.goBack()}
-                setShowEditSemesterModal={setShowEditSemesterModal}
-                setShowCloseSemesterModal={setShowCloseSemesterModal}
+              />
+            }
+          />
+          <PrivateRoute
+            roles={[ROLES.ADMIN]}
+            path="/academic-years/semesters/:id/start"
+            exact={true}
+            component={
+              <StartSemesterModal
+                name="Are you sure to start this semester?"
+                showModal={true}
+                setShowModal={() => history.goBack()}
               />
             }
           />
@@ -99,14 +123,43 @@ const AcademicYearPage = () => {
   useEffect(() => {
     setFilteredAcademicYears(
       (academicYears as AcademicYear[]).filter((academicYear) => {
-        if (academicYearType === 0) return true;
+        let condition = true;
+        if (academicYearType === 0) condition = condition && true;
         if (academicYearType === 1)
-          return academicYear.isOpening === true;
+          condition = condition && academicYear.isOpening === true;
         if (academicYearType === 2)
-          return academicYear.isOpening === false;
+          condition = condition && academicYear.isOpening === false;
+        if (academicYearSearchText) {
+          condition =
+            condition &&
+            academicYear.name
+              .toLowerCase()
+              .includes(academicYearSearchText);
+        }
+        return condition;
       })
     );
-  }, [academicYearType, academicYears]);
+  }, [academicYearType, academicYears, academicYearSearchText]);
+
+  useEffect(() => {
+    if (academicYears.length > 0) {
+      const clonedAcademicYears = _.cloneDeep(academicYears);
+      setFilteredAcademicYears(
+        clonedAcademicYears.sort((a, b) =>
+          moment(b.startDate).diff(moment(a.startDate))
+        )
+      );
+    }
+  }, [academicYears]);
+
+  const handleExpanding = (id: string) => {
+    if (currentExpanding === id) {
+      setIsExpanded((current) => !current);
+    } else {
+      setCurrentExpanding(id);
+      setIsExpanded(true);
+    }
+  };
 
   const conditionalRenderer = () => {
     if (academicYearStatus === "pending") {
@@ -145,6 +198,11 @@ const AcademicYearPage = () => {
                       >
                         <EditIcon />
                       </IconButton>
+                      {academicYear.isOpening ? (
+                        <OpenBadge>OPENING</OpenBadge>
+                      ) : (
+                        <ClosedBadge>CLOSED</ClosedBadge>
+                      )}
                     </Header>
 
                     <Text>
@@ -153,6 +211,14 @@ const AcademicYearPage = () => {
                         "MM-DD-YYYY h:mm:ss a"
                       )}
                     </Text>
+                    {academicYear.isOpening === false && (
+                      <Text>
+                        End date:{" "}
+                        {moment(academicYear.endDate).format(
+                          "MM-DD-YYYY h:mm:ss a"
+                        )}
+                      </Text>
+                    )}
                     <Text>
                       Number of weeks: {academicYear.numberOfWeeks}
                     </Text>
@@ -166,81 +232,158 @@ const AcademicYearPage = () => {
                           ).length
                         : 0}
                     </Text>
-                    {academicYear.isOpening && (
+                    {/* {academicYear.isOpening && (
                       <StyledButton
-                        disabled={
-                          semesters.filter(
-                            (semester) =>
-                              semester.academicYear ===
-                                academicYear._id &&
-                              semester.isOpening === true
-                          ).length > 0
-                        }
-                        onClick={() =>
-                          setShowStartSemesterModal(true)
-                        }
-                        icon={<AddIcon />}
-                      >
-                        <Tooltip
-                          title={
+                        onClick={() => {
+                          if (
                             semesters.filter(
                               (semester) =>
                                 semester.academicYear ===
                                   academicYear._id &&
                                 semester.isOpening === true
                             ).length > 0
-                              ? "There is an opening semester. Close all to create new one."
-                              : "Create new semester"
+                          ) {
+                            dispatch(setShowErrorSnackBar(true));
+                            dispatch(
+                              setSnackBarContent(
+                                "All semesters must be closed before opening new one "
+                              )
+                            );
+                          } else {
+                            setShowStartSemesterModal(true);
                           }
-                        >
-                          <span>Start new semester</span>
-                        </Tooltip>
+                        }}
+                        icon={<AddIcon />}
+                      >
+                        <span>Start new semester</span>
                       </StyledButton>
-                    )}
+                    )} */}
                   </InfoContainer>
                   <ActionContainer>
-                    {academicYear.isOpening ? (
-                      <ActionButton>Close academic year</ActionButton>
-                    ) : (
-                      <ClosedBadge>CLOSED</ClosedBadge>
+                    {academicYear.isOpening && (
+                      <AcademicYearCloseButton
+                        onClick={() =>
+                          history.push(
+                            `/academic-years/${academicYear._id}/close`
+                          )
+                        }
+                      >
+                        Close academic year
+                      </AcademicYearCloseButton>
                     )}
                   </ActionContainer>
                 </MainContent>
                 <CollapseButtonContainer>
                   <IconButton
-                    onClick={() =>
-                      setIsExpanded((current) => !current)
-                    }
+                    onClick={() => handleExpanding(academicYear._id)}
                     style={{ background: "#e7f3ff" }}
                     color="primary"
                     component="span"
                   >
-                    {isExpanded ? (
-                      <ExpandLessIcon fontSize="large" />
+                    {currentExpanding === academicYear._id ? (
+                      isExpanded ? (
+                        <ExpandLessIcon fontSize="large" />
+                      ) : (
+                        <ExpandMoreIcon fontSize="large" />
+                      )
                     ) : (
                       <ExpandMoreIcon fontSize="large" />
                     )}
                   </IconButton>
                 </CollapseButtonContainer>
               </AcademicYearCard>
-              <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                <SemesterCard>
-                  <InfoContainer>
-                    <Header>
-                      <span>Semester 1</span>
-                      <IconButton color="primary" component="span">
-                        <EditIcon />
-                      </IconButton>
-                    </Header>
-                    <Text>
-                      Start date: {new Date().toDateString()}
-                    </Text>
-                    <Text>Number of weeks: 15</Text>
-                  </InfoContainer>
-                  <ActionContainer>
-                    <ActionButton>Close semester</ActionButton>
-                  </ActionContainer>
-                </SemesterCard>
+              <Collapse
+                in={
+                  currentExpanding === academicYear._id
+                    ? isExpanded
+                    : false
+                }
+                timeout="auto"
+                unmountOnExit
+              >
+                {semesters.filter(
+                  (item) => item.academicYear === academicYear._id
+                ).length > 0 ? (
+                  semesters
+                    .filter(
+                      (item) => item.academicYear === academicYear._id
+                    )
+                    .map((item) => (
+                      <SemesterCard key={item._id}>
+                        <InfoContainer>
+                          <Header>
+                            <span>{item.semesterName}</span>
+                            <IconButton
+                              onClick={() =>
+                                history.push(
+                                  `/academic-years/semesters/${item._id}`
+                                )
+                              }
+                              color="primary"
+                              component="span"
+                            >
+                              <EditIcon />
+                            </IconButton>
+                            {item.status ===
+                            SEMESTER_STATUSES.OPENING ? (
+                              <OpenBadge>OPENING</OpenBadge>
+                            ) : item.status ===
+                              SEMESTER_STATUSES.FUTURE ? (
+                              <FutureBadge>FUTURE</FutureBadge>
+                            ) : (
+                              <ClosedBadge>CLOSED</ClosedBadge>
+                            )}
+                          </Header>
+
+                          <Text>
+                            Start date:{" "}
+                            {item.startDate
+                              ? moment(item.startDate).format(
+                                  "MM-DD-YYYY h:mm:ss a"
+                                )
+                              : "Not started yet"}
+                          </Text>
+                          <Text>
+                            Number of weeks: {item.numberOfWeeks}
+                          </Text>
+                        </InfoContainer>
+                        {item.status === SEMESTER_STATUSES.OPENING ? (
+                          <ActionContainer>
+                            <SemesterActionButton
+                              semesterStatus={item.status}
+                              onClick={() =>
+                                history.push(
+                                  `/academic-years/semesters/${item._id}/close`
+                                )
+                              }
+                            >
+                              Close semester
+                            </SemesterActionButton>
+                          </ActionContainer>
+                        ) : item.status ===
+                          SEMESTER_STATUSES.FUTURE ? (
+                          <ActionContainer>
+                            <SemesterActionButton
+                              semesterStatus={item.status}
+                              onClick={() =>
+                                history.push(
+                                  `/academic-years/semesters/${item._id}/start`
+                                )
+                              }
+                            >
+                              Start semester
+                            </SemesterActionButton>
+                          </ActionContainer>
+                        ) : null}
+                      </SemesterCard>
+                    ))
+                ) : (
+                  <Text
+                    style={{ textAlign: "center", marginTop: "1rem" }}
+                  >
+                    There is no semester yet
+                  </Text>
+                )}
               </Collapse>
             </AcademicYearContainer>
           ))}
@@ -261,7 +404,7 @@ const AcademicYearPage = () => {
       <PrivateRoute
         roles={[ROLES.ADMIN]}
         path="/academic-years/:id"
-        exact={false}
+        exact={true}
         component={
           <EditAcademicYearModal
             showModal={true}
@@ -270,16 +413,24 @@ const AcademicYearPage = () => {
           />
         }
       />
+      <PrivateRoute
+        roles={[ROLES.ADMIN]}
+        path="/academic-years/:id/close"
+        exact={true}
+        component={
+          <CloseAcademicYearModal
+            showModal={true}
+            setShowModal={() => history.goBack()}
+            name="Do you want to close this academic year?"
+          />
+        }
+      />
       <StartAcademicYearModal
         setShowModal={setShowStartAcademicYearModal}
         showModal={showStartAcademicYearModal}
         name="Start academic year"
       />
-      <StartSemesterModal
-        name="Start semester"
-        showModal={showStartSemesterModal}
-        setShowModal={setShowStartSemesterModal}
-      />
+
       {renderSemesterModal()}
       <StyledAcademicYear>
         <Toolbar>
@@ -299,27 +450,35 @@ const AcademicYearPage = () => {
 
           <Button
             icon={<AddIcon />}
-            disabled={
-              (academicYears as AcademicYear[]).filter(
-                (item) => item.isOpening === true
-              ).length > 0
-            }
-            onClick={() => setShowStartAcademicYearModal(true)}
-          >
-            <Tooltip
-              title={
+            onClick={() => {
+              if (
                 (academicYears as AcademicYear[]).filter(
                   (item) => item.isOpening === true
                 ).length > 0
-                  ? "There is an opening academic year. Close all to create a new one."
-                  : "Create new academic year"
+              ) {
+                console.log("hello");
+                dispatch(
+                  setSnackBarContent(
+                    "All academic years must be closed before opening new one"
+                  )
+                );
+                dispatch(setShowErrorSnackBar(true));
+              } else {
+                setShowStartAcademicYearModal(true);
               }
-            >
-              <span>Start new academic year</span>
-            </Tooltip>
+            }}
+          >
+            <span>Start new academic year</span>
           </Button>
         </Toolbar>
-        {conditionalRenderer()}
+        <SimpleBar
+          style={{
+            maxHeight: "calc(100% - 110px)",
+            maxWidth: "100%",
+          }}
+        >
+          {conditionalRenderer()}
+        </SimpleBar>
       </StyledAcademicYear>
     </>
   );
@@ -329,7 +488,6 @@ const StyledAcademicYear = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-  margin-top: 1rem;
 `;
 
 const Toolbar = styled.div`
@@ -345,7 +503,7 @@ interface AcademicYearContainerProps {
 
 const AcademicYearContainer = styled.div<AcademicYearContainerProps>`
   border: 2px solid
-    ${({ theme, isOpening }) => (isOpening ? theme.green : "black")};
+    ${({ theme, isOpening }) => (isOpening ? theme.green : theme.red)};
   padding: 0.5rem;
   border-radius: 10px;
   margin-bottom: 1rem;
@@ -370,7 +528,7 @@ const CollapseButtonContainer = styled.div`
 `;
 
 const SemesterCard = styled.div`
-  border-radius: 7px;
+  border-radius: 10px;
   display: flex;
   margin-bottom: 1rem;
   margin-top: 1rem;
@@ -404,7 +562,7 @@ const ActionContainer = styled.div`
   align-items: center;
 `;
 
-const ActionButton = styled(Button)`
+const AcademicYearCloseButton = styled(Button)`
   background-color: ${({ theme }) => theme.lightRed};
   box-shadow: none;
   color: ${({ theme }) => theme.red};
@@ -413,14 +571,16 @@ const ActionButton = styled(Button)`
   padding: 0 0.7rem;
   border: 1px solid ${({ theme }) => theme.red};
   &:active {
-    background-color: ${({ theme }) => theme.lightRed};
+    background-color: ${({ theme }) => theme.red};
     &:hover {
-      background-color: ${({ theme }) => theme.lightRed};
+      background-color: ${({ theme }) => theme.red};
+      color: white;
     }
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.lightRed};
+    background-color: ${({ theme }) => theme.red};
+    color: white;
   }
 `;
 
@@ -431,12 +591,78 @@ const SkeletonContainer = styled.div`
   grid-row-gap: 1rem;
 `;
 
+interface SemesterActionButtonProps {
+  semesterStatus: SEMESTER_STATUSES;
+}
+
+const SemesterActionButton = styled(
+  Button
+)<SemesterActionButtonProps>`
+  background-color: ${({ theme, semesterStatus }) =>
+    semesterStatus === SEMESTER_STATUSES.OPENING
+      ? theme.lightRed
+      : theme.lightGreen};
+  box-shadow: none;
+  color: ${({ theme, semesterStatus }) =>
+    semesterStatus === SEMESTER_STATUSES.OPENING
+      ? theme.red
+      : theme.green};
+  font-weight: 500;
+  font-size: 15px;
+  padding: 0 0.7rem;
+  border: 1px solid
+    ${({ theme, semesterStatus }) =>
+      semesterStatus === SEMESTER_STATUSES.OPENING
+        ? theme.red
+        : theme.green};
+  &:active {
+    background-color: ${({ theme, semesterStatus }) =>
+      semesterStatus === SEMESTER_STATUSES.OPENING
+        ? theme.red
+        : theme.green};
+    &:hover {
+      background-color: ${({ theme, semesterStatus }) =>
+        semesterStatus === SEMESTER_STATUSES.OPENING
+          ? theme.red
+          : theme.green};
+      color: white;
+    }
+  }
+
+  &:hover {
+    background-color: ${({ theme, semesterStatus }) =>
+      semesterStatus === SEMESTER_STATUSES.OPENING
+        ? theme.red
+        : theme.green};
+    color: white;
+  }
+`;
+
 const ClosedBadge = styled.div`
+  background-color: ${({ theme }) => theme.lightRed};
+  color: ${({ theme }) => theme.red};
+  font-size: 12px;
+  padding: 0.3rem;
+  font-weight: 600;
+  border-radius: 10px;
+`;
+
+const OpenBadge = styled.div`
+  background-color: ${({ theme }) => theme.lightGreen};
+  color: ${({ theme }) => theme.darkGreen};
+  font-size: 12px;
+  padding: 0.3rem;
+  font-weight: 600;
+  border-radius: 10px;
+`;
+
+const FutureBadge = styled.div`
   background-color: #eae6ff;
   color: #403294;
   font-size: 12px;
   padding: 0.3rem;
   font-weight: 600;
+  border-radius: 10px;
 `;
 
 const NotFoundContainer = styled.div`

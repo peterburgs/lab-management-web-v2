@@ -11,9 +11,15 @@ import EditCourseModal from "../components/course-page/EditCourseModal";
 import PrivateRoute from "./PrivateRoute";
 import DeleteCourseModal from "../components/course-page/DeleteCourseModal";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import ImportExportIcon from "@material-ui/icons/ImportExport";
+import ImportCoursePanel from "../components/course-page/ImportCoursePanel";
+import ImportCourseModal from "../components/course-page/ImportCourseModal";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
 
 // import models
-import { Course, ROLES } from "../types/model";
+import { Course, COURSE_TYPES, ROLES } from "../types/model";
 
 // import reducers
 
@@ -28,6 +34,7 @@ type CourseTable = {
   id: string;
   name: string;
   numberOfCredits: number;
+  type: string;
   createdAt: string;
 };
 
@@ -45,7 +52,11 @@ const prepareData = (
         id: course._id,
         name: course.courseName,
         numberOfCredits: course.numberOfCredits,
-        createdAt: new Date(course.createdAt).toDateString(),
+        type:
+          course.type === COURSE_TYPES.PRACTICAL
+            ? "Practical"
+            : "Theory",
+        createdAt: new Date(course.createdAt!).toDateString(),
       };
     });
   } else {
@@ -58,12 +69,15 @@ const prepareData = (
 const CoursePage = () => {
   // State
   const [showNewCourseModal, setShowNewCourseModal] = useState(false);
-  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(
-    false
-  );
+  const [showDeleteCourseModal, setShowDeleteCourseModal] =
+    useState(false);
   const [courseIdToDelete, setCourseIdToDelete] = useState<string>(
     null!
   );
+  const [showImportCoursePanel, setShowImportCoursePanel] =
+    useState(false);
+  const [showImportCourseModal, setShowImportCourseModal] =
+    useState(false);
 
   // * Call API
   const [courses, courseStatus] = useGetAllCourses();
@@ -77,6 +91,36 @@ const CoursePage = () => {
   const dispatch = useAppDispatch();
 
   // event handling
+  // handle export template
+
+  const exportCSV = () => {
+    const template = (courses as Course[]).map((course, i) => {
+      return {
+        STT: String(i + 1),
+        "Mã môn": course._id,
+        "Tên môn": course.courseName,
+        "Loại môn":
+          course.type === COURSE_TYPES.THEORY
+            ? "Lý thuyết"
+            : "Thực hành",
+        STC: course.numberOfCredits,
+      };
+    });
+
+    console.log(template);
+
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const ws = XLSX.utils.json_to_sheet(template);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, "course_form_template" + fileExtension);
+  };
 
   const handleRefreshData = () => {
     dispatch(resetCourseState());
@@ -99,6 +143,10 @@ const CoursePage = () => {
       {
         Header: "Number of credits",
         accessor: "numberOfCredits" as const,
+      },
+      {
+        Header: "Type",
+        accessor: "type" as const,
       },
       {
         Header: "Created At",
@@ -169,6 +217,11 @@ const CoursePage = () => {
           />
         }
       />
+      <ImportCourseModal
+        name="Import course"
+        showModal={showImportCourseModal}
+        setShowModal={setShowImportCourseModal}
+      />
       <NewCourseModal
         name="New course"
         showModal={showNewCourseModal}
@@ -192,12 +245,34 @@ const CoursePage = () => {
               </IconButtonContainer>
             </Tooltip>
             {role === ROLES.ADMIN && (
-              <Button
-                icon={<AddIcon />}
-                onClick={() => setShowNewCourseModal(true)}
-              >
-                New course
-              </Button>
+              <>
+                <Button
+                  onClick={() =>
+                    setShowImportCoursePanel((current) => !current)
+                  }
+                  icon={<ImportExportIcon />}
+                >
+                  Import courses
+                </Button>
+                <Button onClick={exportCSV} icon={<GetAppIcon />}>
+                  Export courses
+                </Button>
+                {showImportCoursePanel && (
+                  <ImportPanelContainer>
+                    <ImportCoursePanel
+                      setShowImportCourseModal={
+                        setShowImportCourseModal
+                      }
+                    />
+                  </ImportPanelContainer>
+                )}
+                <Button
+                  icon={<AddIcon />}
+                  onClick={() => setShowNewCourseModal(true)}
+                >
+                  New course
+                </Button>
+              </>
             )}
           </Action>
         </Toolbar>
@@ -243,7 +318,7 @@ const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
   grid-template-columns: ${({ isAdmin }) =>
-    isAdmin ? "1fr 1fr" : "1fr"};
+    isAdmin ? "1fr 1fr 1fr 1fr" : "1fr"};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {
@@ -270,6 +345,18 @@ const IconButtonContainer = styled.div`
   width: 40px;
   box-sizing: border-box;
   justify-self: end;
+`;
+
+const ImportPanelContainer = styled.div`
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  transform: translate(-400px, 155px);
+  z-index: 3;
+
+  @media (max-width: 1220px) {
+    transform: translate(-400px, 60px);
+  }
 `;
 
 export default CoursePage;

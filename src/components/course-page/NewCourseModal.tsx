@@ -3,13 +3,19 @@ import styled from "styled-components";
 import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
-import { useForm } from "react-hook-form";
-import { TextField } from "@material-ui/core";
+import { useForm, Controller } from "react-hook-form";
+import {
+  TextField,
+  Select,
+  InputLabel,
+  FormControl,
+  MenuItem,
+} from "@material-ui/core";
 import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
 
 // import models
-import { Course } from "../../types/model";
+import { Course, COURSE_TYPES } from "../../types/model";
 // import reducers
 import { newCourse } from "../../reducers/courseSlice";
 import {
@@ -21,7 +27,8 @@ import {
 import { useAppDispatch } from "../../store";
 
 const NewCourseModal = (props: ModalProps) => {
-  const { register, handleSubmit, errors } = useForm<Course>();
+  const { register, handleSubmit, errors, control } =
+    useForm<Course>();
 
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
@@ -79,7 +86,30 @@ const NewCourseModal = (props: ModalProps) => {
             errors.numberOfCredits && "*This field is required"
           }
         />
-
+        <Controller
+          name="type"
+          control={control}
+          defaultValue={COURSE_TYPES.PRACTICAL}
+          rules={{ required: true }}
+          render={(props) => (
+            <StyledFormControl variant="outlined">
+              <InputLabel id="type-label">Type</InputLabel>
+              <Select
+                labelId="type-label"
+                value={props.value}
+                onChange={(e) => props.onChange(e.target.value)}
+                label="Type"
+              >
+                <MenuItem value={COURSE_TYPES.PRACTICAL}>
+                  Practical
+                </MenuItem>
+                <MenuItem value={COURSE_TYPES.THEORY}>
+                  Theory
+                </MenuItem>
+              </Select>
+            </StyledFormControl>
+          )}
+        />
         <StyledButton
           disabled={status === "pending"}
           loading={status === "pending"}
@@ -117,6 +147,11 @@ const StyledButton = styled(Button)`
 `;
 
 const StyledTextField = materialStyled(TextField)({
+  marginBottom: "1rem",
+  marginTop: "0.5rem",
+});
+
+const StyledFormControl = materialStyled(FormControl)({
   marginBottom: "1rem",
   marginTop: "0.5rem",
 });

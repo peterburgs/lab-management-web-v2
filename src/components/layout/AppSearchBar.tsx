@@ -13,6 +13,7 @@ import {
   setTeachingSearch,
   setUserSearch,
   setRequestSearch,
+  setAcademicYearSearch,
 } from "../../reducers/searchSlice";
 import { useAppDispatch } from "../../store";
 import { useLocation } from "react-router";
@@ -45,8 +46,8 @@ const AppSearchBar = () => {
         case "requests":
           dispatch(setRequestSearch(inputRef.current.value));
           break;
-        case "schedule":
-          console.log("Test");
+        case "academic-years":
+          dispatch(setAcademicYearSearch(inputRef.current.value));
           break;
       }
     }
@@ -60,13 +61,10 @@ const AppSearchBar = () => {
     }
     switch (location.pathname.split("/")[1]) {
       case "registration":
-        setPlaceholder("Enter course name or id to search");
+        setPlaceholder("Find course by name or ID");
         break;
       case "courses":
-        setPlaceholder("Enter course name or id to search");
-        break;
-      case "schedule":
-        setPlaceholder("Enter lab name to search");
+        setPlaceholder("Find course by name or ID");
         break;
       case "users":
         setPlaceholder("Enter email or user ID to search");
@@ -76,6 +74,9 @@ const AppSearchBar = () => {
         break;
       case "requests":
         setPlaceholder("Enter request title to search");
+        break;
+      case "academic-years":
+        setPlaceholder("Find an academic year");
         break;
     }
   }, [location, inputRef, dispatch]);

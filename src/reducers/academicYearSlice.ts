@@ -137,20 +137,13 @@ export const academicYearSlice = createSlice({
       state.message = action.payload.message;
     });
     builder.addCase(editAcademicYear.fulfilled, (state, action) => {
-      if (action.payload.academicYear?.isOpening === false) {
-        state.academicYears = [];
-        state.count = 0;
-        state.message = "";
-        state.status = "idle";
-      } else {
-        const currentIndex = state.academicYears.findIndex(
-          (item) => item._id === action.payload.academicYear!._id
-        );
-        state.academicYears[currentIndex] = _.cloneDeep(
-          action.payload.academicYear!
-        );
-        state.message = action.payload.message;
-      }
+      const currentIndex = state.academicYears.findIndex(
+        (item) => item._id === action.payload.academicYear!._id
+      );
+      state.academicYears[currentIndex] = _.cloneDeep(
+        action.payload.academicYear!
+      );
+      state.message = action.payload.message;
     });
   },
 });

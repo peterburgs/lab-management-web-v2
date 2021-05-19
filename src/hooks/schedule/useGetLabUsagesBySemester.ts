@@ -19,7 +19,9 @@ const useGetLabUsagesBySemester = (
   );
 
   useEffect(() => {
+    console.log(semester);
     if (labUsageStatus === "idle" && semester) {
+      console.log("hello");
       (async () => {
         try {
           const actionResult = await dispatch(

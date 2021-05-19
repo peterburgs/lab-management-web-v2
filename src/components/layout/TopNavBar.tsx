@@ -5,7 +5,11 @@ import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
 import { Box } from "@material-ui/core";
-import { Semester, Registration } from "../../types/model";
+import {
+  Semester,
+  Registration,
+  SEMESTER_STATUSES,
+} from "../../types/model";
 import Countdown from "react-countdown";
 import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
@@ -43,9 +47,11 @@ const TopNavBar = ({
   // * Call hooks
 
   const openSemester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item.isOpening === true)
+    state.semesters.semesters.find(
+      (item) => item.status === SEMESTER_STATUSES.OPENING
+    )
   );
-  
+
   const [registrations, registrationStatus] =
     useGetRegistrationBySemester(openSemester?._id);
   const location = useLocation();
@@ -107,12 +113,14 @@ const TopNavBar = ({
       {renderCountdown()}
       <StyledTopNavBar>
         <SearchBarContainer onClick={handleClosePanel}>
-          {location.pathname !== "/registration" ? (
-            <AppSearchBar />
-          ) : (
-            registrations.length > 0 &&
-            openSemester && <AppSearchBar />
-          )}
+          {location.pathname !== "/schedule" ? (
+            location.pathname !== "/registration" ? (
+              <AppSearchBar />
+            ) : (
+              registrations.length > 0 &&
+              openSemester && <AppSearchBar />
+            )
+          ) : null}
         </SearchBarContainer>
 
         <UserSectionContainer>

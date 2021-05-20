@@ -109,7 +109,7 @@ const RequestDetailPage = () => {
             if (semester) {
               const labUsage = {
                 lab: request.lab,
-                teaching: teaching._id,
+                teaching: teaching._id!,
                 weekNo: request.weekNo,
                 dayOfWeek: request.dayOfWeek,
                 startPeriod: request.startPeriod,

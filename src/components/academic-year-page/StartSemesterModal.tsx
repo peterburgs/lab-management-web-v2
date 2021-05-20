@@ -48,6 +48,27 @@ const StartSemesterModal = (props: ModalProps) => {
         .filter((item) => item.academicYear === academicYear?._id)
         .find((item) => item.status === SEMESTER_STATUSES.OPENING);
       if (!openSemester) {
+        if (semester.index > 1) {
+          const previousSemester = semesters.find(
+            (item) =>
+              item.academicYear === academicYear?._id &&
+              item.index === semester.index - 1
+          );
+          if (previousSemester) {
+            if (
+              previousSemester.status !== SEMESTER_STATUSES.CLOSED
+            ) {
+              dispatch(setShowErrorSnackBar(true));
+              dispatch(
+                setSnackBarContent(
+                  `Semester ${semester.index - 1} must be closed`
+                )
+              );
+              return;
+            }
+          }
+        }
+
         try {
           const clonedSemester = _.cloneDeep(semester);
           clonedSemester.status = SEMESTER_STATUSES.OPENING;

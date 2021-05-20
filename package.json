@@ -52,11 +52,13 @@
     "react-scripts": "4.0.3",
     "react-spinners": "^0.10.6",
     "react-table": "^7.6.3",
+    "react-to-print": "^2.12.4",
     "simplebar-react": "^2.3.0",
     "styled-components": "^5.2.1",
     "typescript": "~3.8.2",
     "uuid": "^8.3.2",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "xlsx-style": "^0.8.13"
   },
   "scripts": {
     "start": "react-scripts start",

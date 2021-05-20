@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
@@ -7,9 +7,10 @@ import { useForm } from "react-hook-form";
 import { TextField } from "@material-ui/core";
 import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
+import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
 
 // import models
-import { Lab } from "../../types/model";
+import { Lab, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
 import { newLab } from "../../reducers/labSlice";
 import {
@@ -18,19 +19,33 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 // import hooks
-import { useAppDispatch } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 
 const NewLabModal = (props: ModalProps) => {
   const { register, handleSubmit, errors } = useForm<Lab>();
 
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
+  );
 
   // handle new course submit
   const onSubmit = async (data: Lab) => {
-    try {
-      data.isHidden = false;
+    let isAvailableForCurrentUsing = true;
 
+    const openSemester = semesters.find(
+      (item) => item.status === SEMESTER_STATUSES.OPENING
+    );
+
+    if (openSemester) {
+      isAvailableForCurrentUsing = false;
+    }
+
+    data.isHidden = false;
+    data.isAvailableForCurrentUsing = isAvailableForCurrentUsing;
+
+    try {
       setStatus("pending");
       const actionResult = await dispatch(newLab(data));
       unwrapResult(actionResult);
@@ -53,6 +68,32 @@ const NewLabModal = (props: ModalProps) => {
 
   return (
     <Modal {...props}>
+      {semesters.filter(
+        (item) => item.status === SEMESTER_STATUSES.OPENING
+      ).length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <WarningImage height={150} />
+          <div
+            style={{
+              color: "red",
+              fontStyle: "italic",
+              marginBottom: "1rem",
+              fontSize: 12,
+              textAlign: "center",
+            }}
+          >
+            * There is an opening semester. The new labs will not be
+            used for generating schedule but still be able for extra
+            classes.
+          </div>
+        </div>
+      )}
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledTextField
           label="Lab name"

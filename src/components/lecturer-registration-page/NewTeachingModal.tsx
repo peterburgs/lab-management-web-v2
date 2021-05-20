@@ -16,7 +16,11 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import Button from "../common/Button";
 
 // import models
-import { Teaching, RegistrableCourse } from "../../types/model";
+import {
+  Teaching,
+  RegistrableCourse,
+  SEMESTER_STATUSES,
+} from "../../types/model";
 // import reducers
 import { newTeaching } from "../../reducers/teachingSlice";
 import {
@@ -46,6 +50,12 @@ const NewTeachingModal = (props: ModalProps) => {
     (state) => state.auth.verifiedUser
   );
 
+  const openSemester = useAppSelector((state) =>
+    state.semesters.semesters.find(
+      (item) => item.status === SEMESTER_STATUSES.OPENING
+    )
+  );
+
   // Fetch registrable courses
   const [registrableCourses, registrableCourseStatus] =
     useGetRegistrableCoursesByRegistration(openRegistration?._id);
@@ -60,6 +70,10 @@ const NewTeachingModal = (props: ModalProps) => {
       ) {
         try {
           data.isHidden = false;
+          data.code =
+            data.course +
+            "_" +
+            (data.group < 10 ? `0${Number(data.group)}` : data.group);
           data.registration = openRegistration!._id;
           data.uId = verifiedUser!._id;
 
@@ -133,6 +147,13 @@ const NewTeachingModal = (props: ModalProps) => {
             helperText={errors.course && "*This field is required"}
           />
           <StyledTextField
+            label="Class"
+            inputRef={register({ required: true })}
+            name="class"
+            error={Boolean(errors.class)}
+            helperText={errors.class && "*This field is required"}
+          />
+          <StyledTextField
             label="Group"
             inputRef={register({ required: true })}
             name="group"
@@ -162,6 +183,11 @@ const NewTeachingModal = (props: ModalProps) => {
           <StyledTextField
             label="Number of practical weeks"
             inputRef={register({ required: true })}
+            defaultValue={
+              openSemester
+                ? Math.floor(openSemester.numberOfWeeks / 2 - 2)
+                : 0
+            }
             name="numberOfPracticalWeeks"
             error={Boolean(errors.numberOfPracticalWeeks)}
             type="number"

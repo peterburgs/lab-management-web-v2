@@ -49,7 +49,8 @@ export type Semester = {
 };
 
 export type Teaching = {
-  _id: string;
+  _id?: string;
+  code: string;
   uId: string;
   user: string | User;
   course: string | Course;
@@ -107,11 +108,12 @@ export type User = {
 };
 
 export type Lab = {
-  _id: string;
+  _id?: string;
   labName: string;
   capacity: number;
-  createdAt: Date;
-  updatedAt: Date;
+  isAvailableForCurrentUsing: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
   isHidden: boolean;
 };
 

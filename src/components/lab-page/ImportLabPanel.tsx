@@ -5,27 +5,17 @@ import * as XLSX from "xlsx";
 
 const template = [
   {
-    TT: "1",
-    "Mã LHP": "BDAN333977_01",
-    "Tên HP": "Big Data Analysis",
-    "Số TC": 1,
-    "Loại HP": "Lý thuyết",
-    Lớp: "181330A, 181330B, 181330C",
-    SL: 75,
-    CBGD: 3995,
-    "Tên Cán Bộ Giáng Dạy": "Lê Thị Minh  Châu",
-    Thứ: "Thứ Hai",
-    "Tiết        1234567890123456": "------7890------",
-    Phòng: "A217",
-    "Tuần học 234567890123456": "234567890123456",
+    STT: 1,
+    "Phòng thực hành": "A1-101",
+    "Sức chứa": "3",
   },
 ];
 
-interface ImportPanelProps {
-  setShowImportTeachingModal: (a: boolean) => void;
+interface ImportLabPanelProps {
+  setShowImportLabModal: (a: boolean) => void;
 }
 
-const ImportPanel = (props: ImportPanelProps) => {
+const ImportLabPanel = (props: ImportLabPanelProps) => {
   // handle export template
   const exportCSV = () => {
     const fileType =
@@ -38,12 +28,12 @@ const ImportPanel = (props: ImportPanelProps) => {
       type: "array",
     });
     const data = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data, "teaching_form_template" + fileExtension);
+    FileSaver.saveAs(data, "lab_form_template" + fileExtension);
   };
 
   return (
     <StyledImportPanel>
-      <Button onClick={() => props.setShowImportTeachingModal(true)}>
+      <Button onClick={() => props.setShowImportLabModal(true)}>
         Import
       </Button>
       <Button onClick={exportCSV}>Download excel template</Button>
@@ -90,4 +80,4 @@ const Button = styled.button`
   }
 `;
 
-export default ImportPanel;
+export default ImportLabPanel;

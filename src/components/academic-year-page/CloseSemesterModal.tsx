@@ -28,35 +28,49 @@ const CloseSemesterModal = (props: ModalProps) => {
   const semester = useAppSelector((state) =>
     state.semesters.semesters.find((item) => item._id === id)
   );
+  const openRegistration = useAppSelector((state) =>
+    state.registrations.registrations.find(
+      (item) => item.isOpening === true
+    )
+  );
   const dispatch = useAppDispatch();
   const { handleSubmit } = useForm<Semester>();
 
   // handle close semester submit
   const onSubmit = async () => {
     if (semester) {
-      try {
-        const clonedSemester = _.cloneDeep(semester);
-        clonedSemester.status = SEMESTER_STATUSES.CLOSED;
-        setStatus("pending");
-        const actionResult = await dispatch(
-          editSemester(clonedSemester)
-        );
-        unwrapResult(actionResult);
+      if (!openRegistration) {
+        try {
+          const clonedSemester = _.cloneDeep(semester);
+          clonedSemester.status = SEMESTER_STATUSES.CLOSED;
+          setStatus("pending");
+          const actionResult = await dispatch(
+            editSemester(clonedSemester)
+          );
+          unwrapResult(actionResult);
 
-        dispatch(resetRegistrationState());
-        dispatch(resetTeachingState());
-        dispatch(setSnackBarContent("Close semester successfully"));
-        dispatch(setShowSuccessSnackBar(true));
-        props.setShowModal(false);
-      } catch (error) {
-        console.log("Failed to close semester", error);
-        if (error.response) {
-          dispatch(setSnackBarContent(error.response.data.message));
-        } else {
-          dispatch(setSnackBarContent("Failed to close semester"));
+          dispatch(resetRegistrationState());
+          dispatch(resetTeachingState());
+          dispatch(setSnackBarContent("Close semester successfully"));
+          dispatch(setShowSuccessSnackBar(true));
+          props.setShowModal(false);
+        } catch (error) {
+          console.log("Failed to close semester", error);
+          if (error.response) {
+            dispatch(setSnackBarContent(error.response.data.message));
+          } else {
+            dispatch(setSnackBarContent("Failed to close semester"));
+          }
+          dispatch(setShowErrorSnackBar(true));
+          props.setShowModal(false);
         }
+      } else {
         dispatch(setShowErrorSnackBar(true));
-        props.setShowModal(false);
+        dispatch(
+          setSnackBarContent(
+            "Close all registrations before closing semester"
+          )
+        );
       }
     }
   };

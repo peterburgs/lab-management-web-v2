@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import Button from "../common/Button";
 import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
+import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 
 // import reducers
 import {
@@ -17,17 +19,22 @@ import { generateSchedule } from "../../reducers/scheduleSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
 import useGetAllTeachings from "../../hooks/teaching/useGetAllTeachings";
-import { Teaching, Registration } from "../../types/model";
+import { Teaching, Registration, User } from "../../types/model";
+import useGetAllUsers from "../../hooks/user/useGetAllUsers";
+import { resetState as resetSemesterState } from "../../reducers/semesterSlice";
 
 const GenerateScheduleModal = (props: ModalProps) => {
   const { handleSubmit } = useForm();
 
   const dispatch = useAppDispatch();
 
+  const [enable, setEnable] = useState(false);
+
   const [latestRegistration, setLatestRegistration] =
     useState<Registration>(null!);
 
   const [teachings] = useGetAllTeachings();
+  const [users] = useGetAllUsers();
   const registrations = useAppSelector(
     (state) => state.registrations.registrations
   );
@@ -49,6 +56,8 @@ const GenerateScheduleModal = (props: ModalProps) => {
           );
 
           unwrapResult(actionResult);
+
+          dispatch(resetSemesterState());
 
           dispatch(
             setSnackBarContent("Generate schedule successfully")
@@ -101,20 +110,80 @@ const GenerateScheduleModal = (props: ModalProps) => {
         {latestRegistration && (
           <Label>
             <Header>{`Registration batch ${latestRegistration.batch}`}</Header>
-            <Text>{`The number of teachings: ${
+            <Text>{`Number of teachings: ${
               teachings.filter(
                 (teaching) =>
                   teaching.registration === latestRegistration._id
               ).length
             }`}</Text>
+            <Text>{`Users have submitted: ${
+              (users as User[]).filter((user) => {
+                if (
+                  teachings
+                    .filter(
+                      (teaching) =>
+                        teaching.registration ===
+                        latestRegistration._id
+                    )
+                    .find((item) => item.user === user)
+                ) {
+                  return true;
+                }
+                return false;
+              }).length
+            }/${(users as User[]).length}`}</Text>
           </Label>
         )}
+        <div
+          style={{
+            width: "100%",
+            height: 1,
+            background: "grey",
+            marginTop: "1rem",
+          }}
+        ></div>
+        <WarningImage height={150} />
+        <div
+          style={{
+            color: "red",
+            fontStyle: "italic",
+            marginBottom: "1rem",
+            fontSize: 12,
+            textAlign: "center",
+          }}
+        >
+          * You will not be able to edit lab status after generating
+          schedule
+        </div>
+        <div
+          style={{
+            color: "red",
+            fontStyle: "italic",
+            marginBottom: "1rem",
+            fontSize: 12,
+            textAlign: "center",
+          }}
+        >
+          * The labs that are added after this moment will be used for
+          creating schedule but they might be used for extra classes
+        </div>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={enable}
+              onChange={() => setEnable((current) => !current)}
+              name="checkedB"
+              color="primary"
+            />
+          }
+          label="I am sure to generate schedule."
+        />
         <SubmitButton
-          disabled={status === "pending"}
+          disabled={status === "pending" || !enable}
           loading={status === "pending"}
           type="submit"
         >
-          Generate
+          Confirm
         </SubmitButton>
       </StyledForm>
     </Modal>

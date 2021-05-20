@@ -11,6 +11,10 @@ import DeleteLabModal from "../components/lab-page/DeleteLabModal";
 import PrivateRoute from "./PrivateRoute";
 import AddIcon from "@material-ui/icons/Add";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import GetAppIcon from "@material-ui/icons/GetApp";
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+import ImportExportIcon from "@material-ui/icons/ImportExport";
 
 // import models
 import { Lab, ROLES } from "../types/model";
@@ -22,10 +26,13 @@ import useGetAllLabs from "../hooks/lab/useGetAllLabs";
 import { useAppSelector, useAppDispatch } from "../store";
 import { useHistory } from "react-router";
 import { resetState as resetLabState } from "../reducers/labSlice";
+import ImportLabModal from "../components/lab-page/ImportLabModal";
+import ImportLabPanel from "../components/lab-page/ImportLabPanel";
 
 type LabTable = {
   rowId: string;
   name: string;
+  status: JSX.Element;
   capacity: number;
   createdAt: string;
 };
@@ -40,10 +47,15 @@ const prepareData = (
   if (labs.length > 0) {
     data = labs.map((lab) => {
       return {
-        rowId: lab._id,
+        rowId: lab._id!,
         name: lab.labName,
         capacity: lab.capacity,
-        createdAt: new Date(lab.createdAt).toDateString(),
+        status: lab.isAvailableForCurrentUsing ? (
+          <AvailableBadge>Available</AvailableBadge>
+        ) : (
+          <NotAvailableBadge>Not Available</NotAvailableBadge>
+        ),
+        createdAt: new Date(lab.createdAt!).toDateString(),
       };
     });
   } else {
@@ -58,7 +70,8 @@ const LabPage = () => {
   const [showNewLabModal, setShowNewLabModal] = useState(false);
   const [showDeleteLabModal, setShowDeleteLabModal] = useState(false);
   const [labIdToDelete, setLabIdToDelete] = useState<string>(null!);
-
+  const [showImportLabPanel, setShowImportLabPanel] = useState(false);
+  const [showImportLabModal, setShowImportLabModal] = useState(false);
   // * Call API
   const [labs, labStatus] = useGetAllLabs();
 
@@ -71,6 +84,30 @@ const LabPage = () => {
   const dispatch = useAppDispatch();
 
   // event handling
+
+  const exportCSV = () => {
+    const template = (labs as Lab[]).map((lab, i) => {
+      return {
+        STT: String(i + 1),
+        "Phòng thực hành": lab.labName,
+        "Sức chứa": lab.capacity,
+      };
+    });
+
+    console.log(template);
+
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const ws = XLSX.utils.json_to_sheet(template);
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, "lab_form_template" + fileExtension);
+  };
 
   const handleRefreshData = () => {
     dispatch(resetLabState());
@@ -87,6 +124,10 @@ const LabPage = () => {
         accessor: "name" as const,
       },
       {
+        Header: "Status",
+        accessor: "status" as const,
+      },
+      {
         Header: "Capacity",
         accessor: "capacity" as const,
       },
@@ -99,7 +140,7 @@ const LabPage = () => {
       const { data } = prepareData(
         (labs as Lab[]).filter(
           (item) =>
-            item._id.includes(labSearchText) ||
+            item._id!.includes(labSearchText) ||
             item.labName
               .toLowerCase()
               .includes(labSearchText.toLowerCase())
@@ -159,6 +200,11 @@ const LabPage = () => {
           />
         }
       />
+      <ImportLabModal
+        name="Import lab"
+        showModal={showImportLabModal}
+        setShowModal={setShowImportLabModal}
+      />
       <NewLabModal
         name="New lab"
         showModal={showNewLabModal}
@@ -182,12 +228,32 @@ const LabPage = () => {
               </IconButtonContainer>
             </Tooltip>
             {role === ROLES.ADMIN && (
-              <Button
-                icon={<AddIcon />}
-                onClick={() => setShowNewLabModal(true)}
-              >
-                New lab
-              </Button>
+              <>
+                <Button
+                  onClick={() =>
+                    setShowImportLabPanel((current) => !current)
+                  }
+                  icon={<ImportExportIcon />}
+                >
+                  Import labs
+                </Button>
+                <Button onClick={exportCSV} icon={<GetAppIcon />}>
+                  Export labs
+                </Button>
+                {showImportLabPanel && (
+                  <ImportPanelContainer>
+                    <ImportLabPanel
+                      setShowImportLabModal={setShowImportLabModal}
+                    />
+                  </ImportPanelContainer>
+                )}
+                <Button
+                  icon={<AddIcon />}
+                  onClick={() => setShowNewLabModal(true)}
+                >
+                  New lab
+                </Button>
+              </>
             )}
           </Action>
         </Toolbar>
@@ -233,7 +299,7 @@ const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
   grid-template-columns: ${({ isAdmin }) =>
-    isAdmin ? "1fr 1fr" : "1fr"};
+    isAdmin ? "1fr 1fr 1fr 1fr" : "1fr"};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {
@@ -260,6 +326,36 @@ const IconButtonContainer = styled.div`
   width: 40px;
   box-sizing: border-box;
   justify-self: end;
+`;
+
+const ImportPanelContainer = styled.div`
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  transform: translate(-400px, 155px);
+  z-index: 3;
+
+  @media (max-width: 1220px) {
+    transform: translate(-400px, 60px);
+  }
+`;
+
+const NotAvailableBadge = styled.div`
+  background-color: ${({ theme }) => theme.lightRed};
+  color: ${({ theme }) => theme.red};
+  font-size: 12px;
+  padding: 0 0.5rem;
+  font-weight: 600;
+  border-radius: 10px;
+`;
+
+const AvailableBadge = styled.div`
+  background-color: ${({ theme }) => theme.green};
+  color: white;
+  font-size: 12px;
+  padding: 0 0.5rem;
+  font-weight: 600;
+  border-radius: 10px;
 `;
 
 export default LabPage;

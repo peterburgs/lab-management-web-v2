@@ -190,10 +190,10 @@ const Table = <T extends Record<string, unknown>>(
                   })}
 
                   <ActionButtonContainer>
-                    {props.isAllowEditDelete ? (
+                    {props.isAllowEditDelete && (
                       <>
                         {" "}
-                        <ActionButton
+                        <EditButton
                           onClick={() =>
                             props.onClickEditBtn!(
                               row.original.rowId as string
@@ -201,8 +201,8 @@ const Table = <T extends Record<string, unknown>>(
                           }
                         >
                           <EditIcon fontSize="small" />
-                        </ActionButton>
-                        <ActionButton
+                        </EditButton>
+                        <DeleteButton
                           onClick={() =>
                             props.onClickDeleteBtn!(
                               row.original.rowId as string
@@ -210,12 +210,8 @@ const Table = <T extends Record<string, unknown>>(
                           }
                         >
                           <DeleteIcon fontSize="small" />
-                        </ActionButton>
+                        </DeleteButton>
                       </>
-                    ) : (
-                      <ActionButton>
-                        <InfoIcon fontSize="small" />
-                      </ActionButton>
                     )}
                   </ActionButtonContainer>
                 </StyledTBodyRow>
@@ -301,14 +297,13 @@ const ActionButtonContainer = styled.div`
   margin-right: 0.5rem;
 `;
 
-const ActionButton = styled.button`
+const EditButton = styled.button`
   outline: none;
   background: transparent;
   color: rgba(0, 0, 0, 0.8);
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.8);
   cursor: pointer;
-  opacity: 0.4;
   margin: 0 5px;
   font-size: 16px;
   padding: 5px 5px;
@@ -325,6 +320,35 @@ const ActionButton = styled.button`
 
   &:hover {
     background-color: black;
+    color: white;
+  }
+`;
+
+const DeleteButton = styled.button`
+  outline: none;
+  background: transparent;
+  color: ${({ theme }) => theme.red};
+  border-radius: 4px;
+  border: 1px solid ${({ theme }) => theme.red};
+  cursor: pointer;
+  margin: 0 5px;
+  font-size: 16px;
+  padding: 5px 5px;
+  display: flex;
+  align-items: center;
+
+  &:active {
+    background-color: ${({ theme }) => theme.red};
+    transform: scale(0.98);
+    color: white;
+    &:hover {
+      background-color: ${({ theme }) => theme.red};
+      color: white;
+    }
+  }
+
+  &:hover {
+    background-color: ${({ theme }) => theme.red};
     color: white;
   }
 `;

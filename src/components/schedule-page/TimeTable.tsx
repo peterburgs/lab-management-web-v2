@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, RefObject } from "react";
 import styled, { css } from "styled-components";
 import Usage from "./Usage";
 import "simplebar/dist/simplebar.min.css";
@@ -56,7 +56,7 @@ const TimeTable = ({
         usagesByDayOfWeek.forEach((usages, dayOfWeek) => {
           cells.push(
             <Cell
-              key={lab._id + dayOfWeek}
+              key={lab._id! + dayOfWeek}
               position={{
                 row: labs.indexOf(lab) + 2,
                 column: dayOfWeek + 1,
@@ -117,6 +117,8 @@ const TimeTable = ({
         <DayOfWeek>Friday</DayOfWeek>
         <DayOfWeek>Saturday</DayOfWeek>
         <DayOfWeek>Sunday</DayOfWeek>
+        <DayOfWeek>Sunday</DayOfWeek>
+        <DayOfWeek>Sunday</DayOfWeek>
         {renderUsages()}
       </UsageContainer>
     </StyledTimeTable>
@@ -157,7 +159,7 @@ const LabName = styled.div`
 const UsageContainer = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(7, minmax(auto, 1fr));
+  grid-template-columns: repeat(9, minmax(auto, 1fr));
   grid-template-rows: 50px;
   grid-auto-rows: 145px;
   margin-left: 1rem;

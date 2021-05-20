@@ -30,7 +30,7 @@ import { useHistory } from "react-router";
 // Table type
 type TeachingTable = {
   rowId: string;
-  teachingId: string;
+  code: string;
   courseName: string;
   group: number;
   period: string;
@@ -70,8 +70,8 @@ const prepareData = (
     console.log(teachings);
     data = teachings.map((teaching) => {
       return {
-        rowId: teaching._id,
-        teachingId: teaching._id,
+        rowId: teaching._id!,
+        code: teaching.code,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,
         group: teaching.group,
@@ -138,8 +138,8 @@ const LecturerRegistrationPage = () => {
         accessor: "rowId" as const,
       },
       {
-        Header: "Teaching ID",
-        accessor: "teachingId" as const,
+        Header: "Code",
+        accessor: "code" as const,
       },
       {
         Header: "Course Name",

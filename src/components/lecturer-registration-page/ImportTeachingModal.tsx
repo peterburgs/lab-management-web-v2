@@ -87,7 +87,7 @@ const ImportTeachingModal = (props: ModalProps) => {
         data.forEach((item, i) => {
           // Convert to teaching model
           let teaching: Teaching = {
-            _id: "",
+            code: "",
             uId: "",
             user: "",
             course: "",
@@ -130,7 +130,7 @@ const ImportTeachingModal = (props: ModalProps) => {
 
             switch (key) {
               case "Mã LHP":
-                teaching._id = strValue;
+                teaching.code = strValue;
                 teaching.course = strValue.split("_")[0];
                 teaching.group = Number(strValue.split("_")[1]);
                 teaching.registration = openRegistration!._id;
@@ -256,7 +256,6 @@ const ImportTeachingModal = (props: ModalProps) => {
     if (registrableCourseStatus === "succeeded") {
       return (
         <>
-          <ModalText>Choose excel file</ModalText>
           <ChooseFileContainer>
             <InputFile
               onChange={handleFileSelected}
@@ -265,7 +264,7 @@ const ImportTeachingModal = (props: ModalProps) => {
               id="contained-button-file"
             />
             <label htmlFor="contained-button-file">
-              <ChooseFileButton>Choose file</ChooseFileButton>
+              <ChooseFileButton>Choose excel file</ChooseFileButton>
             </label>
             <FileSelectedName>
               {fileSelected && fileSelected[0].name}

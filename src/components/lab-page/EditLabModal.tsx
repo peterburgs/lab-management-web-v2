@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
-import { TextField } from "@material-ui/core";
+import {
+  TextField,
+  Checkbox,
+  FormControlLabel,
+} from "@material-ui/core";
 import Button from "../common/Button";
 import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import { Lab } from "../../types/model";
+import { Lab, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
 import { editLab } from "../../reducers/labSlice";
 import {
@@ -24,11 +28,21 @@ import { useParams } from "react-router";
 
 const EditLabModal = (props: ModalProps) => {
   // call hooks
-  const { register, handleSubmit, errors } = useForm<Lab>();
+  const { register, handleSubmit, errors, control } = useForm<Lab>();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
+
+  const [isAvailableForCurrentUsing, setIsAvailableForCurrentUsing] =
+    useState(false);
+
   const lab = useAppSelector((state) =>
     state.labs.labs.find((item) => item._id === id)
+  );
+
+  const openSemester = useAppSelector((state) =>
+    state.semesters.semesters.find(
+      (item) => item.status === SEMESTER_STATUSES.OPENING
+    )
   );
 
   // useState
@@ -42,6 +56,9 @@ const EditLabModal = (props: ModalProps) => {
           ..._.cloneDeep(lab),
           ...data,
         };
+
+        clonedLab.isAvailableForCurrentUsing =
+          isAvailableForCurrentUsing;
 
         setStatus("pending");
         const actionResult = await dispatch(editLab(clonedLab));
@@ -65,6 +82,12 @@ const EditLabModal = (props: ModalProps) => {
     }
   };
 
+  useEffect(() => {
+    if (lab) {
+      setIsAvailableForCurrentUsing(lab.isAvailableForCurrentUsing);
+    }
+  }, [lab]);
+
   return (
     <Modal {...props}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -78,6 +101,7 @@ const EditLabModal = (props: ModalProps) => {
               error={Boolean(errors.labName)}
               helperText={errors.labName && "*This field is required"}
             />
+
             <StyledTextField
               label="Capacity"
               inputRef={register({ required: true })}
@@ -87,6 +111,29 @@ const EditLabModal = (props: ModalProps) => {
               helperText={
                 errors.capacity && "*This field is required"
               }
+            />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  disabled={
+                    openSemester
+                      ? openSemester.labSchedule!.length > 0
+                        ? true
+                        : false
+                      : false
+                  }
+                  checked={isAvailableForCurrentUsing}
+                  onChange={() =>
+                    setIsAvailableForCurrentUsing(
+                      (current) => !current
+                    )
+                  }
+                  name="checkedB"
+                  color="primary"
+                />
+              }
+              label="Allow to use this lab"
             />
             <StyledButton
               disabled={status === "pending"}

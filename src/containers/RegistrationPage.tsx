@@ -66,7 +66,7 @@ const prepareData = (
   if (teachings.length > 0) {
     data = teachings.map((teaching) => {
       return {
-        rowId: teaching._id,
+        rowId: teaching._id!,
         courseId: teaching.course as string,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,

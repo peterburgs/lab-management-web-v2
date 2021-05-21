@@ -71,24 +71,28 @@ const TimeTable = ({
                   startPeriod={usage.startPeriod}
                   endPeriod={usage.endPeriod}
                   courseName={
-                    courses.find(
-                      (course) =>
-                        course._id ===
-                        teachings.find(
-                          (teaching) =>
-                            teaching._id === usage.teaching
-                        )!.course
-                    )!.courseName
+                    courses
+                      ? courses.find(
+                          (course) =>
+                            course._id ===
+                            teachings.find(
+                              (teaching) =>
+                                teaching._id === usage.teaching
+                            )!.course
+                        )!.courseName
+                      : ""
                   }
                   lecturerName={
-                    lecturers.find(
-                      (lecturer) =>
-                        lecturer._id ===
-                        teachings.find(
-                          (teaching) =>
-                            teaching._id === usage.teaching
-                        )!.user
-                    )!.fullName
+                    lecturers
+                      ? lecturers.find(
+                          (lecturer) =>
+                            lecturer._id ===
+                            teachings.find(
+                              (teaching) =>
+                                teaching._id === usage.teaching
+                            )!.user
+                        )!.fullName
+                      : ""
                   }
                 />
               ))}
@@ -116,8 +120,6 @@ const TimeTable = ({
         <DayOfWeek>Thursday</DayOfWeek>
         <DayOfWeek>Friday</DayOfWeek>
         <DayOfWeek>Saturday</DayOfWeek>
-        <DayOfWeek>Sunday</DayOfWeek>
-        <DayOfWeek>Sunday</DayOfWeek>
         <DayOfWeek>Sunday</DayOfWeek>
         {renderUsages()}
       </UsageContainer>
@@ -159,7 +161,7 @@ const LabName = styled.div`
 const UsageContainer = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(9, minmax(auto, 1fr));
+  grid-template-columns: repeat(7, minmax(auto, 1fr));
   grid-template-rows: 50px;
   grid-auto-rows: 145px;
   margin-left: 1rem;

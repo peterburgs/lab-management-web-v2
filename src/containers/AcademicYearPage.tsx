@@ -181,7 +181,10 @@ const AcademicYearPage = () => {
       return (
         <>
           {filteredAcademicYears.map((academicYear) => (
-            <AcademicYearContainer isOpening={academicYear.isOpening}>
+            <AcademicYearContainer
+              key={academicYear._id}
+              isOpening={academicYear.isOpening}
+            >
               <AcademicYearCard>
                 <MainContent>
                   <InfoContainer>

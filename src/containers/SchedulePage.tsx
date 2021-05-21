@@ -44,7 +44,7 @@ import moment from "moment";
 import _ from "lodash";
 
 const SchedulePage = () => {
-  const [week, setWeek] = useState(1);
+  const [week, setWeek] = useState(2);
   const [filteredLabUsages, setFilterLabUsages] = useState<
     LabUsage[]
   >([]);
@@ -140,15 +140,17 @@ const SchedulePage = () => {
 
   // Filter lab usages
   useEffect(() => {
-    if (labUsages.length > 0) {
-      console.log(labUsages);
-      setFilterLabUsages(
-        (labUsages as LabUsage[]).filter(
-          (labUsage) =>
-            labUsage.semester === selectedSemester._id &&
-            labUsage.weekNo === week
-        )
-      );
+    if (selectedSemester) {
+      if (labUsages.length > 0) {
+        console.log(labUsages);
+        setFilterLabUsages(
+          (labUsages as LabUsage[]).filter(
+            (labUsage) =>
+              labUsage.semester === selectedSemester._id &&
+              labUsage.weekNo === week
+          )
+        );
+      }
     }
   }, [week, labUsages, selectedSemester]);
 
@@ -847,7 +849,13 @@ const SchedulePage = () => {
             {courses.length > 0 && users.length > 0 ? (
               <TimeTable
                 labUsages={filteredLabUsages}
-                labs={labs as Lab[]}
+                labs={
+                  (labs as Lab[]).length > 1
+                    ? _.cloneDeep(labs as Lab[]).sort(
+                        (a, b) => b.capacity - a.capacity
+                      )
+                    : (labs as Lab[])
+                }
                 courses={courses as Course[]}
                 lecturers={users as User[]}
                 teachings={teachings}

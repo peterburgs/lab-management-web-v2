@@ -125,7 +125,7 @@ const GenerateScheduleModal = (props: ModalProps) => {
                         teaching.registration ===
                         latestRegistration._id
                     )
-                    .find((item) => item.user === user)
+                    .find((item) => item.user === user._id)
                 ) {
                   return true;
                 }

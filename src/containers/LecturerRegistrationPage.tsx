@@ -19,7 +19,12 @@ import DeleteTeachingModal from "../components/lecturer-registration-page/Delete
 import ImportTeachingModal from "../components/lecturer-registration-page/ImportTeachingModal";
 
 // import models
-import { Teaching, Course, ROLES, SEMESTER_STATUSES } from "../types/model";
+import {
+  Teaching,
+  Course,
+  ROLES,
+  SEMESTER_STATUSES,
+} from "../types/model";
 
 // import hooks
 import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";
@@ -30,6 +35,7 @@ import { useHistory } from "react-router";
 // Table type
 type TeachingTable = {
   rowId: string;
+  teachingId: string;
   code: string;
   courseName: string;
   group: number;
@@ -71,6 +77,7 @@ const prepareData = (
     data = teachings.map((teaching) => {
       return {
         rowId: teaching._id!,
+        teachingId: teaching._id!,
         code: teaching.code,
         courseName: courses.find((c) => c._id === teaching.course)!
           .courseName,
@@ -101,7 +108,9 @@ const LecturerRegistrationPage = () => {
 
   // call hooks
   const openSemester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item.status === SEMESTER_STATUSES.OPENING)
+    state.semesters.semesters.find(
+      (item) => item.status === SEMESTER_STATUSES.OPENING
+    )
   );
   const openAcademicYear = useAppSelector((state) =>
     state.academicYears.academicYears.find(
@@ -136,6 +145,10 @@ const LecturerRegistrationPage = () => {
       {
         Header: "Row ID",
         accessor: "rowId" as const,
+      },
+      {
+        Header: "Teaching ID",
+        accessor: "teachingId" as const,
       },
       {
         Header: "Code",

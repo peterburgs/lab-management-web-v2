@@ -131,7 +131,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
             <DateTimePicker
               label="Start date"
               inputFormat="dd/MM/yyyy hh:mm a"
-              renderInput={(props) => <StyledTextField {...props} />}
+              renderInput={(props) => <StyledTextField {...props} helperText={null} />}
               onChange={(value) => props.onChange(value)}
               value={props.value}
             />
@@ -146,7 +146,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
             <DateTimePicker
               label="End date"
               inputFormat="dd/MM/yyyy hh:mm a"
-              renderInput={(props) => <StyledTextField {...props} />}
+              renderInput={(props) => <StyledTextField {...props} helperText={null} />}
               onChange={(value) => props.onChange(value)}
               value={props.value}
             />

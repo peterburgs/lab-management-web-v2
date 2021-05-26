@@ -24,7 +24,7 @@ import {
 import AddIcon from "@material-ui/icons/Add";
 import moment from "moment";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
-import StartAcademicYearModal from "../components/academic-year-page/StartAcademicYear";
+import StartAcademicYearModal from "../components/academic-year-page/StartAcademicYearModal";
 import StartSemesterModal from "../components/academic-year-page/StartSemesterModal";
 import EditAcademicYearModal from "../components/academic-year-page/EditAcademicYearModal";
 import { useHistory } from "react-router";

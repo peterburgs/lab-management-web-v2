@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
+import moment from "moment";
 
 interface RequestCardProps {
   title: string;
@@ -62,30 +63,12 @@ const RequestCard = ({
           <Info>
             {status === REQUEST_STATUSES.PENDING
               ? "Open at " +
-                new Date(pendingAt!).toDateString() +
-                " " +
-                new Date(pendingAt!).getHours() +
-                ":" +
-                new Date(pendingAt!).getMinutes() +
-                ":" +
-                new Date(pendingAt!).getSeconds()
+                moment(pendingAt!).format("MM-DD-YYYY h:mm:ss a")
               : status === REQUEST_STATUSES.APPROVED
               ? "Approved at " +
-                new Date(approvedAt!).toDateString() +
-                " " +
-                new Date(approvedAt!).getHours() +
-                ":" +
-                new Date(approvedAt!).getMinutes() +
-                ":" +
-                new Date(approvedAt!).getSeconds()
+                moment(approvedAt!).format("MM-DD-YYYY h:mm:ss a")
               : "Denied at " +
-                new Date(deniedAt!).toDateString() +
-                " " +
-                new Date(deniedAt!).getHours() +
-                ":" +
-                new Date(deniedAt!).getMinutes() +
-                ":" +
-                new Date(deniedAt!).getSeconds()}
+                moment(deniedAt!).format("MM-DD-YYYY h:mm:ss a")}
             <span>
               {" "}
               by {user.fullName} - {user.email}

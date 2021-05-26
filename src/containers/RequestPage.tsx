@@ -27,6 +27,7 @@ import useGetAllRequests from "../hooks/request/useGetAllRequests";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import _ from "lodash";
 import { useAppSelector } from "../store";
+import useGetAllComments from "../hooks/comment/useGetAllComments";
 
 const RequestPage = () => {
   const [selectedStatus, setSelectedStatus] =
@@ -48,6 +49,7 @@ const RequestPage = () => {
   };
   const [users, userStatus] = useGetAllUsers();
   const [requests, requestStatus] = useGetAllRequests();
+  const [comments] = useGetAllComments();
 
   const role = useAppSelector((state) => state.auth.verifiedRole);
   const lecturer = useAppSelector(
@@ -88,7 +90,11 @@ const RequestPage = () => {
                         (user) => user._id === request.user
                       )!
                     }
-                    numberOfComments={123}
+                    numberOfComments={
+                      comments.filter(
+                        (item) => item.request === request._id
+                      ).length
+                    }
                   />
                 );
               } else if (
@@ -107,7 +113,11 @@ const RequestPage = () => {
                         (user) => user._id === request.user
                       )!
                     }
-                    numberOfComments={123}
+                    numberOfComments={
+                      comments.filter(
+                        (item) => item.request === request._id
+                      ).length
+                    }
                   />
                 );
               }

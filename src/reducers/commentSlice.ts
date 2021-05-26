@@ -10,7 +10,7 @@ interface CommentState {
   message?: string;
 }
 
-interface GETResponse {
+export interface GETResponse {
   comments: Comment[];
   count: number;
   message: string;

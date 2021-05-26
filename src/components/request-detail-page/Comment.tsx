@@ -51,6 +51,7 @@ const CommentContainer = styled.div`
   flex-direction: column;
   border: 1px solid #e1e4e8;
   border-radius: 7px;
+  width: 100%;
 `;
 
 const Info = styled.div`

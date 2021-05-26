@@ -47,40 +47,112 @@ const EditLabUsageModal = (props: EditLabUsageModalProps) => {
       (item) => item._id === props.semester
     )
   );
+  const labUsages = useAppSelector(
+    (state) => state.schedule.labUsages
+  );
 
   // useState
   const [status, setStatus] = useState("idle");
+
+  const checkPeriod = (
+    startA: number,
+    endA: number,
+    startB: number,
+    endB: number
+  ) => {
+    if (startB >= startA && endB <= endA) return true;
+    if (startB >= startA && startB <= endA && endB >= endA)
+      return true;
+    if (startB <= startA && endB >= startA && endB <= endA)
+      return true;
+    return false;
+  };
+
+  const isValidLabUsage = (
+    weekNo: number,
+    dayOfWeek: number,
+    startPeriod: number,
+    endPeriod: number,
+    labId: string
+  ) => {
+    if (labUsage && labUsages.length > 0) {
+      const labUsagesToCheck = labUsages.filter(
+        (item) => item._id !== labUsage._id
+      );
+      if (labUsagesToCheck.length === 0) {
+        return true;
+      }
+      if (
+        labUsagesToCheck.filter(
+          (item) =>
+            item.weekNo === weekNo &&
+            item.dayOfWeek === dayOfWeek &&
+            checkPeriod(
+              item.startPeriod,
+              item.endPeriod,
+              startPeriod,
+              endPeriod
+            ) &&
+            item.lab === labId
+        ).length === 0
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   // handle submit event
   const onSubmit = async (data: LabUsage) => {
     if (labUsage) {
       if (labs.find((item) => item._id === data.lab)) {
-        try {
-          const clonedLabUsage = {
-            ..._.cloneDeep(labUsage),
-            ...data,
-          } as LabUsage;
+        if (
+          isValidLabUsage(
+            data.weekNo,
+            data.dayOfWeek,
+            data.startPeriod,
+            data.endPeriod,
+            data.lab as string
+          )
+        ) {
+          try {
+            const clonedLabUsage = {
+              ..._.cloneDeep(labUsage),
+              ...data,
+            } as LabUsage;
 
-          setStatus("pending");
-          const actionResult = await dispatch(
-            editLabUsage(clonedLabUsage)
-          );
-          unwrapResult(actionResult);
+            setStatus("pending");
+            const actionResult = await dispatch(
+              editLabUsage(clonedLabUsage)
+            );
+            unwrapResult(actionResult);
 
-          setStatus("idle");
-          dispatch(setSnackBarContent("Edit lab usage successfully"));
-          dispatch(setShowSuccessSnackBar(true));
-          props.setShowModal(false);
-        } catch (err) {
-          console.log("Failed to edit lab usage", err);
-          if (err.response) {
-            dispatch(setSnackBarContent(err.response.data.message));
-          } else {
-            dispatch(setSnackBarContent("Failed to edit lab usage"));
+            setStatus("idle");
+            dispatch(
+              setSnackBarContent("Edit lab usage successfully")
+            );
+            dispatch(setShowSuccessSnackBar(true));
+            props.setShowModal(false);
+          } catch (err) {
+            console.log("Failed to edit lab usage", err);
+            if (err.response) {
+              dispatch(setSnackBarContent(err.response.data.message));
+            } else {
+              dispatch(
+                setSnackBarContent("Failed to edit lab usage")
+              );
+            }
+            setStatus("idle");
+            dispatch(setShowErrorSnackBar(true));
+            props.setShowModal(false);
           }
-          setStatus("idle");
+        } else {
+          dispatch(
+            setSnackBarContent(
+              "The lab you choose is not idle at the present"
+            )
+          );
           dispatch(setShowErrorSnackBar(true));
-          props.setShowModal(false);
         }
       } else {
         dispatch(setSnackBarContent("Lab name is not correct"));

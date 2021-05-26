@@ -116,7 +116,7 @@ const RequestDetailPage = () => {
                 endPeriod: request.endPeriod,
                 semester: semester._id!,
                 isHidden: false,
-            };
+              };
 
               const actionResult = await dispatch(
                 newLabUsage(labUsage)
@@ -245,93 +245,89 @@ const RequestDetailPage = () => {
   };
 
   return (
-    <SimpleBar
-      style={{
-        maxHeight: "calc(100% - 20px)",
-      }}
-    >
-      <StyledRequestDetailPage>
-        {request && users.length > 0 && (
-          <>
-            <Header>
-              <RequestInfo>
-                <RequestTitle>{request.title}</RequestTitle>
-                <Info>
-                  <TypeBadge>
-                    {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE
-                      ? "MODIFY LAB USAGE"
-                      : "ADD EXTRA CLASS"}
-                  </TypeBadge>
-                  <StatusBadge status={request.status}>
-                    {request.status === REQUEST_STATUSES.PENDING
-                      ? "PENDING"
-                      : REQUEST_STATUSES.APPROVED
-                      ? "APPROVED"
-                      : "DENIED"}
-                  </StatusBadge>
-                  <span>
-                    {new Date(
+    <StyledRequestDetailPage>
+      {request && users.length > 0 && (
+        <>
+          <Header>
+            <RequestInfo>
+              <RequestTitle>{request.title}</RequestTitle>
+              <Info>
+                <TypeBadge>
+                  {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE
+                    ? "MODIFY LAB USAGE"
+                    : "ADD EXTRA CLASS"}
+                </TypeBadge>
+                <StatusBadge status={request.status}>
+                  {request.status === REQUEST_STATUSES.PENDING
+                    ? "PENDING"
+                    : REQUEST_STATUSES.APPROVED
+                    ? "APPROVED"
+                    : "DENIED"}
+                </StatusBadge>
+                <span>
+                  {new Date(
+                    request.updatedAt!.toString()
+                  ).toDateString() +
+                    " " +
+                    new Date(
                       request.updatedAt!.toString()
-                    ).toDateString() +
-                      " " +
-                      new Date(
-                        request.updatedAt!.toString()
-                      ).getHours() +
-                      ":" +
-                      new Date(
-                        request.updatedAt!.toString()
-                      ).getMinutes() +
-                      ":" +
-                      new Date(
-                        request.updatedAt!.toString()
-                      ).getSeconds() +
-                      " " +
-                      `by ${
-                        (users as User[]).find(
-                          (user) => user._id === request.user
-                        )!.fullName
-                      } ${
-                        (users as User[]).find(
-                          (user) => user._id === request.user
-                        )!.email
-                      }`}
-                  </span>
-                </Info>
-                <RequestDescription>
-                  {request.description}
-                </RequestDescription>
-                {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE && (
+                    ).getHours() +
+                    ":" +
+                    new Date(
+                      request.updatedAt!.toString()
+                    ).getMinutes() +
+                    ":" +
+                    new Date(
+                      request.updatedAt!.toString()
+                    ).getSeconds() +
+                    " " +
+                    `by ${
+                      (users as User[]).find(
+                        (user) => user._id === request.user
+                      )!.fullName
+                    } ${
+                      (users as User[]).find(
+                        (user) => user._id === request.user
+                      )!.email
+                    }`}
+                </span>
+              </Info>
+              <RequestDescription>
+                {request.description}
+              </RequestDescription>
+              {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE && (
+                <>
+                  <SmallText>Old usage:</SmallText>
+                  {renderOldUsage()}
+                </>
+              )}
+
+              <SmallText>New usage:</SmallText>
+              {renderNewUsage()}
+            </RequestInfo>
+            <Action>
+              {request.status === REQUEST_STATUSES.PENDING &&
+                role === ROLES.ADMIN && (
                   <>
-                    <SmallText>Old usage:</SmallText>
-                    {renderOldUsage()}
+                    <ActionButton
+                      loading={approveStatus === "pending"}
+                      action="approve"
+                      onClick={handleApprove}
+                    >
+                      Approve
+                    </ActionButton>
+                    <ActionButton
+                      loading={denyStatus === "pending"}
+                      action="deny"
+                      onClick={handleDeny}
+                    >
+                      Deny
+                    </ActionButton>
                   </>
                 )}
-
-                <SmallText>New usage:</SmallText>
-                {renderNewUsage()}
-              </RequestInfo>
-              <Action>
-                {request.status === REQUEST_STATUSES.PENDING &&
-                  role === ROLES.ADMIN && (
-                    <>
-                      <ActionButton
-                        loading={approveStatus === "pending"}
-                        action="approve"
-                        onClick={handleApprove}
-                      >
-                        Approve
-                      </ActionButton>
-                      <ActionButton
-                        loading={denyStatus === "pending"}
-                        action="deny"
-                        onClick={handleDeny}
-                      >
-                        Deny
-                      </ActionButton>
-                    </>
-                  )}
-              </Action>
-            </Header>
+            </Action>
+          </Header>
+          <ScrollArea>
             {commentStatus === "pending" ? (
               <SkeletonContainer>
                 <Skeleton
@@ -377,24 +373,30 @@ const RequestDetailPage = () => {
             )}
 
             <AddComment request={request._id} />
-          </>
-        )}
-      </StyledRequestDetailPage>
-    </SimpleBar>
+          </ScrollArea>
+        </>
+      )}
+    </StyledRequestDetailPage>
   );
 };
 
 const StyledRequestDetailPage = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden;
+`;
+
+const ScrollArea = styled.div`
+  overflow: auto;
+  margin-bottom: 1rem;
 `;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #eaecef;
+  border-bottom: 1px solid ${({theme}) => theme.blue};
 `;
 
 const RequestInfo = styled.div`
@@ -503,7 +505,7 @@ const CommentListContainer = styled.div`
   flex-direction: column;
   margin-top: 1rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid #eaecef;
+  border-bottom: 1px solid ${({theme}) => theme.blue};
 `;
 
 const SmallText = styled.div`

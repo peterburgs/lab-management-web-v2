@@ -95,11 +95,9 @@ const SchedulePage = () => {
   // initialize
   useEffect(() => {
     if (academicYears.length > 0) {
-      const latestAcademicYear = _.cloneDeep(
-        academicYears.sort((a, b) =>
-          moment(b.startDate).diff(moment(a.startDate))
-        )[0]
-      );
+      const latestAcademicYear = _.cloneDeep(academicYears).sort(
+        (a, b) => moment(b.startDate).diff(moment(a.startDate))
+      )[0];
       console.log("*** Academic year:", latestAcademicYear);
       setSelectedYear(latestAcademicYear);
 
@@ -939,7 +937,7 @@ const Toolbar = styled.div`
 
 const Filter = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   column-gap: 1rem;
 `;
 

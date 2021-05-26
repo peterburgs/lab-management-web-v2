@@ -13,6 +13,7 @@ import {
 import Countdown from "react-countdown";
 import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
+import Clock from "react-live-clock";
 
 // import reducers
 import {
@@ -120,7 +121,15 @@ const TopNavBar = ({
               registrations.length > 0 &&
               openSemester && <AppSearchBar />
             )
-          ) : null}
+          ) : (
+            <ClockContainer>
+              <Clock
+                format={"HH:mm:ss a"}
+                ticking={true}
+                timezone={"	Asia/Ho_Chi_Minh"}
+              />
+            </ClockContainer>
+          )}
         </SearchBarContainer>
 
         <UserSectionContainer>
@@ -180,6 +189,10 @@ const AvatarPanelContainer = styled.div`
   right: 0px;
   transform: translate(-20px, 65px);
   z-index: 3;
+`;
+
+const ClockContainer = styled.div`
+
 `;
 
 export default TopNavBar;

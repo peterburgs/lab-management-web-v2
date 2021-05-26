@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { EditorState, convertToRaw } from "draft-js";
+import { EditorState, convertToRaw, ContentState } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
@@ -44,12 +44,20 @@ const AddComment = (props: AddCommentProps) => {
 
         dispatch(setSnackBarContent("New comment created"));
         dispatch(setShowSuccessSnackBar(true));
+        const newEditorState = EditorState.push(
+          editorState,
+          ContentState.createFromText(""),
+          "remove-range"
+        );
+        setEditorState(newEditorState);
       } catch (err) {
         console.log("Failed to create new comment", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {
-          dispatch(setSnackBarContent("Failed to create new comment"));
+          dispatch(
+            setSnackBarContent("Failed to create new comment")
+          );
         }
         dispatch(setShowErrorSnackBar(true));
       } finally {

@@ -25,7 +25,13 @@ import CloseRegistrationModal from "../components/registration-page/CloseRegistr
 import GenerateScheduleModal from "../components/registration-page/GenerateScheduleModal";
 
 // Import models
-import { Teaching, Registration, Course, User, SEMESTER_STATUSES } from "../types/model";
+import {
+  Teaching,
+  Registration,
+  Course,
+  User,
+  SEMESTER_STATUSES,
+} from "../types/model";
 
 // Import hooks
 import useGetTeachingsByRegistrationBatch from "../hooks/teaching/useGetTeachingsByRegistrationBatch";
@@ -103,7 +109,9 @@ const RegistrationPage = () => {
 
   // call hooks
   const openSemester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item.status === SEMESTER_STATUSES.OPENING)
+    state.semesters.semesters.find(
+      (item) => item.status === SEMESTER_STATUSES.OPENING
+    )
   );
   const openSemesterStatus = useAppSelector(
     (state) => state.semesters.status

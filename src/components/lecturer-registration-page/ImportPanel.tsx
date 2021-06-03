@@ -5,19 +5,20 @@ import * as XLSX from "xlsx";
 
 const template = [
   {
-    TT: "1",
-    "Mã LHP": "BDAN333977_01",
-    "Tên HP": "Big Data Analysis",
-    "Số TC": 1,
-    "Loại HP": "Lý thuyết",
-    Lớp: "181330A, 181330B, 181330C",
-    SL: 75,
-    CBGD: 3995,
-    "Tên Cán Bộ Giáng Dạy": "Lê Thị Minh  Châu",
-    Thứ: "Thứ Hai",
-    "Tiết        1234567890123456": "------7890------",
-    Phòng: "A217",
-    "Tuần học 234567890123456": "234567890123456",
+    "#": "1",
+    "Class code": "BDAN333977_01",
+    "Course name": "Big Data Analysis",
+    "Credits": "1",
+    "Course type": "Theory",
+    "Class": "181330A, 181330B, 181330C",
+    "Number of students": "75",
+    "Lecturer id": "3995",
+    "Lecturer name": "Lê Đức Thịnh",
+    "Day of week": "Monday",
+    "Periods": "7-10",
+    "Theory room": "A217",
+    "Number of practical weeks": "7",
+    "Start practical week": "2",
   },
 ];
 

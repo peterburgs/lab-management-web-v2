@@ -9,6 +9,7 @@ interface UsageProps {
   courseName: string;
   lecturerName: string;
   id: string;
+  lecturerId: string;
   onEditLabUsage: (id: string) => void;
   onRequestModifyLabUsage: (id: string) => void;
 }
@@ -19,6 +20,7 @@ const Usage = ({
   courseName,
   lecturerName,
   id,
+  lecturerId,
   onEditLabUsage,
   onRequestModifyLabUsage,
 }: UsageProps) => {
@@ -36,12 +38,26 @@ const Usage = ({
   };
 
   const role = useAppSelector((state) => state.auth.verifiedRole);
+  const user = useAppSelector((state) => state.auth.verifiedUser);
 
   return (
     <StyledUsage shift={convertPeriodToShift(startPeriod, endPeriod)}>
-      <CourseName>{courseName}</CourseName>
-      <LecturerName>{lecturerName}</LecturerName>
-      <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
+      {role === ROLES.ADMIN ? (
+        <>
+          <CourseName>{courseName}</CourseName>
+          <LecturerName>{lecturerName}</LecturerName>
+          <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
+        </>
+      ) : lecturerId === user?._id ? (
+        <>
+          <CourseName>{courseName}</CourseName>
+          <LecturerName>{lecturerName}</LecturerName>
+          <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>{" "}
+        </>
+      ) : (
+        <Text>Occupied</Text>
+      )}
+
       <ActionButtonContainer>
         {role === ROLES.ADMIN ? (
           <>
@@ -50,11 +66,11 @@ const Usage = ({
             </ActionButton>
             <ActionButton>Delete</ActionButton>
           </>
-        ) : (
+        ) : lecturerId === user?._id ? (
           <ActionButton onClick={() => onRequestModifyLabUsage(id)}>
             Change lab usage
           </ActionButton>
-        )}
+        ) : null}
       </ActionButtonContainer>
     </StyledUsage>
   );
@@ -134,6 +150,14 @@ const ActionButton = styled.button`
     background-color: black;
     color: white;
   }
+`;
+
+const Text = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export default Usage;

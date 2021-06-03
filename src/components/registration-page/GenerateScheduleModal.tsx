@@ -43,45 +43,56 @@ const GenerateScheduleModal = (props: ModalProps) => {
 
   const onSubmit = async () => {
     if (latestRegistration) {
-      if (
-        teachings.filter(
-          (teaching) =>
-            teaching.registration === latestRegistration._id
-        ).length > 0
-      ) {
-        try {
-          setStatus("pending");
-          const actionResult = await dispatch(
-            generateSchedule({ registration: latestRegistration._id })
-          );
-
-          unwrapResult(actionResult);
-
-          dispatch(resetSemesterState());
-
-          dispatch(
-            setSnackBarContent("Generate schedule successfully")
-          );
-          dispatch(setShowSuccessSnackBar(true));
-        } catch (err) {
-          console.log("Failed to generate schedule", err);
-          if (err.response) {
-            dispatch(setSnackBarContent(err.response.data.message));
-          } else {
-            dispatch(
-              setSnackBarContent("Failed to generate schedule")
+      if (!latestRegistration.isOpening) {
+        if (
+          teachings.filter(
+            (teaching) =>
+              teaching.registration === latestRegistration._id
+          ).length > 0
+        ) {
+          try {
+            setStatus("pending");
+            const actionResult = await dispatch(
+              generateSchedule({
+                registration: latestRegistration._id,
+              })
             );
+
+            unwrapResult(actionResult);
+
+            dispatch(resetSemesterState());
+
+            dispatch(
+              setSnackBarContent("Generate schedule successfully")
+            );
+            dispatch(setShowSuccessSnackBar(true));
+          } catch (err) {
+            console.log("Failed to generate schedule", err);
+            if (err.response) {
+              dispatch(setSnackBarContent(err.response.data.message));
+            } else {
+              dispatch(
+                setSnackBarContent("Failed to generate schedule")
+              );
+            }
+            dispatch(setShowErrorSnackBar(true));
+          } finally {
+            setStatus("idle");
+            props.setShowModal(false);
           }
+        } else {
           dispatch(setShowErrorSnackBar(true));
-        } finally {
-          setStatus("idle");
-          props.setShowModal(false);
+          dispatch(
+            setSnackBarContent(
+              "Teachings are required to generate schedule"
+            )
+          );
         }
       } else {
         dispatch(setShowErrorSnackBar(true));
         dispatch(
           setSnackBarContent(
-            "Teachings are required to generate schedule"
+            "Close the opening registration before generating schedule"
           )
         );
       }

@@ -45,6 +45,7 @@ export type Semester = {
   createdAt?: Date;
   academicYear: AcademicYear | string;
   labSchedule?: number[][];
+  startPracticalWeek: number;
   isHidden: boolean;
 };
 
@@ -62,6 +63,7 @@ export type Teaching = {
   numberOfStudents: number;
   theoryRoom: string;
   numberOfPracticalWeeks: number;
+  startPracticalWeek: number;
   registration: string | Registration;
   updatedAt?: Date;
   createdAt?: Date;
@@ -147,6 +149,11 @@ export type Request = {
   description: string;
   type: REQUEST_TYPES;
   isHidden: boolean;
+  oldLab: string;
+  oldDayOfWeek: number;
+  oldWeekNo: number;
+  oldStartPeriod: number;
+  oldEndPeriod: number;
   createdAt?: Date;
   updatedAt?: Date;
 };

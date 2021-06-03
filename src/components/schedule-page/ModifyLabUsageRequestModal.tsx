@@ -36,6 +36,25 @@ interface ModifyLabUsageRequestProps extends ModalProps {
   semester: string;
 }
 
+const dowNum2String = (dow: number) => {
+  switch (dow) {
+    case 0:
+      return "Monday";
+    case 1:
+      return "Tuesday";
+    case 2:
+      return "Wednesday";
+    case 3:
+      return "Thursday";
+    case 4:
+      return "Friday";
+    case 5:
+      return "Saturday";
+    case 6:
+      return "Sunday";
+  }
+};
+
 const ModifyLabUsageRequestModal = (
   props: ModifyLabUsageRequestProps
 ) => {
@@ -46,7 +65,9 @@ const ModifyLabUsageRequestModal = (
   const labs = useAppSelector((state) => state.labs.labs);
   // TODO: NOT OPEN SEMESTER
   const semester = useAppSelector((state) =>
-    state.semesters.semesters.find((item) => item._id === props.semester)
+    state.semesters.semesters.find(
+      (item) => item._id === props.semester
+    )
   );
   const verifiedUser = useAppSelector(
     (state) => state.auth.verifiedUser
@@ -85,14 +106,8 @@ const ModifyLabUsageRequestModal = (
     labId: string
   ) => {
     if (labUsage && labUsages.length > 0) {
-      const labUsagesToCheck = labUsages.filter(
-        (item) => item._id !== labUsage._id
-      );
-      if (labUsagesToCheck.length === 0) {
-        return true;
-      }
       if (
-        labUsagesToCheck.filter(
+        labUsages.filter(
           (item) =>
             item.weekNo === weekNo &&
             item.dayOfWeek === dayOfWeek &&
@@ -118,6 +133,7 @@ const ModifyLabUsageRequestModal = (
       labUsage &&
       labs.find((item) => item._id === data.lab)
     ) {
+      console.log(data);
       if (
         isValidLabUsage(
           data.weekNo,
@@ -132,6 +148,11 @@ const ModifyLabUsageRequestModal = (
           data.uId = verifiedUser!._id;
           data.status = REQUEST_STATUSES.PENDING;
           data.labUsage = labUsage._id;
+          data.oldLab = labUsage.lab as string;
+          data.oldWeekNo = labUsage.weekNo;
+          data.oldDayOfWeek = labUsage.dayOfWeek;
+          data.oldStartPeriod = labUsage.startPeriod;
+          data.oldEndPeriod = labUsage.endPeriod;
           data.type = REQUEST_TYPES.MODIFY_LAB_USAGE;
           setStatus("pending");
           const actionResult = await dispatch(newRequest(data));
@@ -193,20 +214,14 @@ const ModifyLabUsageRequestModal = (
                   errors.description && "*This field is required"
                 }
               />
-              <Controller
-                name="lab"
-                control={control}
-                defaultValue={labUsage.lab}
-                rules={{ required: true }}
-                render={(props) => (
+              <ContentContainer>
+                <CurrentUsage>
+                  <CurrentUsageHeader>
+                    Current Usage
+                  </CurrentUsageHeader>
                   <StyledFormControl variant="outlined">
-                    <InputLabel id="lab-label">Lab</InputLabel>
-                    <Select
-                      labelId="lab-label"
-                      value={props.value}
-                      onChange={(e) => props.onChange(e.target.value)}
-                      label="Lab"
-                    >
+                    <InputLabel id="oldlab-label">Lab</InputLabel>
+                    <Select disabled value={labUsage.lab} label="Lab">
                       {labs.map((lab, i) => (
                         <MenuItem value={lab._id} key={lab._id}>
                           {lab.labName}
@@ -214,20 +229,13 @@ const ModifyLabUsageRequestModal = (
                       ))}
                     </Select>
                   </StyledFormControl>
-                )}
-              />
-              <Controller
-                name="weekNo"
-                control={control}
-                defaultValue={labUsage.weekNo}
-                rules={{ required: true }}
-                render={(props) => (
+
                   <StyledFormControl variant="outlined">
-                    <InputLabel id="weekno-label">Week</InputLabel>
+                    <InputLabel id="oldweekno-label">Week</InputLabel>
                     <Select
-                      labelId="weekno-label"
-                      value={props.value}
-                      onChange={(e) => props.onChange(e.target.value)}
+                      disabled
+                      labelId="oldweekno-label"
+                      value={labUsage.weekNo}
                       label="Week"
                     >
                       {[...Array(semester.numberOfWeeks)].map(
@@ -239,22 +247,15 @@ const ModifyLabUsageRequestModal = (
                       )}
                     </Select>
                   </StyledFormControl>
-                )}
-              />
-              <Controller
-                name="dayOfWeek"
-                control={control}
-                defaultValue={labUsage.dayOfWeek}
-                rules={{ required: true }}
-                render={(props) => (
+
                   <StyledFormControl variant="outlined">
-                    <InputLabel id="dow-label">
+                    <InputLabel id="olddow-label">
                       Day of week
                     </InputLabel>
                     <Select
-                      labelId="dow-label"
-                      value={props.value}
-                      onChange={(e) => props.onChange(e.target.value)}
+                      disabled
+                      labelId="olddow-label"
+                      value={labUsage.dayOfWeek}
                       label="Day of week"
                     >
                       <MenuItem value={0}>Monday</MenuItem>
@@ -266,22 +267,15 @@ const ModifyLabUsageRequestModal = (
                       <MenuItem value={6}>Sunday</MenuItem>
                     </Select>
                   </StyledFormControl>
-                )}
-              />
-              <Controller
-                name="startPeriod"
-                control={control}
-                defaultValue={labUsage.startPeriod}
-                rules={{ required: true }}
-                render={(props) => (
+
                   <StyledFormControl variant="outlined">
-                    <InputLabel id="start-label">
+                    <InputLabel id="oldstart-label">
                       Start period
                     </InputLabel>
                     <Select
-                      labelId="start-label"
-                      value={props.value}
-                      onChange={(e) => props.onChange(e.target.value)}
+                      disabled
+                      labelId="oldstart-label"
+                      value={labUsage.startPeriod}
                       label="Start period"
                     >
                       {[...Array(15)].map((_, i) => (
@@ -294,20 +288,15 @@ const ModifyLabUsageRequestModal = (
                       ))}
                     </Select>
                   </StyledFormControl>
-                )}
-              />
-              <Controller
-                name="endPeriod"
-                control={control}
-                defaultValue={labUsage.endPeriod}
-                rules={{ required: true }}
-                render={(props) => (
+
                   <StyledFormControl variant="outlined">
-                    <InputLabel id="end-label">End period</InputLabel>
+                    <InputLabel id="oldend-label">
+                      End period
+                    </InputLabel>
                     <Select
-                      labelId="end-label"
-                      value={props.value}
-                      onChange={(e) => props.onChange(e.target.value)}
+                      disabled
+                      labelId="oldend-label"
+                      value={labUsage.endPeriod}
                       label="End period"
                     >
                       {[...Array(15)].map((_, i) => (
@@ -317,8 +306,154 @@ const ModifyLabUsageRequestModal = (
                       ))}
                     </Select>
                   </StyledFormControl>
-                )}
-              />
+                </CurrentUsage>
+                <NewUsage>
+                  <NewUsageHeader>New Usage</NewUsageHeader>
+                  <Controller
+                    name="lab"
+                    control={control}
+                    defaultValue={labUsage.lab}
+                    rules={{ required: true }}
+                    render={(props) => (
+                      <StyledFormControl variant="outlined">
+                        <InputLabel id="lab-label">Lab</InputLabel>
+                        <Select
+                          labelId="lab-label"
+                          value={props.value}
+                          onChange={(e) =>
+                            props.onChange(e.target.value)
+                          }
+                          label="Lab"
+                        >
+                          {labs.map((lab, i) => (
+                            <MenuItem value={lab._id} key={lab._id}>
+                              {lab.labName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </StyledFormControl>
+                    )}
+                  />
+                  <Controller
+                    name="weekNo"
+                    control={control}
+                    defaultValue={labUsage.weekNo}
+                    rules={{ required: true }}
+                    render={(props) => (
+                      <StyledFormControl variant="outlined">
+                        <InputLabel id="weekno-label">
+                          Week
+                        </InputLabel>
+                        <Select
+                          labelId="weekno-label"
+                          value={props.value}
+                          onChange={(e) =>
+                            props.onChange(e.target.value)
+                          }
+                          label="Week"
+                        >
+                          {[...Array(semester.numberOfWeeks)].map(
+                            (_, i) => (
+                              <MenuItem value={i} key={"weekNo" + i}>
+                                {i}
+                              </MenuItem>
+                            )
+                          )}
+                        </Select>
+                      </StyledFormControl>
+                    )}
+                  />
+                  <Controller
+                    name="dayOfWeek"
+                    control={control}
+                    defaultValue={labUsage.dayOfWeek}
+                    rules={{ required: true }}
+                    render={(props) => (
+                      <StyledFormControl variant="outlined">
+                        <InputLabel id="dow-label">
+                          Day of week
+                        </InputLabel>
+                        <Select
+                          labelId="dow-label"
+                          value={props.value}
+                          onChange={(e) =>
+                            props.onChange(e.target.value)
+                          }
+                          label="Day of week"
+                        >
+                          <MenuItem value={0}>Monday</MenuItem>
+                          <MenuItem value={1}>Tuesday</MenuItem>
+                          <MenuItem value={2}>Wednesday</MenuItem>
+                          <MenuItem value={3}>Thursday</MenuItem>
+                          <MenuItem value={4}>Friday</MenuItem>
+                          <MenuItem value={5}>Saturday</MenuItem>
+                          <MenuItem value={6}>Sunday</MenuItem>
+                        </Select>
+                      </StyledFormControl>
+                    )}
+                  />
+                  <Controller
+                    name="startPeriod"
+                    control={control}
+                    defaultValue={labUsage.startPeriod}
+                    rules={{ required: true }}
+                    render={(props) => (
+                      <StyledFormControl variant="outlined">
+                        <InputLabel id="start-label">
+                          Start period
+                        </InputLabel>
+                        <Select
+                          labelId="start-label"
+                          value={props.value}
+                          onChange={(e) =>
+                            props.onChange(e.target.value)
+                          }
+                          label="Start period"
+                        >
+                          {[...Array(15)].map((_, i) => (
+                            <MenuItem
+                              value={i + 1}
+                              key={"startPeriod" + i}
+                            >
+                              {i + 1}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </StyledFormControl>
+                    )}
+                  />
+                  <Controller
+                    name="endPeriod"
+                    control={control}
+                    defaultValue={labUsage.endPeriod}
+                    rules={{ required: true }}
+                    render={(props) => (
+                      <StyledFormControl variant="outlined">
+                        <InputLabel id="end-label">
+                          End period
+                        </InputLabel>
+                        <Select
+                          labelId="end-label"
+                          value={props.value}
+                          onChange={(e) =>
+                            props.onChange(e.target.value)
+                          }
+                          label="End period"
+                        >
+                          {[...Array(15)].map((_, i) => (
+                            <MenuItem
+                              value={i + 1}
+                              key={"endPeriod" + i}
+                            >
+                              {i + 1}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </StyledFormControl>
+                    )}
+                  />
+                </NewUsage>
+              </ContentContainer>
               <StyledButton
                 disabled={status === "pending"}
                 loading={status === "pending"}
@@ -355,6 +490,44 @@ const StyledButton = styled(Button)`
   &:hover {
     background-color: ${({ theme }) => theme.veryLightBlue};
   }
+`;
+
+const ContentContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1rem;
+  column-gap: 1rem;
+  width: 100%;
+`;
+
+const CurrentUsage = styled.div`
+  border-radius: 7px;
+  box-shadow: ${({ theme }) => theme.greyShadow};
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+`;
+
+const NewUsage = styled.div`
+  border-radius: 7px;
+  box-shadow: ${({ theme }) => theme.greyShadow};
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+`;
+
+const CurrentUsageHeader = styled.div`
+  font-size: 18px;
+  margin-bottom: 1rem;
+  color: ${({ theme }) => theme.blue};
+`;
+
+const NewUsageHeader = styled.div`
+  font-size: 18px;
+  margin-bottom: 1rem;
+  color: ${({ theme }) => theme.red};
 `;
 
 const StyledTextField = materialStyled(TextField)({

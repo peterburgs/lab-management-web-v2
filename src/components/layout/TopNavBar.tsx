@@ -121,15 +121,7 @@ const TopNavBar = ({
               registrations.length > 0 &&
               openSemester && <AppSearchBar />
             )
-          ) : (
-            <ClockContainer>
-              <Clock
-                format={"HH:mm:ss a"}
-                ticking={true}
-                timezone={"	Asia/Ho_Chi_Minh"}
-              />
-            </ClockContainer>
-          )}
+          ) : null}
         </SearchBarContainer>
 
         <UserSectionContainer>
@@ -192,7 +184,19 @@ const AvatarPanelContainer = styled.div`
 `;
 
 const ClockContainer = styled.div`
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-right: calc(100% - 30%);
+  border-radius: 3px;
+  color: white;
+  background-color: ${({ theme }) => theme.blue};
+  padding-left: 0.5rem;
 
+  @media (max-width: 500px) {
+    margin-right: 1rem;
+  }
 `;
 
 export default TopNavBar;

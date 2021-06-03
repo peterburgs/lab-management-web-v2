@@ -7,10 +7,18 @@ import {
   REQUEST_STATUSES,
   REQUEST_TYPES,
   ROLES,
+  Semester,
   Teaching,
   User,
 } from "../types/model";
-import { Skeleton } from "@material-ui/core";
+import {
+  Skeleton,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+} from "@material-ui/core";
+import { styled as materialStyled } from "@material-ui/styles";
 import SimpleBar from "simplebar-react";
 import Button from "../components/common/Button";
 import CommentComponent from "../components/request-detail-page/Comment";
@@ -177,23 +185,101 @@ const RequestDetailPage = () => {
         const teaching = teachings.find(
           (item) => item._id === labUsage.teaching
         );
-        if (teaching) {
+        const semester = semesters.find(
+          (item) => item._id === labUsage.semester
+        );
+        if (teaching && semester) {
           const course = (courses as Course[]).find(
             (item) => item._id === teaching.course
           );
           const lab = (labs as Lab[]).find(
-            (item) => item._id === labUsage.lab
+            (item) => item._id === request.oldLab
           );
           if (lab && course) {
             return (
-              <UsageInfo
-                courseName={course.courseName}
-                startPeriod={labUsage.startPeriod}
-                endPeriod={labUsage.endPeriod}
-                labName={lab.labName}
-                weekNo={labUsage.weekNo}
-                dayOfWeek={labUsage.dayOfWeek}
-              />
+              <CurrentUsage>
+                <CurrentUsageHeader>Current Usage</CurrentUsageHeader>
+                <StyledFormControl variant="outlined">
+                  <InputLabel id="oldlab-label">Lab</InputLabel>
+                  <Select disabled value={lab._id} label="Lab">
+                    {(labs as Lab[]).map((lab, i) => (
+                      <MenuItem value={lab._id} key={lab._id}>
+                        {lab.labName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </StyledFormControl>
+                <StyledFormControl variant="outlined">
+                  <InputLabel id="oldweekno-label">Week</InputLabel>
+                  <Select
+                    disabled
+                    labelId="oldweekno-label"
+                    value={request.oldWeekNo}
+                    label="Week"
+                  >
+                    {[...Array(semester.numberOfWeeks)].map(
+                      (_, i) => (
+                        <MenuItem value={i} key={"weekNo" + i}>
+                          {i}
+                        </MenuItem>
+                      )
+                    )}
+                  </Select>
+                </StyledFormControl>
+                <StyledFormControl variant="outlined">
+                  <InputLabel id="olddow-label">
+                    Day of week
+                  </InputLabel>
+                  <Select
+                    disabled
+                    labelId="olddow-label"
+                    value={request.oldDayOfWeek}
+                    label="Day of week"
+                  >
+                    <MenuItem value={0}>Monday</MenuItem>
+                    <MenuItem value={1}>Tuesday</MenuItem>
+                    <MenuItem value={2}>Wednesday</MenuItem>
+                    <MenuItem value={3}>Thursday</MenuItem>
+                    <MenuItem value={4}>Friday</MenuItem>
+                    <MenuItem value={5}>Saturday</MenuItem>
+                    <MenuItem value={6}>Sunday</MenuItem>
+                  </Select>
+                </StyledFormControl>
+                <StyledFormControl variant="outlined">
+                  <InputLabel id="oldstart-label">
+                    Start period
+                  </InputLabel>
+                  <Select
+                    disabled
+                    labelId="oldstart-label"
+                    value={request.oldStartPeriod}
+                    label="Start period"
+                  >
+                    {[...Array(15)].map((_, i) => (
+                      <MenuItem value={i + 1} key={"startPeriod" + i}>
+                        {i + 1}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </StyledFormControl>
+                <StyledFormControl variant="outlined">
+                  <InputLabel id="oldend-label">
+                    End period
+                  </InputLabel>
+                  <Select
+                    disabled
+                    labelId="oldend-label"
+                    value={request.oldEndPeriod}
+                    label="End period"
+                  >
+                    {[...Array(15)].map((_, i) => (
+                      <MenuItem value={i + 1} key={"endPeriod" + i}>
+                        {i + 1}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </StyledFormControl>
+              </CurrentUsage>
             );
           }
         }
@@ -230,14 +316,81 @@ const RequestDetailPage = () => {
         );
         if (lab && course) {
           return (
-            <UsageInfo
-              courseName={course!.courseName}
-              startPeriod={request.startPeriod}
-              endPeriod={request.endPeriod}
-              labName={lab!.labName}
-              weekNo={request.weekNo}
-              dayOfWeek={request.dayOfWeek}
-            />
+            <NewUsage>
+              <NewUsageHeader>New Usage</NewUsageHeader>
+              <StyledFormControl variant="outlined">
+                <InputLabel id="oldlab-label">Lab</InputLabel>
+                <Select disabled value={lab._id} label="Lab">
+                  {(labs as Lab[]).map((lab, i) => (
+                    <MenuItem value={lab._id} key={lab._id}>
+                      {lab.labName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </StyledFormControl>
+              <StyledFormControl variant="outlined">
+                <InputLabel id="oldweekno-label">Week</InputLabel>
+                <Select
+                  disabled
+                  labelId="oldweekno-label"
+                  value={request.weekNo}
+                  label="Week"
+                >
+                  <MenuItem value={request.weekNo}>
+                    {request.weekNo}
+                  </MenuItem>
+                </Select>
+              </StyledFormControl>
+              <StyledFormControl variant="outlined">
+                <InputLabel id="olddow-label">Day of week</InputLabel>
+                <Select
+                  disabled
+                  labelId="olddow-label"
+                  value={request.dayOfWeek}
+                  label="Day of week"
+                >
+                  <MenuItem value={0}>Monday</MenuItem>
+                  <MenuItem value={1}>Tuesday</MenuItem>
+                  <MenuItem value={2}>Wednesday</MenuItem>
+                  <MenuItem value={3}>Thursday</MenuItem>
+                  <MenuItem value={4}>Friday</MenuItem>
+                  <MenuItem value={5}>Saturday</MenuItem>
+                  <MenuItem value={6}>Sunday</MenuItem>
+                </Select>
+              </StyledFormControl>
+              <StyledFormControl variant="outlined">
+                <InputLabel id="oldstart-label">
+                  Start period
+                </InputLabel>
+                <Select
+                  disabled
+                  labelId="oldstart-label"
+                  value={request.startPeriod}
+                  label="Start period"
+                >
+                  {[...Array(15)].map((_, i) => (
+                    <MenuItem value={i + 1} key={"startPeriod" + i}>
+                      {i + 1}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </StyledFormControl>
+              <StyledFormControl variant="outlined">
+                <InputLabel id="oldend-label">End period</InputLabel>
+                <Select
+                  disabled
+                  labelId="oldend-label"
+                  value={request.endPeriod}
+                  label="End period"
+                >
+                  {[...Array(15)].map((_, i) => (
+                    <MenuItem value={i + 1} key={"endPeriod" + i}>
+                      {i + 1}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </StyledFormControl>
+            </NewUsage>
           );
         }
       }
@@ -247,87 +400,86 @@ const RequestDetailPage = () => {
   return (
     <StyledRequestDetailPage>
       {request && users.length > 0 && (
-        <>
-          <Header>
-            <RequestInfo>
-              <RequestTitle>{request.title}</RequestTitle>
-              <Info>
-                <TypeBadge>
-                  {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE
-                    ? "MODIFY LAB USAGE"
-                    : "ADD EXTRA CLASS"}
-                </TypeBadge>
-                <StatusBadge status={request.status}>
-                  {request.status === REQUEST_STATUSES.PENDING
-                    ? "PENDING"
-                    : REQUEST_STATUSES.APPROVED
-                    ? "APPROVED"
-                    : "DENIED"}
-                </StatusBadge>
-                <span>
-                  {new Date(
-                    request.updatedAt!.toString()
-                  ).toDateString() +
-                    " " +
-                    new Date(
+        <ScrollArea>
+          <>
+            <Header>
+              <RequestInfo>
+                <RequestTitle>{request.title}</RequestTitle>
+                <Info>
+                  <TypeBadge>
+                    {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE
+                      ? "MODIFY LAB USAGE"
+                      : "ADD EXTRA CLASS"}
+                  </TypeBadge>
+                  <StatusBadge status={request.status}>
+                    {request.status === REQUEST_STATUSES.PENDING
+                      ? "PENDING"
+                      : REQUEST_STATUSES.APPROVED
+                      ? "APPROVED"
+                      : "DENIED"}
+                  </StatusBadge>
+                  <span>
+                    {new Date(
                       request.updatedAt!.toString()
-                    ).getHours() +
-                    ":" +
-                    new Date(
-                      request.updatedAt!.toString()
-                    ).getMinutes() +
-                    ":" +
-                    new Date(
-                      request.updatedAt!.toString()
-                    ).getSeconds() +
-                    " " +
-                    `by ${
-                      (users as User[]).find(
-                        (user) => user._id === request.user
-                      )!.fullName
-                    } ${
-                      (users as User[]).find(
-                        (user) => user._id === request.user
-                      )!.email
-                    }`}
-                </span>
-              </Info>
-              <RequestDescription>
-                {request.description}
-              </RequestDescription>
-              {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE && (
-                <>
-                  <SmallText>Old usage:</SmallText>
-                  {renderOldUsage()}
-                </>
-              )}
+                    ).toDateString() +
+                      " " +
+                      new Date(
+                        request.updatedAt!.toString()
+                      ).getHours() +
+                      ":" +
+                      new Date(
+                        request.updatedAt!.toString()
+                      ).getMinutes() +
+                      ":" +
+                      new Date(
+                        request.updatedAt!.toString()
+                      ).getSeconds() +
+                      " " +
+                      `by ${
+                        (users as User[]).find(
+                          (user) => user._id === request.user
+                        )!.fullName
+                      } ${
+                        (users as User[]).find(
+                          (user) => user._id === request.user
+                        )!.email
+                      }`}
+                  </span>
+                </Info>
+                <RequestDescription>
+                  {request.description}
+                </RequestDescription>
+                <UsageContainer>
+                  {request.type ===
+                    REQUEST_TYPES.MODIFY_LAB_USAGE && (
+                    <>{renderOldUsage()}</>
+                  )}
 
-              <SmallText>New usage:</SmallText>
-              {renderNewUsage()}
-            </RequestInfo>
-            <Action>
-              {request.status === REQUEST_STATUSES.PENDING &&
-                role === ROLES.ADMIN && (
-                  <>
-                    <ActionButton
-                      loading={approveStatus === "pending"}
-                      action="approve"
-                      onClick={handleApprove}
-                    >
-                      Approve
-                    </ActionButton>
-                    <ActionButton
-                      loading={denyStatus === "pending"}
-                      action="deny"
-                      onClick={handleDeny}
-                    >
-                      Deny
-                    </ActionButton>
-                  </>
-                )}
-            </Action>
-          </Header>
-          <ScrollArea>
+                  {renderNewUsage()}
+                </UsageContainer>
+              </RequestInfo>
+              <Action>
+                {request.status === REQUEST_STATUSES.PENDING &&
+                  role === ROLES.ADMIN && (
+                    <>
+                      <ActionButton
+                        loading={approveStatus === "pending"}
+                        action="approve"
+                        onClick={handleApprove}
+                      >
+                        Approve
+                      </ActionButton>
+                      <ActionButton
+                        loading={denyStatus === "pending"}
+                        action="deny"
+                        onClick={handleDeny}
+                      >
+                        Deny
+                      </ActionButton>
+                    </>
+                  )}
+              </Action>
+            </Header>
             {commentStatus === "pending" ? (
               <SkeletonContainer>
                 <Skeleton
@@ -373,8 +525,8 @@ const RequestDetailPage = () => {
             )}
 
             <AddComment request={request._id} />
-          </ScrollArea>
-        </>
+          </>
+        </ScrollArea>
       )}
     </StyledRequestDetailPage>
   );
@@ -396,11 +548,12 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   padding-bottom: 1rem;
-  border-bottom: 1px solid ${({theme}) => theme.blue};
+  border-bottom: 1px solid ${({ theme }) => theme.blue};
 `;
 
 const RequestInfo = styled.div`
   display: flex;
+  width: 100%;
   flex-direction: column;
 
   & > * {
@@ -505,7 +658,7 @@ const CommentListContainer = styled.div`
   flex-direction: column;
   margin-top: 1rem;
   padding-bottom: 0.3rem;
-  border-bottom: 1px solid ${({theme}) => theme.blue};
+  border-bottom: 1px solid ${({ theme }) => theme.blue};
 `;
 
 const SmallText = styled.div`
@@ -518,5 +671,49 @@ const SkeletonContainer = styled.div`
   grid-template-rows: 1fr 1fr 1fr;
   grid-row-gap: 1rem;
 `;
+
+const CurrentUsage = styled.div`
+  border-radius: 7px;
+  box-shadow: ${({ theme }) => theme.greyShadow};
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+`;
+
+const NewUsage = styled.div`
+  border-radius: 7px;
+  box-shadow: ${({ theme }) => theme.greyShadow};
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+`;
+
+const CurrentUsageHeader = styled.div`
+  font-size: 18px;
+  margin-bottom: 1rem;
+  color: ${({ theme }) => theme.blue};
+`;
+
+const NewUsageHeader = styled.div`
+  font-size: 18px;
+  margin-bottom: 1rem;
+  color: ${({ theme }) => theme.red};
+`;
+
+const UsageContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1rem;
+  column-gap: 1rem;
+  width: 100%;
+  padding: 1rem;
+`;
+
+const StyledFormControl = materialStyled(FormControl)({
+  marginBottom: "1rem",
+  marginTop: "0.5rem",
+});
 
 export default RequestDetailPage;

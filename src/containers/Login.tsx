@@ -183,7 +183,7 @@ const Login = () => {
         <source src={backgroundVideo} type="video/mp4" />
       </StyledVideo>
       <HeaderContainer>
-        <Header>Lab management</Header>
+        <Header>Lab Management</Header>
       </HeaderContainer>
       <Action>
         {transition((style, item) => {

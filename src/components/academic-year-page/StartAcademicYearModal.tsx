@@ -59,6 +59,8 @@ const StartAcademicYearModal = (props: ModalProps) => {
               ? SEMESTER_STATUSES.OPENING
               : SEMESTER_STATUSES.FUTURE,
           academicYear: res.academicYear!._id,
+
+          startPracticalWeek: 2,
           isHidden: false,
         };
         const savedSemesterResult = await dispatch(
@@ -97,7 +99,9 @@ const StartAcademicYearModal = (props: ModalProps) => {
             <DateTimePicker
               label="Start date"
               inputFormat="dd/MM/yyyy hh:mm a"
-              renderInput={(props) => <StyledTextField {...props} helperText={null} />}
+              renderInput={(props) => (
+                <StyledTextField {...props} helperText={null} />
+              )}
               onChange={(value) => props.onChange(value)}
               value={props.value}
             />

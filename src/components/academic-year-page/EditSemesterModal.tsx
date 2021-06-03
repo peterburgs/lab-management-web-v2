@@ -33,13 +33,14 @@ const EditSemesterModal = (props: ModalProps) => {
 
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id: string }>();
-  const semester = useAppSelector(
-    (state) =>
-      state.semesters.semesters.find((item) => item._id === id)
+  const semester = useAppSelector((state) =>
+    state.semesters.semesters.find((item) => item._id === id)
   );
   const [status, setStatus] = useState("idle");
-  const [isEditNumberOfWeeks, setIsEditNumberOfWeeks] =
-    useState(false);
+  const [
+    isEditNumberOfWeeksAndStartPracticalWeek,
+    setIsEditNumberOfWeeksAndStartPracticalWeek,
+  ] = useState(false);
 
   const onSubmit = async (data: Semester) => {
     if (semester) {
@@ -94,7 +95,9 @@ const EditSemesterModal = (props: ModalProps) => {
             <DateTimePicker
               label="Start date"
               inputFormat="dd/MM/yyyy hh:mm a"
-              renderInput={(props) => <StyledTextField {...props} helperText={null} />}
+              renderInput={(props) => (
+                <StyledTextField {...props} helperText={null} />
+              )}
               onChange={(value) => props.onChange(value)}
               value={props.value}
             />
@@ -103,19 +106,21 @@ const EditSemesterModal = (props: ModalProps) => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={isEditNumberOfWeeks}
+              checked={isEditNumberOfWeeksAndStartPracticalWeek}
               onChange={(e) => {
-                setIsEditNumberOfWeeks(e.target.checked);
+                setIsEditNumberOfWeeksAndStartPracticalWeek(
+                  e.target.checked
+                );
               }}
             />
           }
-          label="Change the number of Weeks"
+          label="Change the number of Weeks and start practical week"
         />
         <StyledTextField
           label="Number of weeks"
           inputRef={register({ required: true })}
           name="numberOfWeeks"
-          disabled={!isEditNumberOfWeeks}
+          disabled={!isEditNumberOfWeeksAndStartPracticalWeek}
           defaultValue={semester ? semester.numberOfWeeks : null}
           error={Boolean(errors.numberOfWeeks)}
           type="number"
@@ -123,7 +128,19 @@ const EditSemesterModal = (props: ModalProps) => {
             errors.numberOfWeeks && "*This field is required"
           }
         />
-        {isEditNumberOfWeeks ? (
+        <StyledTextField
+          label="Start practical week"
+          inputRef={register({ required: true })}
+          name="startPracticalWeek"
+          disabled={!isEditNumberOfWeeksAndStartPracticalWeek}
+          defaultValue={semester ? semester.startPracticalWeek : null}
+          error={Boolean(errors.startPracticalWeek)}
+          type="number"
+          helperText={
+            errors.startPracticalWeek && "*This field is required"
+          }
+        />
+        {isEditNumberOfWeeksAndStartPracticalWeek ? (
           <Warning>
             The existing schedule will be removed due to this change!
           </Warning>

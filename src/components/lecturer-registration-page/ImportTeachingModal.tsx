@@ -42,18 +42,6 @@ const ImportTeachingModal = (props: ModalProps) => {
   const [registrableCourses, registrableCourseStatus] =
     useGetRegistrableCoursesByRegistration(openRegistration?._id);
 
-  const findStartPeriod = (str: string) => {
-    for (let i = 0; i <= str.length; i++) {
-      if (str[i] !== "-") return i + 1;
-    }
-  };
-
-  const findEndPeriod = (str: string) => {
-    for (let i = str.length - 1; i >= 0; i--) {
-      if (str[i] !== "-") return i + 1;
-    }
-  };
-
   // handle new course submit
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,19 +57,20 @@ const ImportTeachingModal = (props: ModalProps) => {
         let data = XLSX.utils.sheet_to_json(sheet);
 
         const attrs = [
-          "TT",
-          "Mã LHP",
-          "Tên HP",
-          "Số TC",
-          "Loại HP",
-          "Lớp",
-          "SL",
-          "CBGD",
-          "Tên Cán Bộ Giáng Dạy",
-          "Thứ",
-          "Tiết        1234567890123456",
-          "Phòng",
-          "Tuần học 234567890123456",
+          "#",
+          "Class code",
+          "Course name",
+          "Credits",
+          "Course type",
+          "Class",
+          "Number of students",
+          "Lecturer id",
+          "Lecturer name",
+          "Day of week",
+          "Periods",
+          "Theory room",
+          "Number of practical weeks",
+          "Start practical week",
         ];
 
         data.forEach((item, i) => {
@@ -97,6 +86,7 @@ const ImportTeachingModal = (props: ModalProps) => {
             endPeriod: 0,
             numberOfStudents: 0,
             numberOfPracticalWeeks: 0,
+            startPracticalWeek: 0,
             registration: "",
             theoryRoom: "",
             isHidden: false,
@@ -129,62 +119,63 @@ const ImportTeachingModal = (props: ModalProps) => {
             }
 
             switch (key) {
-              case "Mã LHP":
+              case "Class code":
                 teaching.code = strValue;
                 teaching.course = strValue.split("_")[0];
                 teaching.group = Number(strValue.split("_")[1]);
                 teaching.registration = openRegistration!._id;
                 break;
-              case "Lớp":
+              case "Class":
                 teaching.class = strValue;
                 break;
-              case "SL":
+              case "Number of students":
                 teaching.numberOfStudents = Number(strValue);
                 break;
-              case "Phòng":
+              case "Theory room":
                 teaching.theoryRoom = strValue;
                 break;
-              case "CBGD":
+              case "Lecturer id":
                 teaching.uId = strValue;
                 break;
-              case "Thứ":
+              case "Day of week":
                 switch (strValue) {
-                  case "Thứ Hai":
+                  case "Monday":
                     teaching.dayOfWeek = 0;
                     break;
-                  case "Thứ Ba":
+                  case "Tuesday":
                     teaching.dayOfWeek = 1;
                     break;
-                  case "Thứ Tư":
+                  case "Wednesday":
                     teaching.dayOfWeek = 2;
                     break;
-                  case "Thứ Năm":
+                  case "Thursday":
                     teaching.dayOfWeek = 3;
                     break;
-                  case "Thứ Sáu":
+                  case "Friday":
                     teaching.dayOfWeek = 4;
                     break;
-                  case "Thứ Bảy":
+                  case "Saturday":
                     teaching.dayOfWeek = 5;
                     break;
-                  case "Chủ Nhật":
+                  case "Sunday":
                     teaching.dayOfWeek = 6;
                     break;
                 }
                 break;
-              case "Tiết        1234567890123456":
-                teaching.startPeriod = findStartPeriod(strValue)!;
-                teaching.endPeriod = findEndPeriod(strValue)!;
+              case "Periods":
+                teaching.startPeriod = Number(strValue.split("-")[0]);
+                teaching.endPeriod = Number(strValue.split("-")[1]);
                 break;
-              case "Tuần học 234567890123456":
-                teaching.numberOfPracticalWeeks = Math.floor(
-                  strValue.length / 2
-                );
+              case "Number of practical weeks":
+                teaching.numberOfPracticalWeeks = Number(strValue);
+                break;
+              case "Start practical week":
+                teaching.startPracticalWeek = Number(strValue);
                 break;
             }
 
             // check if courses are in registrable courses
-            if (key === "Mã LHP") {
+            if (key === "Class code") {
               if (
                 !(registrableCourses as RegistrableCourse[]).find(
                   (item) => item.course === teaching.course

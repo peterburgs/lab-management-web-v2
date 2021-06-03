@@ -8,11 +8,17 @@ import { ReactComponent as LabIcon } from "../../assets/images/lab-icon.svg";
 import { ReactComponent as RequestIcon } from "../../assets/images/request-icon.svg";
 import { ReactComponent as UserIcon } from "../../assets/images/user-icon.svg";
 import { ReactComponent as AcademicYearIcon } from "../../assets/images/academic-year-icon.svg";
+import { ReactComponent as AttendanceIcon } from "../../assets/images/attendance-icon.svg";
 
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
 import { useAppSelector } from "../../store";
-import { AcademicYear, ROLES, Semester, SEMESTER_STATUSES } from "../../types/model";
+import {
+  AcademicYear,
+  ROLES,
+  Semester,
+  SEMESTER_STATUSES,
+} from "../../types/model";
 import { Skeleton } from "@material-ui/core";
 import useGetAllSemester from "../../hooks/semester/useGetAllSemester";
 import useGetAllAcademicYears from "../../hooks/academicYear/useGetAllAcademicYears";
@@ -141,6 +147,12 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
               path="/users"
               name="Users"
               icon={<UserIcon />}
+            />
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/attendances"
+              name="Attendances"
+              icon={<AttendanceIcon  />}
             />
           </>
         ) : null}

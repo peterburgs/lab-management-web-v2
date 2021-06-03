@@ -71,7 +71,10 @@ const TimeTable = ({
                   startPeriod={usage.startPeriod}
                   endPeriod={usage.endPeriod}
                   courseName={
-                    courses
+                    courses &&
+                    teachings.find(
+                      (teaching) => teaching._id === usage.teaching
+                    )
                       ? courses.find(
                           (course) =>
                             course._id ===
@@ -82,8 +85,26 @@ const TimeTable = ({
                         )!.courseName
                       : ""
                   }
+                  lecturerId={
+                    lecturers &&
+                    teachings.find(
+                      (teaching) => teaching._id === usage.teaching
+                    )
+                      ? lecturers.find(
+                          (lecturer) =>
+                            lecturer._id ===
+                            teachings.find(
+                              (teaching) =>
+                                teaching._id === usage.teaching
+                            )!.user
+                        )!._id
+                      : ""
+                  }
                   lecturerName={
-                    lecturers
+                    lecturers &&
+                    teachings.find(
+                      (teaching) => teaching._id === usage.teaching
+                    )
                       ? lecturers.find(
                           (lecturer) =>
                             lecturer._id ===

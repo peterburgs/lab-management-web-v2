@@ -3,16 +3,13 @@ import styled, { css } from "styled-components";
 import {
   REQUEST_STATUSES,
   User,
-  REQUEST_TYPES,
   Request,
   ROLES,
 } from "../types/model";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
-import MobileDateTimePicker from "@material-ui/lab/MobileDateTimePicker";
 import {
-  TextField,
   FormControl,
   InputLabel,
   Select,
@@ -28,13 +25,18 @@ import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import _ from "lodash";
 import { useAppSelector } from "../store";
 import useGetAllComments from "../hooks/comment/useGetAllComments";
+import moment from "moment";
+
+enum SORT_BY {
+  NEWEST,
+  OLDEST,
+}
 
 const RequestPage = () => {
   const [selectedStatus, setSelectedStatus] =
     useState<REQUEST_STATUSES>(REQUEST_STATUSES.PENDING);
 
-  const [startDate, setStartDate] = useState<Date>(null!);
-  const [endDate, setEndDate] = useState<Date>(null!);
+  const [sortBy, setSortBy] = useState<SORT_BY>(null!);
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
   const [filteredRequests, setFilterRequests] = useState<Request[]>(
     []
@@ -152,18 +154,40 @@ const RequestPage = () => {
   };
 
   useEffect(() => {
-    setFilterRequests(
-      _.cloneDeep(
-        (requests as Request[]).filter(
-          (request) =>
-            request.status === selectedStatus &&
-            request.title
-              .toLowerCase()
-              .includes(requestSearchText.toLowerCase())
-        )
-      )
+    let filteredRequests = (requests as Request[]).filter(
+      (request) =>
+        request.status === selectedStatus &&
+        request.title
+          .toLowerCase()
+          .includes(requestSearchText.toLowerCase())
     );
-  }, [requests, selectedStatus, requestSearchText]);
+
+    if (sortBy === SORT_BY.NEWEST) {
+      filteredRequests.sort((a, b) =>
+        moment(b.updatedAt).diff(moment(a.updatedAt))
+      );
+    }
+
+    if (sortBy === SORT_BY.OLDEST) {
+      filteredRequests.sort((a, b) =>
+        moment(a.updatedAt).diff(moment(b.updatedAt))
+      );
+    }
+
+    if (selectedAuthor) {
+      filteredRequests = filteredRequests.filter(
+        (item) => item.user === selectedAuthor
+      );
+    }
+
+    setFilterRequests(filteredRequests);
+  }, [
+    requests,
+    selectedStatus,
+    requestSearchText,
+    sortBy,
+    selectedAuthor,
+  ]);
 
   useEffect(() => {
     if (lecturer && role) {
@@ -237,34 +261,23 @@ const RequestPage = () => {
             </SelectStatusButton>
           </StatusContainer>
           <Filter isAdmin={role === ROLES.ADMIN}>
-            <MobileDateTimePicker
-              label="Start date"
-              value={startDate}
-              onChange={(newValue) => {
-                setStartDate(newValue!);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  margin="none"
-                  variant="standard"
-                />
-              )}
-            />
-            <MobileDateTimePicker
-              label="End date"
-              value={endDate}
-              onChange={(newValue) => {
-                setEndDate(newValue!);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  margin="none"
-                  variant="standard"
-                />
-              )}
-            />
+            <FormControl variant="standard" style={{ minWidth: 120 }}>
+              <InputLabel id="sort-by-label">Sort By</InputLabel>
+              <Select
+                margin="none"
+                labelId="sort-by-label"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                label="Sort by"
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+
+                <MenuItem value={SORT_BY.NEWEST}>Newest</MenuItem>
+                <MenuItem value={SORT_BY.OLDEST}>Oldest</MenuItem>
+              </Select>
+            </FormControl>
             {role === ROLES.ADMIN && (
               <FormControl
                 variant="standard"
@@ -316,7 +329,7 @@ interface FilterProps {
 const Filter = styled.div<FilterProps>`
   display: grid;
   grid-template-columns: ${({ isAdmin }) =>
-    isAdmin ? "1fr 1fr 1fr" : "1fr 1fr"};
+    isAdmin ? "1fr 1fr" : "1fr"};
   justify-content: center;
   align-items: center;
   column-gap: 1rem;

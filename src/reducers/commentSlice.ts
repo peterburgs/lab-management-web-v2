@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Comment } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface CommentState {
@@ -36,7 +36,7 @@ export const getComments = createAsyncThunk<
   { rejectValue: GETResponse }
 >("comments/getComments", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/comments", {
+    const { data } = await nodeAPI.get("/comments", {
       headers: auth(),
       params: { ...filter },
     });
@@ -52,7 +52,7 @@ export const newComment = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("comments/newComment", async (comment, thunkApi) => {
   try {
-    const { data } = await api.post("/comments", comment, {
+    const { data } = await nodeAPI.post("/comments", comment, {
       headers: auth(),
     });
     return data as POSTResponse;
@@ -69,7 +69,7 @@ export const editComment = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("comments/editComment", async (comment, thunkApi) => {
   try {
-    const { data } = await api.put(
+    const { data } = await nodeAPI.put(
       `/comments/${comment._id}`,
       comment,
       { headers: auth() }

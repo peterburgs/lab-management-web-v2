@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Lab } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface LabState {
@@ -42,7 +42,7 @@ export const getLabs = createAsyncThunk<
   { rejectValue: GETResponse }
 >("labs/getLabs", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/labs", {
+    const { data } = await nodeAPI.get("/labs", {
       headers: auth(),
       params: { ...filter },
     });
@@ -58,7 +58,7 @@ export const newLab = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("labs/newLab", async (lab, thunkApi) => {
   try {
-    const { data } = await api.post("/labs", lab, {
+    const { data } = await nodeAPI.post("/labs", lab, {
       headers: auth(),
     });
     return data as POSTResponse;
@@ -75,7 +75,7 @@ export const editLab = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("labs/editLab", async (lab, thunkApi) => {
   try {
-    const { data } = await api.put(`/labs/${lab._id}`, lab, {
+    const { data } = await nodeAPI.put(`/labs/${lab._id}`, lab, {
       headers: auth(),
     });
     return data as PUTResponse;
@@ -90,7 +90,7 @@ export const deleteLab = createAsyncThunk<
   { rejectValue: DELETEResponse }
 >("labs/deleteLab", async (labId, thunkApi) => {
   try {
-    const { data } = await api.delete(`/labs/${labId}`, {
+    const { data } = await nodeAPI.delete(`/labs/${labId}`, {
       headers: auth(),
     });
     return data as DELETEResponse;

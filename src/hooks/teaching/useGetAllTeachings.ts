@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Teaching } from "../../types/model";
-import { api, auth } from "../../api";
+import { nodeAPI, auth } from "../../api";
 import { GETResponse as TeachingGETResponse } from "../../reducers/teachingSlice";
 
 const useGetAllTeaching = () => {
@@ -10,7 +10,7 @@ const useGetAllTeaching = () => {
     (async () => {
       try {
         const res = (
-          await api.get("/teachings", {
+          await nodeAPI.get("/teachings", {
             headers: auth(),
           })
         ).data as TeachingGETResponse;

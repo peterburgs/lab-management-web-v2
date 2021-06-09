@@ -204,6 +204,7 @@ const LecturerRegistrationPage = () => {
               setTeachingIdToDelete(id);
             }}
             isAllowEditDelete={true}
+            isFaceId={false}
           />
         );
       } else if (teachingStatus === "failed") {
@@ -221,6 +222,7 @@ const LecturerRegistrationPage = () => {
               setTeachingIdToDelete(id);
             }}
             isAllowEditDelete={true}
+            isFaceId={false}
           />
         );
       } else {
@@ -264,6 +266,7 @@ const LecturerRegistrationPage = () => {
             setTeachingIdToDelete(id);
           }}
           isAllowEditDelete={true}
+          isFaceId={false}
         />
       );
     } else {

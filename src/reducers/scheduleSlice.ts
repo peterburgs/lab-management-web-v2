@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { LabUsage } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface ScheduleState {
@@ -41,7 +41,7 @@ export const getLabUsages = createAsyncThunk<
   { rejectValue: LabUsageGETResponse }
 >("schedule/getLabUsages", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/schedules", {
+    const { data } = await nodeAPI.get("/schedules", {
       headers: auth(),
       params: { ...filter },
     });
@@ -59,7 +59,7 @@ export const newLabUsage = createAsyncThunk<
   { rejectValue: LabUsagePOSTResponse }
 >("schedule/newLabUsage", async (labUsage, thunkApi) => {
   try {
-    const { data } = await api.post("/schedules", labUsage, {
+    const { data } = await nodeAPI.post("/schedules", labUsage, {
       headers: auth(),
     });
     return data as LabUsagePOSTResponse;
@@ -76,7 +76,7 @@ export const editLabUsage = createAsyncThunk<
   { rejectValue: LabUsagePUTResponse }
 >("schedule/editLabUsage", async (labUsage, thunkApi) => {
   try {
-    const { data } = await api.put(
+    const { data } = await nodeAPI.put(
       `/schedules/${labUsage._id}`,
       labUsage,
       { headers: auth() }
@@ -95,7 +95,7 @@ export const generateSchedule = createAsyncThunk<
   { rejectValue: SchedulePOSTResponse }
 >("schedule/generateSchedule", async ({ registration }, thunkApi) => {
   try {
-    const { data } = await api.post(
+    const { data } = await nodeAPI.post(
       "/schedules/generate",
       {
         registration,

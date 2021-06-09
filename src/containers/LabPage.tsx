@@ -152,6 +152,7 @@ const LabPage = () => {
           columns={columns}
           name="Lab"
           isAllowEditDelete={role === ROLES.ADMIN}
+          isFaceId={false}
           onClickEditBtn={(id) => history.push(`/labs/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteLabModal(true);
@@ -167,6 +168,7 @@ const LabPage = () => {
           columns={columns}
           name="Lab"
           isAllowEditDelete={role === ROLES.ADMIN}
+          isFaceId={false}
           onClickEditBtn={(id) => history.push(`/labs/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteLabModal(true);

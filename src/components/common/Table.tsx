@@ -28,6 +28,8 @@ import { TableSortLabel } from "@material-ui/core";
 import SimpleBar from "simplebar-react";
 import "simplebar/dist/simplebar.min.css";
 import { ReactComponent as Image } from "../../assets/images/empty.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserSlash } from "@fortawesome/free-solid-svg-icons";
 
 // Define the interface for the props of this component
 export interface TableProperties<T extends Record<string, unknown>>
@@ -39,7 +41,9 @@ export interface TableProperties<T extends Record<string, unknown>>
   onClick?: (row: Row<T>) => void;
   onClickEditBtn?: (id: string) => void;
   onClickDeleteBtn?: (id: string) => void;
+  onClickDeleteFaceIdBtn?: (id: string) => void;
   isAllowEditDelete: boolean;
+  isFaceId: boolean;
 }
 
 // Add alignment styling to header and cell
@@ -190,6 +194,17 @@ const Table = <T extends Record<string, unknown>>(
                   })}
 
                   <ActionButtonContainer>
+                    {props.isFaceId && (
+                      <DeleteButton
+                        onClick={() =>
+                          props.onClickDeleteFaceIdBtn!(
+                            row.original.rowId as string
+                          )
+                        }
+                      >
+                        <FontAwesomeIcon icon={faUserSlash} />
+                      </DeleteButton>
+                    )}
                     {props.isAllowEditDelete && (
                       <>
                         {" "}
@@ -291,7 +306,7 @@ const ActionButtonContainer = styled.div`
   position: absolute;
   bottom: 0;
   top: 0;
-  display: none;
+  display: flex;
   align-items: center;
   background: #fff;
   margin-right: 0.5rem;

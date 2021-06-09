@@ -103,6 +103,7 @@ export type User = {
   email: string;
   fullName: string;
   avatarUrl: string;
+  isFaceIdVerified: boolean;
   roles: ROLES[];
   createdAt: Date;
   updatedAt: Date;

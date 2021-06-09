@@ -4,7 +4,7 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { ROLES, User } from "../types/model";
-import { api } from "../api";
+import { nodeAPI } from "../api";
 import _ from "lodash";
 import { AppDispatch } from "../store";
 
@@ -37,7 +37,7 @@ export const verify = createAsyncThunk<
   "auth/verify",
   async ({ token, role, expirationDate }, thunkApi) => {
     try {
-      const { data } = await api.get("/auth", {
+      const { data } = await nodeAPI.get("/auth", {
         params: { role: role },
         headers: { Authorization: `Bearer ${token}` },
       });

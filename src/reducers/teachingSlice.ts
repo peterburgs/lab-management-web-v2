@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Teaching } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 import { RootState } from "../store";
 
@@ -46,7 +46,7 @@ export const getTeachings = createAsyncThunk<
   }
 >("teachings/getTeachings", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/teachings", {
+    const { data } = await nodeAPI.get("/teachings", {
       headers: auth(),
       params: { ...filter },
     });
@@ -62,7 +62,7 @@ export const newTeaching = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("teachings/newTeaching", async (teaching, thunkApi) => {
   try {
-    const { data } = await api.post("/teachings", teaching, {
+    const { data } = await nodeAPI.post("/teachings", teaching, {
       headers: auth(),
     });
     return data as POSTResponse;
@@ -79,7 +79,7 @@ export const createBulkOfTeachings = createAsyncThunk<
   { rejectValue: { teachings: Teaching[]; message: string } }
 >("teachings/createBulkOfTeachings", async (teachings, thunkApi) => {
   try {
-    const { data } = await api.post(
+    const { data } = await nodeAPI.post(
       "/teachings/bulk",
       { teachings: [...teachings] },
       {
@@ -100,7 +100,7 @@ export const editTeaching = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("teachings/editTeaching", async (teaching, thunkApi) => {
   try {
-    const { data } = await api.put(
+    const { data } = await nodeAPI.put(
       `/teachings/${teaching._id}`,
       teaching,
       { headers: auth() }
@@ -117,7 +117,7 @@ export const deleteTeaching = createAsyncThunk<
   { rejectValue: DELETEResponse }
 >("teachings/deleteTeaching", async (teachingId, thunkApi) => {
   try {
-    const { data } = await api.delete(`/teachings/${teachingId}`, {
+    const { data } = await nodeAPI.delete(`/teachings/${teachingId}`, {
       headers: auth(),
     });
     return data as DELETEResponse;

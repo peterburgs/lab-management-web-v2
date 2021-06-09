@@ -169,6 +169,7 @@ const CoursePage = () => {
           columns={columns}
           name="Course"
           isAllowEditDelete={role === ROLES.ADMIN}
+          isFaceId={false}
           onClickEditBtn={(id) => history.push(`/courses/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteCourseModal(true);
@@ -184,6 +185,7 @@ const CoursePage = () => {
           columns={columns}
           name="Course"
           isAllowEditDelete={role === ROLES.ADMIN}
+          isFaceId={false}
           onClickEditBtn={(id) => history.push(`/courses/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteCourseModal(true);

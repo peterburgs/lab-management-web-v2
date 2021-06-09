@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Request } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface RequestState {
@@ -36,7 +36,7 @@ export const getRequests = createAsyncThunk<
   { rejectValue: GETResponse }
 >("requests/getRequests", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/requests", {
+    const { data } = await nodeAPI.get("/requests", {
       headers: auth(),
       params: { ...filter },
     });
@@ -52,7 +52,7 @@ export const newRequest = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("requests/newRequest", async (request, thunkApi) => {
   try {
-    const { data } = await api.post("/requests", request, {
+    const { data } = await nodeAPI.post("/requests", request, {
       headers: auth(),
     });
     return data as POSTResponse;
@@ -69,7 +69,7 @@ export const editRequest = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("requests/editRequest", async (request, thunkApi) => {
   try {
-    const { data } = await api.put(
+    const { data } = await nodeAPI.put(
       `/requests/${request._id}`,
       request,
       { headers: auth() }

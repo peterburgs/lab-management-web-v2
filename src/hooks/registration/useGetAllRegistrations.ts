@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Registration } from "../../types/model";
-import { api, auth } from "../../api";
+import { nodeAPI, auth } from "../../api";
 import { GETResponse as RegistrationGETResponse } from "../../reducers/registrationSlice";
 
 const useGetAllRegistrations = () => {
@@ -12,7 +12,7 @@ const useGetAllRegistrations = () => {
     (async () => {
       try {
         const res = (
-          await api.get("/registrations", {
+          await nodeAPI.get("/registrations", {
             headers: auth(),
           })
         ).data as RegistrationGETResponse;

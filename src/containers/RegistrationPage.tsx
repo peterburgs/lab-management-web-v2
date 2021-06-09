@@ -238,6 +238,7 @@ const RegistrationPage = () => {
             columns={columns}
             name="Teaching"
             isAllowEditDelete={false}
+            isFaceId={false}
           />
         );
       } else if (teachingStatus === "failed") {
@@ -248,6 +249,7 @@ const RegistrationPage = () => {
             columns={columns}
             name="Teaching"
             isAllowEditDelete={false}
+            isFaceId={false}
           />
         );
       } else {
@@ -284,6 +286,7 @@ const RegistrationPage = () => {
           columns={columns}
           name="Teaching"
           isAllowEditDelete={false}
+          isFaceId={false}
         />
       );
     } else {

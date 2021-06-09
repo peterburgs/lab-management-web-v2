@@ -85,10 +85,10 @@ const StyledUsage = styled.div<StyledUsageProps>`
     shift === 1 ? "#ffe5ec" : shift === 2 ? "#D7F2FF" : "#EEEAF7"};
   border-left: ${({ shift }) =>
     shift === 1
-      ? "3px solid rgb(254,63,113)"
+      ? "3px solid #fe3f71"
       : shift === 2
-      ? "3px solid rgb(74,137,162)"
-      : "3px solid rgb(101,55,192)"};
+      ? "3px solid #4a89a2"
+      : "3px solid #6537c0"};
   height: 130px;
   display: flex;
   flex-direction: column;

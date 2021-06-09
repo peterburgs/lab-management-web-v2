@@ -152,7 +152,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
               isCollapsed={isCollapsed}
               path="/attendances"
               name="Attendances"
-              icon={<AttendanceIcon  />}
+              icon={<AttendanceIcon />}
             />
           </>
         ) : null}

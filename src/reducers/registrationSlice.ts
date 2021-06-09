@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Registration } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface RegistrationState {
@@ -40,7 +40,7 @@ export const getRegistrations = createAsyncThunk<
   { rejectValue: GETResponse }
 >("registrations/getRegistrations", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/registrations", {
+    const { data } = await nodeAPI.get("/registrations", {
       headers: auth(),
       params: { ...filter },
     });
@@ -58,7 +58,7 @@ export const openRegistration = createAsyncThunk<
   "registrations/openRegistration",
   async (registration, thunkApi) => {
     try {
-      const { data } = await api.post(
+      const { data } = await nodeAPI.post(
         "/registrations",
         registration,
         { headers: auth() }
@@ -80,7 +80,7 @@ export const editRegistration = createAsyncThunk<
   "registrations/editRegistration",
   async (registration, thunkApi) => {
     try {
-      const { data } = await api.put(
+      const { data } = await nodeAPI.put(
         `/registrations/${registration._id}`,
         registration,
         { headers: auth() }

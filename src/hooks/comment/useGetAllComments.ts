@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Comment } from "../../types/model";
-import { api, auth } from "../../api";
+import { nodeAPI, auth } from "../../api";
 import { GETResponse as CommentGETResponse } from "../../reducers/commentSlice";
 
 const useGetAllComments = () => {
@@ -10,7 +10,7 @@ const useGetAllComments = () => {
     (async () => {
       try {
         const res = (
-          await api.get("/comments", {
+          await nodeAPI.get("/comments", {
             headers: auth(),
           })
         ).data as CommentGETResponse;

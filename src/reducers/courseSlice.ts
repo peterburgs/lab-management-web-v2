@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Course } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface CourseState {
@@ -42,7 +42,7 @@ export const getCourses = createAsyncThunk<
   { rejectValue: GETResponse }
 >("courses/getCourses", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/courses", {
+    const { data } = await nodeAPI.get("/courses", {
       headers: auth(),
       params: { ...filter },
     });
@@ -58,7 +58,7 @@ export const newCourse = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("courses/newCourse", async (course, thunkApi) => {
   try {
-    const { data } = await api.post("/courses", course, {
+    const { data } = await nodeAPI.post("/courses", course, {
       headers: auth(),
     });
     return data as POSTResponse;
@@ -75,7 +75,7 @@ export const editCourse = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("courses/editCourse", async (course, thunkApi) => {
   try {
-    const { data } = await api.put(`/courses/${course._id}`, course, {
+    const { data } = await nodeAPI.put(`/courses/${course._id}`, course, {
       headers: auth(),
     });
     return data as PUTResponse;
@@ -90,7 +90,7 @@ export const deleteCourse = createAsyncThunk<
   { rejectValue: DELETEResponse }
 >("courses/deleteCourse", async (courseId, thunkApi) => {
   try {
-    const { data } = await api.delete(`/courses/${courseId}`, {
+    const { data } = await nodeAPI.delete(`/courses/${courseId}`, {
       headers: auth(),
     });
     return data as DELETEResponse;

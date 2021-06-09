@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { LabUsage } from "../../types/model";
-import { api, auth } from "../../api";
+import { nodeAPI, auth } from "../../api";
 import { LabUsageGETResponse } from "../../reducers/scheduleSlice";
 
 const useGetAllLabUsages = () => {
@@ -10,7 +10,7 @@ const useGetAllLabUsages = () => {
     (async () => {
       try {
         const res = (
-          await api.get("/schedules", {
+          await nodeAPI.get("/schedules", {
             headers: auth(),
           })
         ).data as LabUsageGETResponse;

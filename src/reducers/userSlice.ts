@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { User } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth, faceAPI } from "../api";
 import _ from "lodash";
 
 interface UserState {
@@ -43,7 +43,7 @@ export const getUsers = createAsyncThunk<
   { rejectValue: GETResponse }
 >("users/getUsers", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/users", {
+    const { data } = await nodeAPI.get("/users", {
       headers: auth(),
       params: { ...filter },
     });
@@ -59,10 +59,35 @@ export const newUser = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("users/newUser", async (user, thunkApi) => {
   try {
-    const { data } = await api.post("/users", user, {
+    const { data } = await nodeAPI.post("/users", user, {
       headers: auth(),
     });
+    const res = await faceAPI.post(
+      "/user",
+      { id: user._id, email: user.email, fullName: user.fullName },
+      { headers: auth() }
+    );
     return data as POSTResponse;
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as POSTResponse
+    );
+  }
+});
+
+export const deleteFaceID = createAsyncThunk<
+  PUTResponse,
+  User,
+  { rejectValue: PUTResponse }
+>("user/deleteFaceID", async (user, thunkApi) => {
+  try {
+    const res = await faceAPI.delete(`/face/${user._id}`, {
+      headers: auth(),
+    });
+    const { data } = await nodeAPI.put(`/users/${user._id}`, user, {
+      headers: auth(),
+    });
+    return data as DELETEResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(
       err.response.data as POSTResponse
@@ -76,7 +101,7 @@ export const editUser = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("users/editUser", async (user, thunkApi) => {
   try {
-    const { data } = await api.put(`/users/${user._id}`, user, {
+    const { data } = await nodeAPI.put(`/users/${user._id}`, user, {
       headers: auth(),
     });
     return data as PUTResponse;
@@ -91,7 +116,7 @@ export const deleteUser = createAsyncThunk<
   { rejectValue: DELETEResponse }
 >("users/deleteUser", async (userId, thunkApi) => {
   try {
-    const { data } = await api.delete(`/users/${userId}`, {
+    const { data } = await nodeAPI.delete(`/users/${userId}`, {
       headers: auth(),
     });
     return data as DELETEResponse;
@@ -144,6 +169,13 @@ export const UserSlice = createSlice({
       state.message = action.payload.message;
     });
     builder.addCase(editUser.fulfilled, (state, action) => {
+      const currentIndex = state.users.findIndex(
+        (item) => item._id === action.payload.user!._id
+      );
+      state.users[currentIndex] = _.cloneDeep(action.payload.user!);
+      state.message = action.payload.message;
+    });
+    builder.addCase(deleteFaceID.fulfilled, (state, action) => {
       const currentIndex = state.users.findIndex(
         (item) => item._id === action.payload.user!._id
       );

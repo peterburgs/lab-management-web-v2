@@ -22,12 +22,14 @@ import useGetAllUsers from "../hooks/user/useGetAllUsers";
 import { useAppSelector, useAppDispatch } from "../store";
 import { useHistory } from "react-router";
 import { resetState as resetUserState } from "../reducers/userSlice";
+import DeleteFaceIDModal from "../components/user-page/DeleteFaceIDModal";
 
 type UserTable = {
   rowId: string;
   id: string;
   fullName: string;
   email: string;
+  isFaceIdVerified: JSX.Element;
   createdAt: string;
 };
 
@@ -45,6 +47,11 @@ const prepareData = (
         id: user._id,
         fullName: user.fullName,
         email: user.email,
+        isFaceIdVerified: user.isFaceIdVerified ? (
+          <AvailableBadge>Verified</AvailableBadge>
+        ) : (
+          <NotAvailableBadge>Not verified</NotAvailableBadge>
+        ),
         createdAt: new Date(user.createdAt).toDateString(),
       };
     });
@@ -58,10 +65,13 @@ const prepareData = (
 const UserPage = () => {
   // State
   const [showNewUserModal, setShowNewUserModal] = useState(false);
-  const [showDeleteUserModal, setShowDeleteUserModal] = useState(
-    false
-  );
+  const [showDeleteUserModal, setShowDeleteUserModal] =
+    useState(false);
+  const [showDeleteFaceIdModal, setShowDeleteFaceIdModal] =
+    useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState<string>(null!);
+  const [userIdToDeleteFaceId, setUserIdToDeleteFaceId] =
+    useState<string>(null!);
 
   // * Call API
   const [users, userStatus] = useGetAllUsers();
@@ -88,14 +98,21 @@ const UserPage = () => {
       {
         Header: "ID",
         accessor: "id" as const,
+        width: 50,
       },
       {
         Header: "Full Name",
         accessor: "fullName" as const,
+        width: 100,
       },
       {
         Header: "Email",
         accessor: "email" as const,
+      },
+      {
+        Header: "FaceID",
+        accessor: "isFaceIdVerified" as const,
+        width: 50,
       },
       {
         Header: "Created At",
@@ -118,10 +135,15 @@ const UserPage = () => {
           columns={columns}
           name="User"
           isAllowEditDelete={true}
+          isFaceId={true}
           onClickEditBtn={(id) => history.push(`/users/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteUserModal(true);
             setUserIdToDelete(id);
+          }}
+          onClickDeleteFaceIdBtn={(id) => {
+            setShowDeleteFaceIdModal(true);
+            setUserIdToDeleteFaceId(id);
           }}
         />
       );
@@ -133,10 +155,15 @@ const UserPage = () => {
           columns={columns}
           name="User"
           isAllowEditDelete={true}
+          isFaceId={true}
           onClickEditBtn={(id) => history.push(`/users/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteUserModal(true);
             setUserIdToDelete(id);
+          }}
+          onClickDeleteFaceIdBtn={(id) => {
+            setShowDeleteFaceIdModal(true);
+            setUserIdToDeleteFaceId(id);
           }}
         />
       );
@@ -176,6 +203,12 @@ const UserPage = () => {
         setShowModal={setShowDeleteUserModal}
         name="Confirm delete user"
         userId={userIdToDelete}
+      />
+      <DeleteFaceIDModal
+        showModal={showDeleteFaceIdModal}
+        setShowModal={setShowDeleteFaceIdModal}
+        name="Confirm delete face ID"
+        userId={userIdToDeleteFaceId}
       />
       <StyledUserPage>
         <Toolbar>
@@ -262,4 +295,21 @@ const IconButtonContainer = styled.div`
   justify-self: end;
 `;
 
+const NotAvailableBadge = styled.div`
+  background-color: ${({ theme }) => theme.lightRed};
+  color: ${({ theme }) => theme.red};
+  font-size: 12px;
+  padding: 0 0.5rem;
+  font-weight: 600;
+  border-radius: 10px;
+`;
+
+const AvailableBadge = styled.div`
+  background-color: ${({ theme }) => theme.green};
+  color: white;
+  font-size: 12px;
+  padding: 0 0.5rem;
+  font-weight: 600;
+  border-radius: 10px;
+`;
 export default UserPage;

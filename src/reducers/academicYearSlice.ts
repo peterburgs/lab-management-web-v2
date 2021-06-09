@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AcademicYear } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface AcademicYearState {
@@ -36,7 +36,7 @@ export const getAcademicYears = createAsyncThunk<
   { rejectValue: GETResponse }
 >("academicYears/getAcademicYears", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/academic-years", {
+    const { data } = await nodeAPI.get("/academic-years", {
       headers: auth(),
       params: { ...filter },
     });
@@ -56,7 +56,7 @@ export const startAcademicYear = createAsyncThunk<
   async (academicYear, thunkApi) => {
     try {
       console.log(academicYear);
-      const { data } = await api.post(
+      const { data } = await nodeAPI.post(
         "/academic-years",
         academicYear,
         {
@@ -80,7 +80,7 @@ export const editAcademicYear = createAsyncThunk<
   "academicYears/editAcademicYear",
   async (academicYear, thunkApi) => {
     try {
-      const { data } = await api.put(
+      const { data } = await nodeAPI.put(
         `/academic-years/${academicYear._id}`,
         academicYear,
         { headers: auth() }

@@ -33,6 +33,7 @@ const NewUserModal = (props: ModalProps) => {
   const onSubmit = async (data: User) => {
     try {
       data.isHidden = false;
+      data.isFaceIdVerified = false;
       data.roles = selectedRoles.map((role) => {
         return role._id === "0" ? ROLES.ADMIN : ROLES.LECTURER;
       });

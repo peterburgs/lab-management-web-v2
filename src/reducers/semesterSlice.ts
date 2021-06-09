@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { Semester, SEMESTER_STATUSES } from "../types/model";
-import { api, auth } from "../api";
+import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
 interface SemesterState {
@@ -40,7 +40,7 @@ export const getSemesters = createAsyncThunk<
   { rejectValue: GETResponse }
 >("semesters/getSemesters", async (filter, thunkApi) => {
   try {
-    const { data } = await api.get("/semesters", {
+    const { data } = await nodeAPI.get("/semesters", {
       headers: auth(),
       params: { ...filter },
     });
@@ -58,7 +58,7 @@ export const startSemester = createAsyncThunk<
 >("semesters/startSemester", async (semester, thunkApi) => {
   try {
     console.log(semester);
-    const { data } = await api.post("/semesters", semester, {
+    const { data } = await nodeAPI.post("/semesters", semester, {
       headers: auth(),
     });
     return data as POSTResponse;
@@ -75,7 +75,7 @@ export const editSemester = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("semesters/editSemester", async (semester, thunkApi) => {
   try {
-    const { data } = await api.put(
+    const { data } = await nodeAPI.put(
       `/semesters/${semester._id}`,
       semester,
       { headers: auth() }

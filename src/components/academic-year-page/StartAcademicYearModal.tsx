@@ -87,6 +87,10 @@ const StartAcademicYearModal = (props: ModalProps) => {
     }
   };
 
+  const disableDays = (date: Date) => {
+    return date.getDay() !== 1;
+  };
+
   return (
     <Modal {...props}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -94,7 +98,16 @@ const StartAcademicYearModal = (props: ModalProps) => {
           name="startDate"
           control={control}
           rules={{ required: true }}
-          defaultValue={new Date()}
+          defaultValue={
+            new Date().getDay() === 1
+              ? new Date().setHours(7, 0, 0)
+              : new Date().getDay() === 0
+              ? moment(new Date().setHours(7, 0, 0)).add(1, "days")
+              : moment(new Date().setHours(7, 0, 0)).add(
+                  8 - new Date().getDay(),
+                  "days"
+                )
+          }
           render={(props) => (
             <DateTimePicker
               label="Start date"
@@ -104,6 +117,8 @@ const StartAcademicYearModal = (props: ModalProps) => {
               )}
               onChange={(value) => props.onChange(value)}
               value={props.value}
+              shouldDisableDate={disableDays}
+              disablePast={true}
             />
           )}
         />

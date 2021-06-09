@@ -125,13 +125,13 @@ const TopNavBar = ({
         </SearchBarContainer>
 
         <UserSectionContainer>
-          <NotificationButton onClick={setIsShowNotifyPanel} />
+          {/* <NotificationButton onClick={setIsShowNotifyPanel} /> */}
 
-          {isShowNotifyPanel && (
+          {/* {isShowNotifyPanel && (
             <NotificationPanelContainer>
               <NotificationPanel />
             </NotificationPanelContainer>
-          )}
+          )} */}
           <AvatarButton onClick={setIsShowAvatarPanel} />
           {isShowAvatarPanel && (
             <AvatarPanelContainer>
@@ -163,7 +163,7 @@ const SearchBarContainer = styled.div`
 
 const UserSectionContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   column-gap: 1.5rem;
 `;
 

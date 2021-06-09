@@ -190,17 +190,20 @@ const AcademicYearPage = () => {
                   <InfoContainer>
                     <Header>
                       <span>{academicYear.name}</span>
-                      <IconButton
-                        onClick={() =>
-                          history.push(
-                            `/academic-years/${academicYear._id}`
-                          )
-                        }
-                        color="primary"
-                        component="span"
-                      >
-                        <EditIcon />
-                      </IconButton>
+                      {academicYear.isOpening && (
+                        <IconButton
+                          onClick={() =>
+                            history.push(
+                              `/academic-years/${academicYear._id}`
+                            )
+                          }
+                          color="primary"
+                          component="span"
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      )}
+
                       {academicYear.isOpening ? (
                         <OpenBadge>OPENING</OpenBadge>
                       ) : (
@@ -316,17 +319,20 @@ const AcademicYearPage = () => {
                         <InfoContainer>
                           <Header>
                             <span>{item.semesterName}</span>
-                            <IconButton
-                              onClick={() =>
-                                history.push(
-                                  `/academic-years/semesters/${item._id}`
-                                )
-                              }
-                              color="primary"
-                              component="span"
-                            >
-                              <EditIcon />
-                            </IconButton>
+                            {academicYear.isOpening && (
+                              <IconButton
+                                onClick={() =>
+                                  history.push(
+                                    `/academic-years/semesters/${item._id}`
+                                  )
+                                }
+                                color="primary"
+                                component="span"
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            )}
+
                             {item.status ===
                             SEMESTER_STATUSES.OPENING ? (
                               <OpenBadge>OPENING</OpenBadge>
@@ -350,7 +356,8 @@ const AcademicYearPage = () => {
                             Number of weeks: {item.numberOfWeeks}
                           </Text>
                         </InfoContainer>
-                        {item.status === SEMESTER_STATUSES.OPENING ? (
+                        {item.status === SEMESTER_STATUSES.OPENING &&
+                        academicYear.isOpening ? (
                           <ActionContainer>
                             <SemesterActionButton
                               semesterStatus={item.status}
@@ -364,7 +371,8 @@ const AcademicYearPage = () => {
                             </SemesterActionButton>
                           </ActionContainer>
                         ) : item.status ===
-                          SEMESTER_STATUSES.FUTURE ? (
+                            SEMESTER_STATUSES.FUTURE &&
+                          academicYear.isOpening ? (
                           <ActionContainer>
                             <SemesterActionButton
                               semesterStatus={item.status}
@@ -648,6 +656,7 @@ const ClosedBadge = styled.div`
   padding: 0.3rem;
   font-weight: 600;
   border-radius: 10px;
+  margin-left: 1rem;
 `;
 
 const OpenBadge = styled.div`
@@ -657,6 +666,7 @@ const OpenBadge = styled.div`
   padding: 0.3rem;
   font-weight: 600;
   border-radius: 10px;
+  margin-left: 1rem;
 `;
 
 const FutureBadge = styled.div`
@@ -666,6 +676,7 @@ const FutureBadge = styled.div`
   padding: 0.3rem;
   font-weight: 600;
   border-radius: 10px;
+  margin-left: 1rem;
 `;
 
 const NotFoundContainer = styled.div`

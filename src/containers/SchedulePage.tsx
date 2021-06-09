@@ -9,6 +9,7 @@ import {
 import TimeTable from "../components/schedule-page/TimeTable";
 import Button from "../components/common/Button";
 import { Skeleton } from "@material-ui/core";
+import { styled as materialUiStyled } from "@material-ui/styles";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import PrivateRoute from "./PrivateRoute";
 import EditLabUsageModal from "../components/schedule-page/EditLabUsageModal";
@@ -746,7 +747,7 @@ const SchedulePage = () => {
         <>
           <Toolbar>
             <Filter>
-              <FormControl>
+              <StyledFormControl>
                 <InputLabel id="academic-year-label">
                   Years
                 </InputLabel>
@@ -769,8 +770,8 @@ const SchedulePage = () => {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
-              <FormControl>
+              </StyledFormControl>
+              <StyledFormControl>
                 <InputLabel id="semester-label">Semester</InputLabel>
                 <Select
                   labelId="semester-label"
@@ -797,8 +798,8 @@ const SchedulePage = () => {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
-              <FormControl>
+              </StyledFormControl>
+              <StyledFormControl>
                 <InputLabel id="shift-label">Week</InputLabel>
                 <Select
                   labelId="week-label"
@@ -816,30 +817,41 @@ const SchedulePage = () => {
                       )
                     )}
                 </Select>
-              </FormControl>
+              </StyledFormControl>
+              <Text>
+                From{" "}
+                {moment(new Date(selectedSemester.startDate!))
+                  .add(week, "weeks")
+                  .format("dddd DD/MM/yyyy")}{" "}
+                to{" "}
+                {moment(new Date(selectedSemester.startDate!))
+                  .add(week, "weeks")
+                  .add(7, "days")
+                  .format("dddd DD/MM/yyyy")}
+              </Text>
             </Filter>
             <Action>
-              <Button
+              <StyledButton
                 onClick={exportScheduleCSV}
                 icon={<GetAppIcon />}
               >
                 Export schedule
-              </Button>
+              </StyledButton>
               {role === ROLES.ADMIN ? (
-                <Button
+                <StyledButton
                   onClick={exportTheoryRoomsCSV}
                   icon={<GetAppIcon />}
                 >
                   Export theory rooms
-                </Button>
+                </StyledButton>
               ) : (
-                <Button
+                <StyledButton
                   onClick={() =>
                     setShowAddExtraClassRequestModal(true)
                   }
                 >
                   Make request to add extra class
-                </Button>
+                </StyledButton>
               )}
             </Action>
           </Toolbar>
@@ -936,15 +948,15 @@ const Toolbar = styled.div`
 `;
 
 const Filter = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  column-gap: 1rem;
+  display: flex;
+  margin-right: 4rem;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Action = styled.div`
-  display: grid;
-  column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+
   font-size: 0.875rem;
 
   @media (max-width: 600px) {
@@ -995,6 +1007,19 @@ const NotFoundContainer = styled.div`
       height: auto;
     }
   }
+`;
+
+const StyledButton = styled(Button)`
+  padding: 0 0.5rem;
+  margin: 0 0.5rem;
+`;
+
+const StyledFormControl = materialUiStyled(FormControl)({
+  marginRight: "1rem",
+});
+
+const Text = styled.div`
+  font-size: 16px;
 `;
 
 export default SchedulePage;

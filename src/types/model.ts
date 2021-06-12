@@ -128,6 +128,8 @@ export type LabUsage = {
   dayOfWeek: number;
   startPeriod: number;
   endPeriod: number;
+  checkInAt?: Date;
+  checkOutAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
   isHidden: boolean;

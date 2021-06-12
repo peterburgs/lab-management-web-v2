@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { useAppSelector } from "../../store";
 import { ROLES } from "../../types/model";
+import OccupiedImage from "../../assets/images/occupied.png";
+import moment from "moment";
 
 interface UsageProps {
   startPeriod: number;
@@ -10,6 +12,8 @@ interface UsageProps {
   lecturerName: string;
   id: string;
   lecturerId: string;
+  checkInAt?: Date;
+  checkOutAt?: Date;
   onEditLabUsage: (id: string) => void;
   onRequestModifyLabUsage: (id: string) => void;
 }
@@ -23,6 +27,8 @@ const Usage = ({
   lecturerId,
   onEditLabUsage,
   onRequestModifyLabUsage,
+  checkInAt,
+  checkOutAt,
 }: UsageProps) => {
   const convertPeriodToShift = (
     startPeriod: number,
@@ -47,15 +53,51 @@ const Usage = ({
           <CourseName>{courseName}</CourseName>
           <LecturerName>{lecturerName}</LecturerName>
           <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
+          <CheckIn>
+            Check in:{" "}
+            {checkInAt
+              ? moment(new Date(checkInAt)).format(
+                  "HH:mm:ss DD/MM/YYYY"
+                )
+              : "pending"}
+          </CheckIn>
+          <CheckOut>
+            Check out:{" "}
+            {checkInAt
+              ? checkOutAt
+                ? moment(new Date(checkOutAt)).format(
+                    "HH:mm:ss DD/MM/YYYY"
+                  )
+                : "pending"
+              : "check in required"}
+          </CheckOut>
         </>
       ) : lecturerId === user?._id ? (
         <>
           <CourseName>{courseName}</CourseName>
           <LecturerName>{lecturerName}</LecturerName>
-          <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>{" "}
+          <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
+          <CheckIn>
+            Check in:{" "}
+            {checkInAt
+              ? moment(new Date(checkInAt)).format(
+                  "HH:mm:ss DD/MM/YYYY"
+                )
+              : "pending"}
+          </CheckIn>
+          <CheckOut>
+            Check out:{" "}
+            {checkInAt
+              ? checkOutAt
+                ? moment(new Date(checkOutAt)).format(
+                    "HH:mm:ss DD/MM/YYYY"
+                  )
+                : "Pending"
+              : "check in required"}
+          </CheckOut>
         </>
       ) : (
-        <Text>Occupied</Text>
+        <Text>OCCUPIED</Text>
       )}
 
       <ActionButtonContainer>
@@ -89,7 +131,7 @@ const StyledUsage = styled.div<StyledUsageProps>`
       : shift === 2
       ? "3px solid #4a89a2"
       : "3px solid #6537c0"};
-  height: 130px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   min-width: 150px;
@@ -119,6 +161,7 @@ const LecturerName = styled.span`
 
 const Period = styled.span`
   font-size: 12px;
+  margin-bottom: 0.5rem;
 `;
 
 const ActionButtonContainer = styled.div`
@@ -158,6 +201,21 @@ const Text = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  font-style: italic;
+  font-size: 18px;
+  color: ${({ theme }) => theme.red};
+`;
+
+const CheckIn = styled.div`
+  font-size: 13px;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+`;
+
+const CheckOut = styled.div`
+  font-size: 13px;
+  margin-bottom: 0.5rem;
+  font-style: italic;
 `;
 
 export default Usage;

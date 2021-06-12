@@ -714,10 +714,7 @@ const SchedulePage = () => {
 
   // conditional render
   const renderContent = () => {
-    if (
-      labUsageSchedule === "pending" ||
-      labUsageSchedule === "idle"
-    ) {
+    if (labUsageSchedule === "pending") {
       return (
         <SkeletonContainer>
           <Skeleton
@@ -788,10 +785,6 @@ const SchedulePage = () => {
                   }
                   label="Semester"
                 >
-                  {console.log(
-                    "250 academic year semesters",
-                    academicYearSemesters
-                  )}
                   {academicYearSemesters.map((semester) => (
                     <MenuItem value={semester._id} key={semester._id}>
                       {semester.semesterName}
@@ -826,7 +819,7 @@ const SchedulePage = () => {
                 to{" "}
                 {moment(new Date(selectedSemester.startDate!))
                   .add(week, "weeks")
-                  .add(7, "days")
+                  .add(6, "days")
                   .format("dddd DD/MM/yyyy")}
               </Text>
             </Filter>

@@ -52,7 +52,7 @@ const StartAcademicYearModal = (props: ModalProps) => {
         let semester: Semester = {
           semesterName: `Semester ${i + 1}`,
           index: i + 1,
-          startDate: i === 0 ? new Date() : undefined,
+          startDate: i === 0 ? data.startDate : undefined,
           numberOfWeeks: i === 2 ? 8 : 17,
           status:
             i === 0

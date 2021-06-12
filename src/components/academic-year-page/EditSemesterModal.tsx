@@ -13,6 +13,7 @@ import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
 import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
+import moment from "moment";
 
 // import models
 import { Semester } from "../../types/model";
@@ -73,6 +74,10 @@ const EditSemesterModal = (props: ModalProps) => {
     }
   };
 
+  const disableDays = (date: Date) => {
+    return date.getDay() !== 1;
+  };
+
   return (
     <Modal {...props} style={{ overlay: { zIndex: 1000 } }}>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -90,7 +95,18 @@ const EditSemesterModal = (props: ModalProps) => {
           name="startDate"
           control={control}
           rules={{ required: true }}
-          defaultValue={semester ? semester.startDate : null}
+          defaultValue={
+            semester
+              ? semester.startDate
+              : new Date().getDay() === 1
+              ? new Date().setHours(7, 0, 0)
+              : new Date().getDay() === 0
+              ? moment(new Date().setHours(7, 0, 0)).add(1, "days")
+              : moment(new Date().setHours(7, 0, 0)).add(
+                  8 - new Date().getDay(),
+                  "days"
+                )
+          }
           render={(props) => (
             <DateTimePicker
               label="Start date"
@@ -100,9 +116,12 @@ const EditSemesterModal = (props: ModalProps) => {
               )}
               onChange={(value) => props.onChange(value)}
               value={props.value}
+              shouldDisableDate={disableDays}
+              disablePast={true}
             />
           )}
         />
+
         <FormControlLabel
           control={
             <Checkbox

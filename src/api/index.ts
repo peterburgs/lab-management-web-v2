@@ -1,11 +1,11 @@
 import axios from "axios";
 
 export const nodeAPI = axios.create({
-  baseURL: "https://e89d69d53564.ngrok.io/api/v2",
+  baseURL: "https://756cbcebb37d.ngrok.io/api/v2",
 });
 
 export const faceAPI = axios.create({
-  baseURL: "https://f305aee7b82d.ngrok.io",
+  baseURL: "https://0c16afa540c0.ngrok.io",
 });
 
 export function auth() {

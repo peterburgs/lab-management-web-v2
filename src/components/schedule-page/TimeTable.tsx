@@ -29,6 +29,19 @@ const TimeTable = ({
   onEditLabUsage,
   onRequestModifyLabUsage,
 }: TimeTableProps) => {
+  const convertPeriodToShift = (
+    startPeriod: number,
+    endPeriod: number
+  ) => {
+    if (startPeriod >= 1 && endPeriod <= 5) {
+      return 1;
+    } else if (startPeriod >= 6 && endPeriod <= 12) {
+      return 2;
+    } else {
+      return 3;
+    }
+  };
+
   const renderUsages = () => {
     const cells: JSX.Element[] = [];
     for (let lab of labs) {
@@ -62,61 +75,69 @@ const TimeTable = ({
                 column: dayOfWeek + 1,
               }}
             >
-              {usages.map((usage) => (
-                <Usage
-                  id={usage._id!}
-                  onEditLabUsage={onEditLabUsage}
-                  onRequestModifyLabUsage={onRequestModifyLabUsage}
-                  key={usage._id}
-                  startPeriod={usage.startPeriod}
-                  endPeriod={usage.endPeriod}
-                  courseName={
-                    courses &&
-                    teachings.find(
-                      (teaching) => teaching._id === usage.teaching
-                    )
-                      ? courses.find(
-                          (course) =>
-                            course._id ===
-                            teachings.find(
-                              (teaching) =>
-                                teaching._id === usage.teaching
-                            )!.course
-                        )!.courseName
-                      : ""
-                  }
-                  lecturerId={
-                    lecturers &&
-                    teachings.find(
-                      (teaching) => teaching._id === usage.teaching
-                    )
-                      ? lecturers.find(
-                          (lecturer) =>
-                            lecturer._id ===
-                            teachings.find(
-                              (teaching) =>
-                                teaching._id === usage.teaching
-                            )!.user
-                        )!._id
-                      : ""
-                  }
-                  lecturerName={
-                    lecturers &&
-                    teachings.find(
-                      (teaching) => teaching._id === usage.teaching
-                    )
-                      ? lecturers.find(
-                          (lecturer) =>
-                            lecturer._id ===
-                            teachings.find(
-                              (teaching) =>
-                                teaching._id === usage.teaching
-                            )!.user
-                        )!.fullName
-                      : ""
-                  }
-                />
-              ))}
+              {usages
+                .sort(
+                  (a, b) =>
+                    convertPeriodToShift(a.startPeriod, a.endPeriod) -
+                    convertPeriodToShift(b.startPeriod, b.endPeriod)
+                )
+                .map((usage) => (
+                  <Usage
+                    id={usage._id!}
+                    onEditLabUsage={onEditLabUsage}
+                    onRequestModifyLabUsage={onRequestModifyLabUsage}
+                    key={usage._id}
+                    startPeriod={usage.startPeriod}
+                    endPeriod={usage.endPeriod}
+                    checkInAt={usage.checkInAt}
+                    checkOutAt={usage.checkOutAt}
+                    courseName={
+                      courses &&
+                      teachings.find(
+                        (teaching) => teaching._id === usage.teaching
+                      )
+                        ? courses.find(
+                            (course) =>
+                              course._id ===
+                              teachings.find(
+                                (teaching) =>
+                                  teaching._id === usage.teaching
+                              )!.course
+                          )!.courseName
+                        : ""
+                    }
+                    lecturerId={
+                      lecturers &&
+                      teachings.find(
+                        (teaching) => teaching._id === usage.teaching
+                      )
+                        ? lecturers.find(
+                            (lecturer) =>
+                              lecturer._id ===
+                              teachings.find(
+                                (teaching) =>
+                                  teaching._id === usage.teaching
+                              )!.user
+                          )!._id
+                        : ""
+                    }
+                    lecturerName={
+                      lecturers &&
+                      teachings.find(
+                        (teaching) => teaching._id === usage.teaching
+                      )
+                        ? lecturers.find(
+                            (lecturer) =>
+                              lecturer._id ===
+                              teachings.find(
+                                (teaching) =>
+                                  teaching._id === usage.teaching
+                              )!.user
+                          )!.fullName
+                        : ""
+                    }
+                  />
+                ))}
             </Cell>
           );
         });
@@ -169,7 +190,7 @@ const LabName = styled.div`
   padding: 0px 5px;
   color: white;
   font-size: 13px;
-  min-height: 130px;
+  min-height: 200px;
   margin-bottom: 15px;
   display: flex;
   align-items: center;

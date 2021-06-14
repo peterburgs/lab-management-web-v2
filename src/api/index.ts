@@ -5,7 +5,7 @@ export const nodeAPI = axios.create({
 });
 
 export const faceAPI = axios.create({
-  baseURL: "https://0c16afa540c0.ngrok.io",
+  baseURL: "https://489a130c097c.ngrok.io",
 });
 
 export function auth() {

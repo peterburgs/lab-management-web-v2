@@ -29,6 +29,7 @@ type UserTable = {
   id: string;
   fullName: string;
   email: string;
+  role: string;
   isFaceIdVerified: JSX.Element;
   createdAt: string;
 };
@@ -47,6 +48,11 @@ const prepareData = (
         id: user._id,
         fullName: user.fullName,
         email: user.email,
+        role: user.roles
+          .map((item) =>
+            item === ROLES.ADMIN ? "Admin" : "Lecturer"
+          )
+          .join(" & "),
         isFaceIdVerified: user.isFaceIdVerified ? (
           <AvailableBadge>Verified</AvailableBadge>
         ) : (
@@ -108,6 +114,11 @@ const UserPage = () => {
       {
         Header: "Email",
         accessor: "email" as const,
+      },
+      {
+        Header: "Role",
+        accessor: "role" as const,
+        width: 70,
       },
       {
         Header: "FaceID",

@@ -47,11 +47,7 @@ const CheckboxList = (props: CheckboxListProps) => {
             </ListItemIcon>
             <ListItemText
               id={labelId}
-              primary={
-                <ItemText>
-                  <span>{item._id}</span> | {item.name}
-                </ItemText>
-              }
+              primary={<ItemText>{item.name}</ItemText>}
             />
           </ListItem>
         );

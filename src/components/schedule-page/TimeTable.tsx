@@ -190,7 +190,7 @@ const LabName = styled.div`
   padding: 0px 5px;
   color: white;
   font-size: 13px;
-  min-height: 200px;
+  min-height: 180px;
   margin-bottom: 15px;
   display: flex;
   align-items: center;

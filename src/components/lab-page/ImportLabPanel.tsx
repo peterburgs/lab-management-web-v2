@@ -1,42 +1,20 @@
 import React from "react";
 import styled from "styled-components";
-import * as FileSaver from "file-saver";
-import * as XLSX from "xlsx";
-
-const template = [
-  {
-    STT: 1,
-    "Phòng thực hành": "A1-101",
-    "Sức chứa": "3",
-  },
-];
+import template from "../../assets/templates/lab_template.xlsx";
 
 interface ImportLabPanelProps {
   setShowImportLabModal: (a: boolean) => void;
 }
 
 const ImportLabPanel = (props: ImportLabPanelProps) => {
-  // handle export template
-  const exportCSV = () => {
-    const fileType =
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-    const fileExtension = ".xlsx";
-    const ws = XLSX.utils.json_to_sheet(template);
-    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
-    const excelBuffer = XLSX.write(wb, {
-      bookType: "xlsx",
-      type: "array",
-    });
-    const data = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data, "lab_form_template" + fileExtension);
-  };
-
   return (
     <StyledImportPanel>
       <Button onClick={() => props.setShowImportLabModal(true)}>
         Import
       </Button>
-      <Button onClick={exportCSV}>Download excel template</Button>
+      <Button href={template} download="lab_template">
+        Download template
+      </Button>
     </StyledImportPanel>
   );
 };
@@ -56,7 +34,7 @@ const StyledImportPanel = styled.div`
   width: 250px;
 `;
 
-const Button = styled.button`
+const Button = styled.a`
   border: none;
   outline: none;
   color: black;

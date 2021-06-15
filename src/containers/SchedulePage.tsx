@@ -86,8 +86,14 @@ const SchedulePage = () => {
   );
 
   const [teachings] = useGetAllTeaching();
-  const [labUsages, labUsageSchedule] =
+  const [labUsages, labUsageStatus] =
     useGetLabUsagesBySemester(selectedSemester);
+  const academicYearStatus = useAppSelector(
+    (state) => state.academicYears.status
+  );
+  const semesterStatus = useAppSelector(
+    (state) => state.semesters.status
+  );
   const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
 
@@ -199,28 +205,28 @@ const SchedulePage = () => {
     let sheetNames: string[] = [];
 
     const headers = [
-      "Phòng lab",
-      "Sáng T2",
-      "Chiều T2",
-      "Tối T2",
-      "Sáng T3",
-      "Chiều T3",
-      "Tối T3",
-      "Sáng T4",
-      "Chiều T4",
-      "Tối T4",
-      "Sáng T5",
-      "Chiều T5",
-      "Tối T5",
-      "Sáng T6",
-      "Chiều T6",
-      "Tối T6",
-      "Sáng T7",
-      "Chiều T7",
-      "Tối T7",
-      "Sáng CN",
-      "Chiều CN",
-      "Tối CN",
+      "Lab",
+      "Monday",
+      "Monday-a",
+      "Monday-e",
+      "Tuesday",
+      "Tuesday-a",
+      "Tuesday-e",
+      "Wednesday",
+      "Wednesday-a",
+      "Wednesday-e",
+      "Thursday",
+      "Thursday-a",
+      "Thursday-e",
+      "Friday",
+      "Friday-a",
+      "Friday-e",
+      "Saturday",
+      "Saturday-a",
+      "Saturday-e",
+      "Sunday",
+      "Sunday-a",
+      "Sunday-e",
     ];
 
     // loop through week
@@ -277,124 +283,26 @@ const SchedulePage = () => {
         );
 
         labUsagesByWeekByLab.forEach((item) => {
-          if (item.dayOfWeek === 0) {
-            if (item.endPeriod <= 5) {
-              row[headers[1]] = getCell(item);
-              const index = headers.indexOf(headers[1]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 5 && item.endPeriod <= 12) {
-              row[headers[2]] = getCell(item);
-              const index = headers.indexOf(headers[2]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 12 && item.endPeriod <= 16) {
-              row[headers[3]] = getCell(item);
-              const index = headers.indexOf(headers[3]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
+          if (item.endPeriod <= 5) {
+            row[headers[1 + item.dayOfWeek * 3]] = getCell(item);
+            const index = headers.indexOf(
+              headers[1 + item.dayOfWeek * 3]
+            );
+            wscols[index] = { wch: getCourseName(item).length };
           }
-          if (item.dayOfWeek === 1) {
-            if (item.endPeriod <= 5) {
-              row[headers[4]] = getCell(item);
-              const index = headers.indexOf(headers[4]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 5 && item.endPeriod <= 12) {
-              row[headers[5]] = getCell(item);
-              const index = headers.indexOf(headers[5]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 12 && item.endPeriod <= 16) {
-              row[headers[6]] = getCell(item);
-              const index = headers.indexOf(headers[6]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
+          if (item.endPeriod > 5 && item.endPeriod <= 12) {
+            row[headers[2 + item.dayOfWeek * 3]] = getCell(item);
+            const index = headers.indexOf(
+              headers[2 + item.dayOfWeek * 3]
+            );
+            wscols[index] = { wch: getCourseName(item).length };
           }
-          if (item.dayOfWeek === 2) {
-            if (item.endPeriod <= 5) {
-              row[headers[7]] = getCell(item);
-              const index = headers.indexOf(headers[7]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 5 && item.endPeriod <= 12) {
-              row[headers[8]] = getCell(item);
-              const index = headers.indexOf(headers[8]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 12 && item.endPeriod <= 16) {
-              row[headers[9]] = getCell(item);
-              const index = headers.indexOf(headers[9]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-          }
-          if (item.dayOfWeek === 3) {
-            if (item.endPeriod <= 5) {
-              row[headers[10]] = getCell(item);
-              const index = headers.indexOf(headers[10]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 5 && item.endPeriod <= 12) {
-              row[headers[11]] = getCell(item);
-              const index = headers.indexOf(headers[11]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 12 && item.endPeriod <= 16) {
-              row[headers[12]] = getCell(item);
-              const index = headers.indexOf(headers[12]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-          }
-          if (item.dayOfWeek === 4) {
-            if (item.endPeriod <= 5) {
-              row[headers[13]] = getCell(item);
-              const index = headers.indexOf(headers[13]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 5 && item.endPeriod <= 12) {
-              row[headers[14]] = getCell(item);
-              const index = headers.indexOf(headers[14]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 12 && item.endPeriod <= 16) {
-              row[headers[15]] = getCell(item);
-              const index = headers.indexOf(headers[15]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-          }
-          if (item.dayOfWeek === 5) {
-            if (item.endPeriod <= 5) {
-              row[headers[16]] = getCell(item);
-              const index = headers.indexOf(headers[16]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 5 && item.endPeriod <= 12) {
-              row[headers[17]] = getCell(item);
-              const index = headers.indexOf(headers[17]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 12 && item.endPeriod <= 16) {
-              row[headers[18]] = getCell(item);
-              const index = headers.indexOf(headers[18]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-          }
-          if (item.dayOfWeek === 6) {
-            if (item.endPeriod <= 5) {
-              row[headers[19]] = getCell(item);
-              const index = headers.indexOf(headers[19]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 5 && item.endPeriod <= 12) {
-              row[headers[20]] = getCell(item);
-              const index = headers.indexOf(headers[20]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
-            if (item.endPeriod > 12 && item.endPeriod <= 16) {
-              row[headers[21]] = getCell(item);
-              const index = headers.indexOf(headers[21]);
-              wscols[index] = { wch: getCourseName(item).length };
-            }
+          if (item.endPeriod > 12 && item.endPeriod <= 16) {
+            row[headers[3 + item.dayOfWeek * 3]] = getCell(item);
+            const index = headers.indexOf(
+              headers[3 + item.dayOfWeek * 3]
+            );
+            wscols[index] = { wch: getCourseName(item).length };
           }
         });
         console.log(row);
@@ -402,10 +310,20 @@ const SchedulePage = () => {
       }
       const ws = XLSX.utils.json_to_sheet(rows);
       console.log(ws);
+      const merge = [
+        { s: { r: 0, c: 1 }, e: { r: 0, c: 3 } },
+        { s: { r: 0, c: 4 }, e: { r: 0, c: 6 } },
+        { s: { r: 0, c: 7 }, e: { r: 0, c: 9 } },
+        { s: { r: 0, c: 10 }, e: { r: 0, c: 12 } },
+        { s: { r: 0, c: 13 }, e: { r: 0, c: 15 } },
+        { s: { r: 0, c: 16 }, e: { r: 0, c: 18 } },
+        { s: { r: 0, c: 19 }, e: { r: 0, c: 21 } },
+      ];
       ws["!cols"] = wscols;
       ws["!rows"] = hsrows;
-      sheets[`Tuần ${i}`] = ws;
-      sheetNames.push(`Tuần ${i}`);
+      ws["!merges"] = merge;
+      sheets[`Week ${i}`] = ws;
+      sheetNames.push(`Week ${i}`);
     }
 
     const fileType =
@@ -426,27 +344,14 @@ const SchedulePage = () => {
     let sheetNames: string[] = [];
 
     const headers = [
-      "Sáng T2",
-      "Chiều T2",
-      "Tối T2",
-      "Sáng T3",
-      "Chiều T3",
-      "Tối T3",
-      "Sáng T4",
-      "Chiều T4",
-      "Tối T4",
-      "Sáng T5",
-      "Chiều T5",
-      "Tối T5",
-      "Sáng T6",
-      "Chiều T6",
-      "Tối T6",
-      "Sáng T7",
-      "Chiều T7",
-      "Tối T7",
-      "Sáng CN",
-      "Chiều CN",
-      "Tối CN",
+      "",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
     ];
 
     // loop through week
@@ -460,243 +365,127 @@ const SchedulePage = () => {
 
       let hsrows = [{ hpt: 40 }, { hpt: 40 }];
 
-      let row: { [index: string]: string } = {};
+      let rowMorning: { [index: string]: string } = {};
+      let rowAfternoon: { [index: string]: string } = {};
+      let rowEvening: { [index: string]: string } = {};
 
-      row[headers[0]] = "";
-      row[headers[1]] = "";
-      row[headers[2]] = "";
-      row[headers[3]] = "";
-      row[headers[4]] = "";
-      row[headers[5]] = "";
-      row[headers[6]] = "";
-      row[headers[7]] = "";
-      row[headers[8]] = "";
-      row[headers[9]] = "";
-      row[headers[10]] = "";
-      row[headers[11]] = "";
-      row[headers[12]] = "";
-      row[headers[13]] = "";
-      row[headers[14]] = "";
-      row[headers[15]] = "";
-      row[headers[16]] = "";
-      row[headers[17]] = "";
-      row[headers[18]] = "";
-      row[headers[19]] = "";
-      row[headers[20]] = "";
+      rowMorning[headers[0]] = "Morning";
+      rowMorning[headers[1]] = "";
+      rowMorning[headers[2]] = "";
+      rowMorning[headers[3]] = "";
+      rowMorning[headers[4]] = "";
+      rowMorning[headers[5]] = "";
+      rowMorning[headers[6]] = "";
+      rowMorning[headers[7]] = "";
 
-      labUsagesByWeek.forEach((item) => {
-        if (item.dayOfWeek === 0) {
-          if (item.endPeriod <= 5) {
-            row[headers[0]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[0]] = row[headers[0]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 5 && item.endPeriod <= 12) {
-            row[headers[1]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[1]] = row[headers[1]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 12 && item.endPeriod <= 16) {
-            row[headers[2]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[2]] = row[headers[2]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
+      rowAfternoon[headers[0]] = "Afternoon";
+      rowAfternoon[headers[1]] = "";
+      rowAfternoon[headers[2]] = "";
+      rowAfternoon[headers[3]] = "";
+      rowAfternoon[headers[4]] = "";
+      rowAfternoon[headers[5]] = "";
+      rowAfternoon[headers[6]] = "";
+      rowAfternoon[headers[7]] = "";
+
+      rowEvening[headers[0]] = "Evening";
+      rowEvening[headers[1]] = "";
+      rowEvening[headers[2]] = "";
+      rowEvening[headers[3]] = "";
+      rowEvening[headers[4]] = "";
+      rowEvening[headers[5]] = "";
+      rowEvening[headers[6]] = "";
+      rowEvening[headers[7]] = "";
+
+      for (let i = 0; i < labUsagesByWeek.length; i++) {
+        if (labUsagesByWeek[i].endPeriod <= 5) {
+          rowMorning[
+            headers[labUsagesByWeek[i].dayOfWeek + 1]
+          ] += `${getTheoryRoomName(labUsagesByWeek[i])}: ${
+            labUsagesByWeek[i].startPeriod
+          } → ${labUsagesByWeek[i].endPeriod};\n`;
+
+          rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
+            rowMorning[
+              headers[labUsagesByWeek[i].dayOfWeek + 1]
+            ].split("\n")[
+              rowMorning[
+                headers[labUsagesByWeek[i].dayOfWeek + 1]
+              ].split("\n").length - 1
+            ] === ""
+              ? rowMorning[
+                  headers[labUsagesByWeek[i].dayOfWeek + 1]
+                ].split("\n")[0]
+              : rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]]
+                  .split("\n")
+                  .sort()
+                  .join("\n");
         }
-        if (item.dayOfWeek === 1) {
-          if (item.endPeriod <= 5) {
-            row[headers[3]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[3]] = row[headers[3]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 5 && item.endPeriod <= 12) {
-            row[headers[4]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[4]] = row[headers[4]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 12 && item.endPeriod <= 16) {
-            row[headers[5]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[5]] = row[headers[5]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
+
+        if (
+          labUsagesByWeek[i].endPeriod > 5 &&
+          labUsagesByWeek[i].endPeriod <= 12
+        ) {
+          rowAfternoon[
+            headers[labUsagesByWeek[i].dayOfWeek + 1]
+          ] += `${getTheoryRoomName(labUsagesByWeek[i])}: ${
+            labUsagesByWeek[i].startPeriod
+          } → ${labUsagesByWeek[i].endPeriod};\n`;
+
+          rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
+            rowAfternoon[
+              headers[labUsagesByWeek[i].dayOfWeek + 1]
+            ].split("\n")[
+              rowAfternoon[
+                headers[labUsagesByWeek[i].dayOfWeek + 1]
+              ].split("\n").length - 1
+            ] === ""
+              ? rowAfternoon[
+                  headers[labUsagesByWeek[i].dayOfWeek + 1]
+                ].split("\n")[0]
+              : rowAfternoon[
+                  headers[labUsagesByWeek[i].dayOfWeek + 1]
+                ]
+                  .split("\n")
+                  .sort()
+                  .join("\n");
         }
-        if (item.dayOfWeek === 2) {
-          if (item.endPeriod <= 5) {
-            row[headers[6]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[6]] = row[headers[6]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 5 && item.endPeriod <= 12) {
-            row[headers[7]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[7]] = row[headers[7]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 12 && item.endPeriod <= 16) {
-            row[headers[8]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[8]] = row[headers[8]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
+
+        if (
+          labUsagesByWeek[i].endPeriod > 12 &&
+          labUsagesByWeek[i].endPeriod <= 16
+        ) {
+          rowEvening[
+            headers[labUsagesByWeek[i].dayOfWeek + 1]
+          ] += `${getTheoryRoomName(labUsagesByWeek[i])}: ${
+            labUsagesByWeek[i].startPeriod
+          } → ${labUsagesByWeek[i].endPeriod};\n`;
+
+          rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
+            rowEvening[
+              headers[labUsagesByWeek[i].dayOfWeek + 1]
+            ].split("\n")[
+              rowEvening[
+                headers[labUsagesByWeek[i].dayOfWeek + 1]
+              ].split("\n").length - 1
+            ] === ""
+              ? rowEvening[
+                  headers[labUsagesByWeek[i].dayOfWeek + 1]
+                ].split("\n")[0]
+              : rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]]
+                  .split("\n")
+                  .sort()
+                  .join("\n");
         }
-        if (item.dayOfWeek === 3) {
-          if (item.endPeriod <= 5) {
-            row[headers[9]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[9]] = row[headers[9]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 5 && item.endPeriod <= 12) {
-            row[headers[10]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[10]] = row[headers[10]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 12 && item.endPeriod <= 16) {
-            row[headers[11]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[11]] = row[headers[11]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-        }
-        if (item.dayOfWeek === 4) {
-          if (item.endPeriod <= 5) {
-            row[headers[12]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[12]] = row[headers[12]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 5 && item.endPeriod <= 12) {
-            row[headers[13]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[13]] = row[headers[13]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 12 && item.endPeriod <= 16) {
-            row[headers[14]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[14]] = row[headers[14]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-        }
-        if (item.dayOfWeek === 5) {
-          if (item.endPeriod <= 5) {
-            row[headers[15]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[15]] = row[headers[15]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 5 && item.endPeriod <= 12) {
-            row[headers[16]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[16]] = row[headers[16]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 12 && item.endPeriod <= 16) {
-            row[headers[17]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[17]] = row[headers[17]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-        }
-        if (item.dayOfWeek === 6) {
-          if (item.endPeriod <= 5) {
-            row[headers[18]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[18]] = row[headers[18]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 5 && item.endPeriod <= 12) {
-            row[headers[19]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[19]] = row[headers[19]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-          if (item.endPeriod > 12 && item.endPeriod <= 16) {
-            row[headers[20]] += `, ${getTheoryRoomName(item)} (${
-              item.startPeriod
-            } → ${item.endPeriod})`;
-            row[headers[20]] = row[headers[20]]
-              .split(", ")
-              .sort()
-              .join(", ");
-          }
-        }
-      });
-      console.log(row);
-      rows.push(row);
+      }
+      rows.push(rowMorning);
+      rows.push(rowAfternoon);
+      rows.push(rowEvening);
 
       const ws = XLSX.utils.json_to_sheet(rows);
       console.log(ws);
       ws["!rows"] = hsrows;
-      sheets[`Tuần ${i}`] = ws;
-      sheetNames.push(`Tuần ${i}`);
+      sheets[`Week ${i}`] = ws;
+      sheetNames.push(`Week ${i}`);
     }
 
     const fileType =
@@ -714,7 +503,11 @@ const SchedulePage = () => {
 
   // conditional render
   const renderContent = () => {
-    if (labUsageSchedule === "pending") {
+    if (
+      labUsageStatus === "pending" ||
+      academicYearStatus === "pending" ||
+      semesterStatus === "pending"
+    ) {
       return (
         <SkeletonContainer>
           <Skeleton
@@ -739,7 +532,7 @@ const SchedulePage = () => {
           />
         </SkeletonContainer>
       );
-    } else if (labUsageSchedule === "succeeded") {
+    } else if (labUsageStatus === "succeeded") {
       return (
         <>
           <Toolbar>

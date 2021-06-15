@@ -97,13 +97,13 @@ const CoursePage = () => {
     const template = (courses as Course[]).map((course, i) => {
       return {
         STT: String(i + 1),
-        "Mã môn": course._id,
-        "Tên môn": course.courseName,
-        "Loại môn":
+        "Course ID": course._id,
+        "Course Name": course.courseName,
+        "Course type":
           course.type === COURSE_TYPES.THEORY
             ? "Lý thuyết"
             : "Thực hành",
-        STC: course.numberOfCredits,
+        Credits: course.numberOfCredits,
       };
     });
 

@@ -89,8 +89,8 @@ const LabPage = () => {
     const template = (labs as Lab[]).map((lab, i) => {
       return {
         STT: String(i + 1),
-        "Phòng thực hành": lab.labName,
-        "Sức chứa": lab.capacity,
+        "Lab name": lab.labName,
+        Capacity: lab.capacity,
       };
     });
 

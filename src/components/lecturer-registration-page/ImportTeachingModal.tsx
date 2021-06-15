@@ -58,23 +58,24 @@ const ImportTeachingModal = (props: ModalProps) => {
 
         const attrs = [
           "#",
-          "Class code",
-          "Course name",
-          "Credits",
-          "Course type",
-          "Class",
-          "Number of students",
-          "Lecturer id",
-          "Lecturer name",
-          "Day of week",
-          "Periods",
-          "Theory room",
-          "Number of practical weeks",
-          "Start practical week",
+          "class code",
+          "course name",
+          "credits",
+          "course type",
+          "class",
+          "number of students",
+          "day of week",
+          "periods",
+          "theory room",
+          "number of practical weeks",
+          "start practical week",
         ];
 
-        data.forEach((item, i) => {
-          // Convert to teaching model
+        let isTeachingValid = true;
+
+        for (let index = 0; index < data.length; index++) {
+          const item = data[index];
+
           let teaching: Teaching = {
             code: "",
             uId: "",
@@ -92,90 +93,83 @@ const ImportTeachingModal = (props: ModalProps) => {
             isHidden: false,
             class: "",
           };
+
+          // check if right format
+          if (
+            attrs.length !==
+            Object.keys(item as { [index: string]: string }).length
+          ) {
+            dispatch(
+              setSnackBarContent(
+                `${index}/${data.length} teachings are ACCEPTED. ${
+                  data.length - index
+                }/${data.length} are invalid and will be dropped.`
+              )
+            );
+            dispatch(setShowErrorSnackBar(true));
+            break;
+          }
+
           for (let [key, value] of Object.entries(
             item as { [index: string]: string }
           )) {
-            // check if right format
-            if (!attrs.find((attr) => attr === key)) {
-              dispatch(
-                setSnackBarContent(
-                  "Incorrect format. Please refer template file."
-                )
-              );
-              dispatch(setShowErrorSnackBar(true));
-              return;
-            }
-
             let strValue = value as string;
 
-            if (strValue.length === 0) {
-              dispatch(
-                setSnackBarContent(
-                  `${key} at row ${i} is missing. This teaching will be skipped`
-                )
-              );
-              dispatch(setShowErrorSnackBar(true));
-              continue;
-            }
-
-            switch (key) {
-              case "Class code":
+            switch (key.toLowerCase()) {
+              case "class code":
                 teaching.code = strValue;
                 teaching.course = strValue.split("_")[0];
                 teaching.group = Number(strValue.split("_")[1]);
                 teaching.registration = openRegistration!._id;
                 break;
-              case "Class":
+              case "class":
                 teaching.class = strValue;
                 break;
-              case "Number of students":
+              case "number of students":
                 teaching.numberOfStudents = Number(strValue);
                 break;
-              case "Theory room":
+              case "theory room":
                 teaching.theoryRoom = strValue;
                 break;
-              case "Lecturer id":
-                teaching.uId = strValue;
-                break;
-              case "Day of week":
-                switch (strValue) {
-                  case "Monday":
+              case "day of week":
+                switch (strValue.toLowerCase()) {
+                  case "monday":
                     teaching.dayOfWeek = 0;
                     break;
-                  case "Tuesday":
+                  case "tuesday":
                     teaching.dayOfWeek = 1;
                     break;
-                  case "Wednesday":
+                  case "wednesday":
                     teaching.dayOfWeek = 2;
                     break;
-                  case "Thursday":
+                  case "thursday":
                     teaching.dayOfWeek = 3;
                     break;
-                  case "Friday":
+                  case "friday":
                     teaching.dayOfWeek = 4;
                     break;
-                  case "Saturday":
+                  case "saturday":
                     teaching.dayOfWeek = 5;
                     break;
-                  case "Sunday":
+                  case "sunday":
                     teaching.dayOfWeek = 6;
                     break;
                 }
                 break;
-              case "Periods":
+              case "periods":
                 teaching.startPeriod = Number(strValue.split("-")[0]);
                 teaching.endPeriod = Number(strValue.split("-")[1]);
                 break;
-              case "Number of practical weeks":
+              case "number of practical weeks":
                 teaching.numberOfPracticalWeeks = Number(strValue);
                 break;
-              case "Start practical week":
+              case "start practical week":
                 teaching.startPracticalWeek = Number(strValue);
                 break;
             }
 
             // check if courses are in registrable courses
-            if (key === "Class code") {
+            if (key === "class code") {
               if (
                 !(registrableCourses as RegistrableCourse[]).find(
                   (item) => item.course === teaching.course
@@ -183,54 +177,66 @@ const ImportTeachingModal = (props: ModalProps) => {
               ) {
                 dispatch(
                   setSnackBarContent(
-                    `${teaching.course} is not in registrable courses`
+                    `${index}/${
+                      data.length
+                    } teachings are ACCEPTED. ${
+                      data.length - index
+                    }/${data.length} are invalid and will be dropped.`
                   )
                 );
                 dispatch(setShowErrorSnackBar(true));
-                continue;
+                isTeachingValid = false;
+                break;
               }
             }
           }
-          teachings.push(teaching);
-        });
+
+          if (isTeachingValid) {
+            teachings.push(teaching);
+          } else {
+            break;
+          }
+        }
 
         console.log(teachings);
 
-        // send data to server
-        setStatus("pending");
-        try {
-          const prepareData = teachings.map((teaching) => {
-            teaching.course = teaching.course.toString();
-            return {
-              ...teaching,
-              registration: openRegistration!._id,
-              user: verifiedUser!._id,
-              isHidden: false,
-            };
-          });
+        if (teachings.length > 0) {
+          setStatus("pending");
+          try {
+            const prepareData = teachings.map((teaching) => {
+              teaching.course = teaching.course.toString();
+              return {
+                ...teaching,
+                registration: openRegistration!._id,
+                user: verifiedUser!._id,
+                uId: verifiedUser!._id,
+                isHidden: false,
+              };
+            });
 
-          console.log(prepareData);
+            console.log(prepareData);
 
-          const actionResult = await dispatch(
-            createBulkOfTeachings(prepareData)
-          );
-          unwrapResult(actionResult);
-
-          dispatch(setSnackBarContent("All new teachings created"));
-          dispatch(setShowSuccessSnackBar(true));
-        } catch (err) {
-          console.log("Failed to create all teachings", err);
-          if (err.response) {
-            dispatch(setSnackBarContent(err.response.data.message));
-          } else {
-            dispatch(
-              setSnackBarContent("Failed to create all teachings")
+            const actionResult = await dispatch(
+              createBulkOfTeachings(prepareData)
             );
+            unwrapResult(actionResult);
+            dispatch(setShowErrorSnackBar(false));
+            dispatch(setSnackBarContent("New teachings created"));
+            dispatch(setShowSuccessSnackBar(true));
+          } catch (err) {
+            console.log("Failed to create teachings", err);
+            if (err.response) {
+              dispatch(setSnackBarContent(err.response.data.message));
+            } else {
+              dispatch(
+                setSnackBarContent("Failed to create teachings")
+              );
+            }
+            dispatch(setShowErrorSnackBar(true));
+          } finally {
+            setStatus("idle");
+            props.setShowModal(false);
           }
-          dispatch(setShowErrorSnackBar(true));
-        } finally {
-          setStatus("idle");
-          props.setShowModal(false);
         }
       };
       reader.readAsBinaryString(fileSelected[0]);

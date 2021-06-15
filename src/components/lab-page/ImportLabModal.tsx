@@ -41,10 +41,10 @@ const ImportLabModal = (props: ModalProps) => {
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let data = XLSX.utils.sheet_to_json(sheet);
 
-      const attrs = ["STT", "Phòng thực hành", "Sức chứa"];
+      const attrs = ["#", "lab name", "capacity"];
 
-      data.forEach((item, i) => {
-        // Convert to teaching model
+      for (let index = 0; index < data.length; index++) {
+        const item = data[index];
 
         let isAvailableForCurrentUsing = true;
 
@@ -62,67 +62,66 @@ const ImportLabModal = (props: ModalProps) => {
           isAvailableForCurrentUsing: isAvailableForCurrentUsing,
           isHidden: false,
         };
+
+        // check if right format
+        if (
+          attrs.length !==
+          Object.keys(item as { [index: string]: string }).length
+        ) {
+          dispatch(
+            setSnackBarContent(
+              `${index}/${data.length} labs are ACCEPTED. ${
+                data.length - index
+              }/${data.length} are invalid and will be dropped.`
+            )
+          );
+          dispatch(setShowErrorSnackBar(true));
+          break;
+        }
+
         for (let [key, value] of Object.entries(
           item as { [index: string]: string }
         )) {
-          // check if right format
-          if (!attrs.find((attr) => attr === key)) {
-            dispatch(
-              setSnackBarContent(
-                "Incorrect format. Please refer template file."
-              )
-            );
-            dispatch(setShowErrorSnackBar(true));
-            return;
-          }
-
           let strValue = value as string;
 
-          if (strValue.length === 0) {
-            dispatch(
-              setSnackBarContent(
-                `${key} at row ${i} is missing. This teaching will be skipped`
-              )
-            );
-            dispatch(setShowErrorSnackBar(true));
-            continue;
-          }
-
           switch (key.toLowerCase()) {
-            case "phòng thực hành":
+            case "lab name":
               lab.labName = strValue;
               break;
-            case "sức chứa":
+            case "capacity":
               lab.capacity = Number(strValue);
               break;
           }
         }
+
         labs.push(lab);
-      });
+      }
 
       console.log(labs);
 
-      //send data to server
-      setStatus("pending");
-      try {
-        for (let lab of labs) {
-          const actionResult = await dispatch(newLab(lab));
-          unwrapResult(actionResult);
+      if (labs.length > 0) {
+        //send data to server
+        setStatus("pending");
+        try {
+          for (let lab of labs) {
+            const actionResult = await dispatch(newLab(lab));
+            unwrapResult(actionResult);
+          }
+          dispatch(setShowErrorSnackBar(false));
+          dispatch(setSnackBarContent("New labs created"));
+          dispatch(setShowSuccessSnackBar(true));
+        } catch (err) {
+          console.log("Failed to create labs", err);
+          if (err.response) {
+            dispatch(setSnackBarContent(err.response.data.message));
+          } else {
+            dispatch(setSnackBarContent("Failed to create labs"));
+          }
+          dispatch(setShowErrorSnackBar(true));
+        } finally {
+          setStatus("idle");
+          props.setShowModal(false);
         }
-
-        dispatch(setSnackBarContent("All new labs created"));
-        dispatch(setShowSuccessSnackBar(true));
-      } catch (err) {
-        console.log("Failed to create all labs", err);
-        if (err.response) {
-          dispatch(setSnackBarContent(err.response.data.message));
-        } else {
-          dispatch(setSnackBarContent("Failed to create all labs"));
-        }
-        dispatch(setShowErrorSnackBar(true));
-      } finally {
-        setStatus("idle");
-        props.setShowModal(false);
       }
     };
     reader.readAsBinaryString(fileSelected[0]);
@@ -148,7 +147,7 @@ const ImportLabModal = (props: ModalProps) => {
                 fontStyle: "italic",
                 marginBottom: "1rem",
                 fontSize: 12,
-                textAlign: 'center'
+                textAlign: "center",
               }}
             >
               * There is an opening semester. The new labs will not be

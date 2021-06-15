@@ -35,90 +35,95 @@ const ImportCourseModal = (props: ModalProps) => {
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let data = XLSX.utils.sheet_to_json(sheet);
 
-      const attrs = ["STT", "Mã môn", "Tên môn", "Loại môn", "STC"];
+      const attrs = [
+        "#",
+        "course id",
+        "course name",
+        "credits",
+        "course type",
+      ];
 
-      data.forEach((item, i) => {
-        // Convert to teaching model
+      for (let index = 0; index < data.length; index++) {
+        const item = data[index];
+
         let course: Course = {
-          _id: "",
           courseName: "",
-          type: COURSE_TYPES.THEORY,
+          _id: "",
           numberOfCredits: 0,
+          type: COURSE_TYPES.THEORY,
           isHidden: false,
         };
+
+        // check if right format
+        if (
+          attrs.length !==
+          Object.keys(item as { [index: string]: string }).length
+        ) {
+          console.log("62");
+          dispatch(
+            setSnackBarContent(
+              `${index}/${data.length} courses are ACCEPTED. ${
+                data.length - index
+              }/${data.length} are invalid and will be dropped.`
+            )
+          );
+          dispatch(setShowErrorSnackBar(true));
+          break;
+        }
+
         for (let [key, value] of Object.entries(
           item as { [index: string]: string }
         )) {
-          // check if right format
-          if (!attrs.find((attr) => attr === key)) {
-            dispatch(
-              setSnackBarContent(
-                "Incorrect format. Please refer template file."
-              )
-            );
-            dispatch(setShowErrorSnackBar(true));
-            return;
-          }
-
           let strValue = value as string;
 
-          if (strValue.length === 0) {
-            dispatch(
-              setSnackBarContent(
-                `${key} at row ${i} is missing. This teaching will be skipped`
-              )
-            );
-            dispatch(setShowErrorSnackBar(true));
-            continue;
-          }
-
           switch (key.toLowerCase()) {
-            case "mã môn":
+            case "course id":
               course._id = strValue;
               break;
-            case "tên môn":
+            case "course name":
               course.courseName = strValue;
               break;
-            case "loại môn":
+            case "credits":
+              course.numberOfCredits = Number(strValue);
+              break;
+            case "course type":
               course.type =
-                strValue.toLowerCase() === "theory" ||
-                strValue.toLowerCase() === "lý thuyết"
+                strValue === "Theory"
                   ? COURSE_TYPES.THEORY
                   : COURSE_TYPES.PRACTICAL;
               break;
-            case "stc":
-              course.numberOfCredits = Number(strValue);
-              break;
           }
         }
+
         courses.push(course);
-      });
+      }
 
       console.log(courses);
 
-      //send data to server
-      setStatus("pending");
-      try {
-        for (let course of courses) {
-          const actionResult = await dispatch(newCourse(course));
-          unwrapResult(actionResult);
-        }
+      if (courses.length > 0) {
+        //send data to server
+        setStatus("pending");
+        try {
+          for (let course of courses) {
+            const actionResult = await dispatch(newCourse(course));
+            unwrapResult(actionResult);
+          }
 
-        dispatch(setSnackBarContent("All new courses created"));
-        dispatch(setShowSuccessSnackBar(true));
-      } catch (err) {
-        console.log("Failed to create all courses", err);
-        if (err.response) {
-          dispatch(setSnackBarContent(err.response.data.message));
-        } else {
-          dispatch(
-            setSnackBarContent("Failed to create all courses")
-          );
+          dispatch(setShowErrorSnackBar(false));
+          dispatch(setSnackBarContent("New courses created"));
+          dispatch(setShowSuccessSnackBar(true));
+        } catch (err) {
+          console.log("Failed to create courses", err);
+          if (err.response) {
+            dispatch(setSnackBarContent(err.response.data.message));
+          } else {
+            dispatch(setSnackBarContent("Failed to create courses"));
+          }
+          dispatch(setShowErrorSnackBar(true));
+        } finally {
+          setStatus("idle");
+          props.setShowModal(false);
         }
-        dispatch(setShowErrorSnackBar(true));
-      } finally {
-        setStatus("idle");
-        props.setShowModal(false);
       }
     };
     reader.readAsBinaryString(fileSelected[0]);
@@ -133,7 +138,6 @@ const ImportCourseModal = (props: ModalProps) => {
   const renderForm = () => {
     return (
       <>
-        <ModalText>Choose excel file</ModalText>
         <ChooseFileContainer>
           <InputFile
             onChange={handleFileSelected}
@@ -142,7 +146,7 @@ const ImportCourseModal = (props: ModalProps) => {
             id="contained-button-file"
           />
           <label htmlFor="contained-button-file">
-            <ChooseFileButton>Choose file</ChooseFileButton>
+            <ChooseFileButton>Choose excel file</ChooseFileButton>
           </label>
           <FileSelectedName>
             {fileSelected && fileSelected[0].name}

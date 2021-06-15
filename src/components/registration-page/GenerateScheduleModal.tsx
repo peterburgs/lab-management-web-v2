@@ -175,7 +175,7 @@ const GenerateScheduleModal = (props: ModalProps) => {
             textAlign: "center",
           }}
         >
-          * The labs that are added after this moment will be used for
+          * The labs that are added after this moment will not be used for
           creating schedule but they might be used for extra classes
         </div>
         <FormControlLabel

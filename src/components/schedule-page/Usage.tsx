@@ -131,7 +131,7 @@ const StyledUsage = styled.div<StyledUsageProps>`
       : shift === 2
       ? "3px solid #4a89a2"
       : "3px solid #6537c0"};
-  height: 200px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   min-width: 150px;

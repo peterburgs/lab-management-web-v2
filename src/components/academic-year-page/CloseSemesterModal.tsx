@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import Button from "../common/Button";
 import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
+import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
+
 
 // import model
 import { Semester, SEMESTER_STATUSES } from "../../types/model";
@@ -77,6 +79,15 @@ const CloseSemesterModal = (props: ModalProps) => {
 
   return (
     <Modal {...props} style={{ overlay: { zIndex: 1000 } }}>
+            <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <WarningImage style={{ height: "100px" }} />
+      </div>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledButton
           disabled={status === "pending"}

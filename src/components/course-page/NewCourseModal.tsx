@@ -89,7 +89,7 @@ const NewCourseModal = (props: ModalProps) => {
         <Controller
           name="type"
           control={control}
-          defaultValue={COURSE_TYPES.PRACTICAL}
+          defaultValue={COURSE_TYPES.THEORY}
           rules={{ required: true }}
           render={(props) => (
             <StyledFormControl variant="outlined">

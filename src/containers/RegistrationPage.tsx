@@ -54,9 +54,9 @@ type TeachingTable = {
   courseName: string;
   group: number;
   period: string;
-  credit: number;
   numOfStudents: number;
-  lecturer: string;
+  lecturerId: string;
+  lecturerName: string;
 };
 
 // Prepare data for the table
@@ -78,11 +78,10 @@ const prepareData = (
           .courseName,
         group: teaching.group,
         period: `${teaching.startPeriod} - ${teaching.endPeriod}`,
-        credit: courses.find((c) => c._id === teaching.course)!
-          .numberOfCredits,
         numOfStudents: teaching.numberOfStudents,
-        lecturer: users.find((c) => c._id === teaching.user)!
+        lecturerName: users.find((c) => c._id === teaching.user)!
           .fullName,
+        lecturerId: users.find((c) => c._id === teaching.user)!._id,
       };
     });
   } else {
@@ -204,16 +203,16 @@ const RegistrationPage = () => {
         accessor: "period" as const,
       },
       {
-        Header: "Credits",
-        accessor: "credit" as const,
-      },
-      {
         Header: "Number of students",
         accessor: "numOfStudents" as const,
       },
       {
-        Header: "Lecturer",
-        accessor: "lecturer" as const,
+        Header: "Lecturer ID",
+        accessor: "lecturerId" as const,
+      },
+      {
+        Header: "Lecturer name",
+        accessor: "lecturerName" as const,
       },
     ];
     if (courseStatus === "succeeded" && userStatus === "succeeded") {
@@ -376,7 +375,7 @@ const RegistrationPage = () => {
       if (registrationStatus === "failed") {
         return (
           <NotFoundContainer>
-            <img alt="Nothing" src={getImage("Nothing.gif")} />
+            {/* <img alt="Nothing" src={getImage("Nothing.gif")} /> */}
             <span>There is no registration</span>
             <Button
               onClick={() => setShowOpenRegistrationModal(true)}
@@ -445,7 +444,7 @@ const RegistrationPage = () => {
                       dispatch(setShowErrorSnackBar(true));
                       dispatch(
                         setSnackBarContent(
-                          "Close all registrations before creating new one"
+                          "A registration is opening. Cannot start new one"
                         )
                       );
                     } else {

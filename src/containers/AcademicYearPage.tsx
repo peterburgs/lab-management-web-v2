@@ -392,7 +392,7 @@ const AcademicYearPage = () => {
                   <Text
                     style={{ textAlign: "center", marginTop: "1rem" }}
                   >
-                    There is no semester yet
+                    No data found
                   </Text>
                 )}
               </Collapse>
@@ -404,7 +404,7 @@ const AcademicYearPage = () => {
       return (
         <NotFoundContainer>
           <NothingImage />
-          <span>There is no academic year</span>
+          <span>No data found</span>
         </NotFoundContainer>
       );
     }
@@ -470,7 +470,7 @@ const AcademicYearPage = () => {
                 console.log("hello");
                 dispatch(
                   setSnackBarContent(
-                    "All academic years must be closed before opening new one"
+                    "An academic year is opening. Cannot start new one."
                   )
                 );
                 dispatch(setShowErrorSnackBar(true));

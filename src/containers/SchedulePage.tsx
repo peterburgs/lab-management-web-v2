@@ -37,14 +37,20 @@ import {
 } from "../types/model";
 
 // import type
-import { useAppSelector } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 import { useHistory } from "react-router";
 import ModifyLabUsageRequestModal from "../components/schedule-page/ModifyLabUsageRequestModal";
 import AddExtraClassRequestModal from "../components/schedule-page/AddExtraClassRequest";
 import moment from "moment";
 import _ from "lodash";
+import {
+  setShowErrorSnackBar,
+  setSnackBarContent,
+} from "../reducers/notificationSlice";
 
 const SchedulePage = () => {
+  const dispatch = useAppDispatch();
+
   const [week, setWeek] = useState(2);
   const [filteredLabUsages, setFilterLabUsages] = useState<
     LabUsage[]
@@ -239,7 +245,7 @@ const SchedulePage = () => {
       let rows: { [index: string]: string }[] = [];
 
       let wscols = headers.map((column) => {
-        return { wch: column.length };
+        return { wch: 30 };
       });
 
       let hsrows = [{ hpt: 40 }];
@@ -634,9 +640,18 @@ const SchedulePage = () => {
                 </StyledButton>
               ) : (
                 <StyledButton
-                  onClick={() =>
-                    setShowAddExtraClassRequestModal(true)
-                  }
+                  onClick={() => {
+                    if (labUsages.length === 0) {
+                      dispatch(setShowErrorSnackBar(true));
+                      dispatch(
+                        setSnackBarContent(
+                          "Request is not available now. Try again later"
+                        )
+                      );
+                    } else {
+                      setShowAddExtraClassRequestModal(true);
+                    }
+                  }}
                 >
                   Make request to add extra class
                 </StyledButton>
@@ -668,7 +683,7 @@ const SchedulePage = () => {
       return (
         <NotFoundContainer>
           <NothingImage />
-          <span>There is no schedule yet</span>
+          <span>No schedule found</span>
         </NotFoundContainer>
       );
     }

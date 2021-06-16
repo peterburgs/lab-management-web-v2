@@ -8,6 +8,7 @@ import { TextField } from "@material-ui/core";
 import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
 
 // import models
 import {
@@ -93,6 +94,15 @@ const StartAcademicYearModal = (props: ModalProps) => {
 
   return (
     <Modal {...props}>
+            <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <WarningImage style={{ height: "100px" }} />
+      </div>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="startDate"
@@ -118,7 +128,8 @@ const StartAcademicYearModal = (props: ModalProps) => {
               onChange={(value) => props.onChange(value)}
               value={props.value}
               shouldDisableDate={disableDays}
-              disablePast={true}
+              // TODO: Enable when production
+              // disablePast={true}
             />
           )}
         />

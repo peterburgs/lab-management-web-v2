@@ -147,7 +147,7 @@ const RequestPage = () => {
       return (
         <NotFoundContainer>
           <NothingImage />
-          <span>There is no requests yet</span>
+          <span>No request found</span>
         </NotFoundContainer>
       );
     }

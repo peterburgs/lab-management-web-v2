@@ -67,6 +67,9 @@ const RequestDetailPage = React.lazy(
 const AcademicYearPage = React.lazy(
   () => import("./containers/AcademicYearPage")
 );
+const AttendancePage = React.lazy(
+  () => import("./containers/AttendancePage")
+);
 
 // material-ui theme
 const theme = createTheme({
@@ -418,6 +421,38 @@ const App = () => {
                       }
                     >
                       <AcademicYearPage />
+                    </Suspense>
+                  </Layout>
+                }
+              />
+              <PrivateRoute
+                roles={[ROLES.ADMIN]}
+                path="/attendances"
+                exact={false}
+                component={
+                  <Layout
+                    handleSidebarToggle={handleSidebarToggle}
+                    isCollapsed={isCollapsed}
+                    setCollapsed={setCollapsed}
+                  >
+                    <Suspense
+                      fallback={
+                        <LinearProgress
+                          style={{
+                            width: isCollapsed
+                              ? "calc(100vw - 67px)"
+                              : "calc(100vw - 240px)",
+                            position: "absolute",
+                            right: "0px",
+                            top:
+                              window.innerWidth < 1220
+                                ? "-80px"
+                                : "0px",
+                          }}
+                        />
+                      }
+                    >
+                      <AttendancePage />
                     </Suspense>
                   </Layout>
                 }

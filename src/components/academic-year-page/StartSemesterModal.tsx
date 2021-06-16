@@ -98,7 +98,7 @@ const StartSemesterModal = (props: ModalProps) => {
         dispatch(setShowErrorSnackBar(true));
         dispatch(
           setSnackBarContent(
-            "Close all semesters before starting new one"
+            "A semester is opening. Cannot start new one."
           )
         );
       }

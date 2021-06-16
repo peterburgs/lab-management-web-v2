@@ -101,8 +101,8 @@ const CoursePage = () => {
         "Course Name": course.courseName,
         "Course type":
           course.type === COURSE_TYPES.THEORY
-            ? "Lý thuyết"
-            : "Thực hành",
+            ? "Theory"
+            : "Practical",
         Credits: course.numberOfCredits,
       };
     });

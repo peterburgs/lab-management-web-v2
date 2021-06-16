@@ -106,6 +106,7 @@ const NewLabModal = (props: ModalProps) => {
         />
         <StyledTextField
           label="Capacity"
+          defaultValue={30}
           inputRef={register({ required: true })}
           name="capacity"
           error={Boolean(errors.capacity)}

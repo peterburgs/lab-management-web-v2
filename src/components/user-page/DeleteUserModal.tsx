@@ -5,6 +5,8 @@ import { ModalProps } from "../../types/modal";
 import { useForm } from "react-hook-form";
 import Button from "../common/Button";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
+
 
 // import reducers
 import {
@@ -54,6 +56,15 @@ const DeleteUserModal = (props: DeleteUserModalProps) => {
 
   return (
     <Modal {...props}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <WarningImage style={{ height: "100px" }} />
+      </div>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledButton
           disabled={status === "pending"}

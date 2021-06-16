@@ -19,7 +19,12 @@ import { generateSchedule } from "../../reducers/scheduleSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
 import useGetAllTeachings from "../../hooks/teaching/useGetAllTeachings";
-import { Teaching, Registration, User } from "../../types/model";
+import {
+  Teaching,
+  Registration,
+  User,
+  ROLES,
+} from "../../types/model";
 import useGetAllUsers from "../../hooks/user/useGetAllUsers";
 import { resetState as resetSemesterState } from "../../reducers/semesterSlice";
 
@@ -84,7 +89,7 @@ const GenerateScheduleModal = (props: ModalProps) => {
           dispatch(setShowErrorSnackBar(true));
           dispatch(
             setSnackBarContent(
-              "Teachings are required to generate schedule"
+              "Cannot create schedule since no teachings found."
             )
           );
         }
@@ -92,7 +97,7 @@ const GenerateScheduleModal = (props: ModalProps) => {
         dispatch(setShowErrorSnackBar(true));
         dispatch(
           setSnackBarContent(
-            "Close the opening registration before generating schedule"
+            "A registration is opening. Cannot create schedule"
           )
         );
       }
@@ -127,7 +132,7 @@ const GenerateScheduleModal = (props: ModalProps) => {
                   teaching.registration === latestRegistration._id
               ).length
             }`}</Text>
-            <Text>{`Users have submitted: ${
+            <Text>{`Lecturers have submitted: ${
               (users as User[]).filter((user) => {
                 if (
                   teachings
@@ -142,7 +147,11 @@ const GenerateScheduleModal = (props: ModalProps) => {
                 }
                 return false;
               }).length
-            }/${(users as User[]).length}`}</Text>
+            }/${
+              (users as User[]).filter((item) =>
+                item.roles.includes(ROLES.LECTURER)
+              ).length
+            }`}</Text>
           </Label>
         )}
         <div
@@ -175,8 +184,9 @@ const GenerateScheduleModal = (props: ModalProps) => {
             textAlign: "center",
           }}
         >
-          * The labs that are added after this moment will not be used for
-          creating schedule but they might be used for extra classes
+          * The labs that are added after this moment will not be used
+          for creating schedule but they might be used for extra
+          classes
         </div>
         <FormControlLabel
           control={

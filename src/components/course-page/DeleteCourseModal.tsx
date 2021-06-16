@@ -16,6 +16,8 @@ import { deleteCourse } from "../../reducers/courseSlice";
 // import hooks
 import { useAppDispatch } from "../../store";
 import useGetAllTeaching from "../../hooks/teaching/useGetAllTeachings";
+import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
+
 
 // component props
 interface DeleteCourseModalProps extends ModalProps {
@@ -72,6 +74,15 @@ const DeleteCourseModal = (props: DeleteCourseModalProps) => {
 
   return (
     <Modal {...props}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <WarningImage style={{ height: "100px" }} />
+      </div>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledButton
           disabled={status === "pending"}

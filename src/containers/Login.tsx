@@ -7,8 +7,8 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import { Theme, makeStyles } from "@material-ui/core/styles";
-import { styled as materialStyled } from "@material-ui/styles";
+import { Theme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/styles";
 import { useTransition, animated } from "@react-spring/web";
 import { SpringValue } from "@react-spring/core";
 import {

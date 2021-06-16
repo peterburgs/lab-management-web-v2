@@ -148,6 +148,12 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
               name="Users"
               icon={<UserIcon />}
             />
+            <NavItem
+              isCollapsed={isCollapsed}
+              path="/attendances"
+              name="Attendances"
+              icon={<AttendanceIcon />}
+            />
           </>
         ) : null}
 

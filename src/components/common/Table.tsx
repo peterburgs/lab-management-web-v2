@@ -194,40 +194,44 @@ const Table = <T extends Record<string, unknown>>(
                   })}
 
                   <ActionButtonContainer>
-                    {props.isFaceId && (
-                      <DeleteButton
-                        onClick={() =>
-                          props.onClickDeleteFaceIdBtn!(
-                            row.original.rowId as string
-                          )
-                        }
-                      >
-                        <FontAwesomeIcon icon={faUserSlash} />
-                      </DeleteButton>
-                    )}
-                    {props.isAllowEditDelete && (
+                    {row.original.rowId !== "MASTER" ? (
                       <>
-                        {" "}
-                        <EditButton
-                          onClick={() =>
-                            props.onClickEditBtn!(
-                              row.original.rowId as string
-                            )
-                          }
-                        >
-                          <EditIcon fontSize="small" />
-                        </EditButton>
-                        <DeleteButton
-                          onClick={() =>
-                            props.onClickDeleteBtn!(
-                              row.original.rowId as string
-                            )
-                          }
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </DeleteButton>
+                        {props.isFaceId && (
+                          <DeleteButton
+                            onClick={() =>
+                              props.onClickDeleteFaceIdBtn!(
+                                row.original.rowId as string
+                              )
+                            }
+                          >
+                            <FontAwesomeIcon icon={faUserSlash} />
+                          </DeleteButton>
+                        )}
+                        {props.isAllowEditDelete && (
+                          <>
+                            {" "}
+                            <EditButton
+                              onClick={() =>
+                                props.onClickEditBtn!(
+                                  row.original.rowId as string
+                                )
+                              }
+                            >
+                              <EditIcon fontSize="small" />
+                            </EditButton>
+                            <DeleteButton
+                              onClick={() =>
+                                props.onClickDeleteBtn!(
+                                  row.original.rowId as string
+                                )
+                              }
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </DeleteButton>
+                          </>
+                        )}
                       </>
-                    )}
+                    ) : null}
                   </ActionButtonContainer>
                 </StyledTBodyRow>
               );

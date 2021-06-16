@@ -114,7 +114,7 @@ const TopNavBar = ({
       {renderCountdown()}
       <StyledTopNavBar>
         <SearchBarContainer onClick={handleClosePanel}>
-          {location.pathname !== "/schedule" ? (
+          {location.pathname !== "/schedule" && location.pathname !== "/attendances" ? (
             location.pathname !== "/registration" ? (
               <AppSearchBar />
             ) : (

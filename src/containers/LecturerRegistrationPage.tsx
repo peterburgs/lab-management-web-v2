@@ -167,31 +167,37 @@ const LecturerRegistrationPage = () => {
       {
         Header: "Teaching ID",
         accessor: "teachingId" as const,
-        width: 100,
+        width: 35,
       },
       {
         Header: "Class code",
         accessor: "classCode" as const,
+        width: 50,
       },
       {
         Header: "Course name",
         accessor: "courseName" as const,
+        width: 100,
       },
       {
         Header: "Group",
         accessor: "group" as const,
+        width: 25,
       },
       {
-        Header: "Day of week",
+        Header: "Day",
         accessor: "dayOfWeek" as const,
+        width: 30,
       },
       {
         Header: "Period",
         accessor: "period" as const,
+        width: 25,
       },
       {
-        Header: "Number of students",
+        Header: "Students",
         accessor: "numOfStudents" as const,
+        width: 50,
       },
     ];
 
@@ -331,7 +337,7 @@ const LecturerRegistrationPage = () => {
         return (
           <NotFoundContainer>
             <NothingImage />
-            <span>There is no registration</span>
+            <span>No registration found</span>
           </NotFoundContainer>
         );
       }
@@ -400,7 +406,7 @@ const LecturerRegistrationPage = () => {
       return (
         <NotFoundContainer>
           <NothingImage />
-          <span>There is no semester</span>
+          <span>No semester found</span>
         </NotFoundContainer>
       );
     }

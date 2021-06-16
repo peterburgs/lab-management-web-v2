@@ -131,7 +131,9 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
             <DateTimePicker
               label="Start date"
               inputFormat="dd/MM/yyyy hh:mm a"
-              renderInput={(props) => <StyledTextField {...props} helperText={null} />}
+              renderInput={(props) => (
+                <StyledTextField {...props} helperText={null} />
+              )}
               onChange={(value) => props.onChange(value)}
               value={props.value}
             />
@@ -146,7 +148,9 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
             <DateTimePicker
               label="End date"
               inputFormat="dd/MM/yyyy hh:mm a"
-              renderInput={(props) => <StyledTextField {...props} helperText={null} />}
+              renderInput={(props) => (
+                <StyledTextField {...props} helperText={null} />
+              )}
               onChange={(value) => props.onChange(value)}
               value={props.value}
             />
@@ -168,7 +172,11 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
             onClick={() => props.setShowSelectCourseModal(true)}
             type="button"
           >
-            Select course
+            {props.selectedCourses
+              ? props.selectedCourses.length > 0
+                ? `${props.selectedCourses.length} courses selected`
+                : "Select course"
+              : "Select course"}
           </SelectCourseButton>
         )}
 

@@ -47,8 +47,8 @@ type AttendanceTable = {
   course: string;
   labName: string;
   period: string;
-  checkIn: string;
-  checkOut: string;
+  checkIn: string | JSX.Element;
+  checkOut: string | JSX.Element;
   lecturer: string;
 };
 
@@ -123,47 +123,59 @@ const AttendancePage = () => {
     let data: AttendanceTable[];
 
     if (filteredLabUsages.length > 0) {
-      data = filteredLabUsages.map((labUsage) => {
-        return {
-          rowId: labUsage._id!,
-          day: dowNum2String(labUsage.dayOfWeek)!,
-          course:
-            courses &&
-            teachings.find(
-              (teaching) => teaching._id === labUsage.teaching
-            )
-              ? courses.find(
-                  (course) =>
-                    course._id ===
-                    teachings.find(
-                      (teaching) => teaching._id === labUsage.teaching
-                    )!.course
-                )!.courseName
-              : "",
-          labName: labs.find((item) => item._id === labUsage.lab)
-            ?.labName!,
-          period: `${labUsage.startPeriod} - ${labUsage.endPeriod}`,
-          checkIn: moment(new Date(labUsage.checkInAt!)).format(
-            "DD/MM/YYYY h:m:s a"
-          ),
-          checkOut: moment(new Date(labUsage.checkOutAt!)).format(
-            "DD/MM/YYYY h:m:s a"
-          ),
-          lecturer:
-            users &&
-            teachings.find(
-              (teaching) => teaching._id === labUsage.teaching
-            )
-              ? users.find(
-                  (lecturer) =>
-                    lecturer._id ===
-                    teachings.find(
-                      (teaching) => teaching._id === labUsage.teaching
-                    )!.user
-                )!.fullName
-              : "",
-        };
-      });
+      data = filteredLabUsages
+        .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
+        .map((labUsage) => {
+          return {
+            rowId: labUsage._id!,
+            day: dowNum2String(labUsage.dayOfWeek)!,
+            course:
+              courses &&
+              teachings.find(
+                (teaching) => teaching._id === labUsage.teaching
+              )
+                ? courses.find(
+                    (course) =>
+                      course._id ===
+                      teachings.find(
+                        (teaching) =>
+                          teaching._id === labUsage.teaching
+                      )!.course
+                  )!.courseName
+                : "",
+            labName: labs.find((item) => item._id === labUsage.lab)
+              ?.labName!,
+            period: `${labUsage.startPeriod} - ${labUsage.endPeriod}`,
+            checkIn: labUsage.checkInAt ? (
+              moment(new Date(labUsage.checkInAt)).format(
+                "DD/MM/YYYY h:m:s a"
+              )
+            ) : (
+              <PendingeBadge>Pending</PendingeBadge>
+            ),
+            checkOut: labUsage.checkInAt ? (
+              moment(new Date(labUsage.checkOutAt!)).format(
+                "DD/MM/YYYY h:m:s a"
+              )
+            ) : (
+              <PendingeBadge>Pending</PendingeBadge>
+            ),
+            lecturer:
+              users &&
+              teachings.find(
+                (teaching) => teaching._id === labUsage.teaching
+              )
+                ? users.find(
+                    (lecturer) =>
+                      lecturer._id ===
+                      teachings.find(
+                        (teaching) =>
+                          teaching._id === labUsage.teaching
+                      )!.user
+                  )!.fullName
+                : "",
+          };
+        });
     } else {
       data = [];
     }
@@ -549,6 +561,15 @@ const StyledFormControl = materialUiStyled(FormControl)({
 
 const Text = styled.div`
   font-size: 16px;
+`;
+
+const PendingeBadge = styled.div`
+  background-color: ${({ theme }) => theme.lightRed};
+  color: ${({ theme }) => theme.red};
+  font-size: 12px;
+  padding: 0 0.5rem;
+  font-weight: 600;
+  border-radius: 10px;
 `;
 
 export default AttendancePage;

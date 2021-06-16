@@ -246,7 +246,6 @@ const Copyright = styled.span<ContainerProps>`
   color: white;
   font-size: 14px;
   font-weight: 400;
-  opacity: 0.7;
 
   ${({ isCollapsed }) =>
     isCollapsed &&

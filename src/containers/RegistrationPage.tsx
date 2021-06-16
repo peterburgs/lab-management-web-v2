@@ -187,12 +187,12 @@ const RegistrationPage = () => {
         accessor: "rowId" as const,
       },
       {
-        Header: "Course ID",
-        accessor: "courseId" as const,
-      },
-      {
         Header: "Course Name",
         accessor: "courseName" as const,
+      },
+      {
+        Header: "Course ID",
+        accessor: "courseId" as const,
       },
       {
         Header: "Group",

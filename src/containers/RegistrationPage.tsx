@@ -427,14 +427,14 @@ const RegistrationPage = () => {
               </Filter>
 
               <Action>
-                <Tooltip title="Refresh table data">
+                {/* <Tooltip title="Refresh table data">
                   <IconButtonContainer>
                     <IconButton
                       onClick={handleRefreshData}
                       icon={<RefreshIcon fontSize="small" />}
                     />
                   </IconButtonContainer>
-                </Tooltip>
+                </Tooltip> */}
                 <Button
                   onClick={() => {
                     if (
@@ -580,7 +580,7 @@ const RegistrationDuration = styled.span`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   font-size: 0.875rem;
   margin-left: 1rem;
 

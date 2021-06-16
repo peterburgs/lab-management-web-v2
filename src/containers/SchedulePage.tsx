@@ -604,17 +604,19 @@ const SchedulePage = () => {
                     )}
                 </Select>
               </StyledFormControl>
-              <Text>
-                From{" "}
-                {moment(new Date(selectedSemester.startDate!))
-                  .add(week, "weeks")
-                  .format("dddd DD/MM/yyyy")}{" "}
-                to{" "}
-                {moment(new Date(selectedSemester.startDate!))
-                  .add(week, "weeks")
-                  .add(6, "days")
-                  .format("dddd DD/MM/yyyy")}
-              </Text>
+              {selectedSemester ? (
+                <Text>
+                  From{" "}
+                  {moment(new Date(selectedSemester.startDate!))
+                    .add(week, "weeks")
+                    .format("dddd DD/MM/yyyy")}{" "}
+                  to{" "}
+                  {moment(new Date(selectedSemester.startDate!))
+                    .add(week, "weeks")
+                    .add(6, "days")
+                    .format("dddd DD/MM/yyyy")}
+                </Text>
+              ) : null}
             </Filter>
             <Action>
               <StyledButton

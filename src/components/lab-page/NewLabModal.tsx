@@ -45,6 +45,8 @@ const NewLabModal = (props: ModalProps) => {
     data.isHidden = false;
     data.isAvailableForCurrentUsing = isAvailableForCurrentUsing;
 
+    data.labName = data.labName.trim();
+
     try {
       setStatus("pending");
       const actionResult = await dispatch(newLab(data));

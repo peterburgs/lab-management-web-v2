@@ -10,7 +10,11 @@ import { ReactComponent as WarningImage } from "../../assets/images/warning.svg"
 // import models
 import { Lab, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
-import { newLab } from "../../reducers/labSlice";
+import {
+  createBulkOfLabs,
+  newLab,
+  resetState,
+} from "../../reducers/labSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
@@ -86,7 +90,7 @@ const ImportLabModal = (props: ModalProps) => {
 
           switch (key.toLowerCase()) {
             case "lab name":
-              lab.labName = strValue;
+              lab.labName = strValue.trim();
               break;
             case "capacity":
               lab.capacity = Number(strValue);
@@ -103,10 +107,9 @@ const ImportLabModal = (props: ModalProps) => {
         //send data to server
         setStatus("pending");
         try {
-          for (let lab of labs) {
-            const actionResult = await dispatch(newLab(lab));
-            unwrapResult(actionResult);
-          }
+          const actionResult = await dispatch(createBulkOfLabs(labs));
+          unwrapResult(actionResult);
+          dispatch(resetState());
           dispatch(setShowErrorSnackBar(false));
           dispatch(setSnackBarContent("New labs created"));
           dispatch(setShowSuccessSnackBar(true));

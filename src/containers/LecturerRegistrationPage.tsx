@@ -12,6 +12,7 @@ import EditTeachingModal from "../components/lecturer-registration-page/EditTeac
 import PrivateRoute from "../containers/PrivateRoute";
 import ImportExportIcon from "@material-ui/icons/ImportExport";
 import ImportPanel from "../components/lecturer-registration-page/ImportPanel";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 // Import modal
 import NewTeachingModal from "../components/lecturer-registration-page/NewTeachingModal";
@@ -28,15 +29,19 @@ import {
 
 // import hooks
 import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";
-import { useAppSelector } from "../store";
+import { useAppSelector, useAppDispatch } from "../store";
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import { useHistory } from "react-router";
+import {
+  setShowSuccessSnackBar,
+  setSnackBarContent,
+} from "../reducers/notificationSlice";
 
 // Table type
 type TeachingTable = {
   rowId: string;
-  teachingId: string;
-  code: string;
+  teachingId: JSX.Element;
+  classCode: string;
   courseName: string;
   group: number;
   period: string;
@@ -63,37 +68,6 @@ const dowNum2String = (dow: number) => {
   }
 };
 
-// prepare data for the table
-const prepareData = (
-  teachings: Teaching[],
-  courses: Course[]
-): {
-  data: TeachingTable[];
-} => {
-  let data: TeachingTable[];
-
-  if (teachings.length > 0 && courses.length > 0) {
-    console.log(teachings);
-    data = teachings.map((teaching) => {
-      return {
-        rowId: teaching._id!,
-        teachingId: teaching._id!,
-        code: teaching.code,
-        courseName: courses.find((c) => c._id === teaching.course)!
-          .courseName,
-        group: teaching.group,
-        period: `${teaching.startPeriod} - ${teaching.endPeriod}`,
-        numOfStudents: teaching.numberOfStudents,
-        dayOfWeek: dowNum2String(teaching.dayOfWeek)!,
-      };
-    });
-  } else {
-    data = [];
-  }
-
-  return { data };
-};
-
 const LecturerRegistrationPage = () => {
   // state
   const [showNewTeachingModal, setShowNewTeachingModal] =
@@ -105,6 +79,8 @@ const LecturerRegistrationPage = () => {
   const [showImportPanel, setShowImportPanel] = useState(false);
   const [showImportTeachingModal, setShowImportTeachingModal] =
     useState(false);
+
+  const dispatch = useAppDispatch();
 
   // call hooks
   const openSemester = useAppSelector((state) =>
@@ -139,6 +115,48 @@ const LecturerRegistrationPage = () => {
   );
   const history = useHistory();
 
+  // helper
+  // prepare data for the table
+  const prepareData = (
+    teachings: Teaching[],
+    courses: Course[]
+  ): {
+    data: TeachingTable[];
+  } => {
+    let data: TeachingTable[];
+
+    if (teachings.length > 0 && courses.length > 0) {
+      console.log(teachings);
+      data = teachings.map((teaching) => {
+        return {
+          rowId: teaching._id!,
+          teachingId: (
+            <CopyButton
+              onClick={() => {
+                navigator.clipboard.writeText(teaching._id!);
+                dispatch(setShowSuccessSnackBar(true));
+                dispatch(setSnackBarContent("Copied to clipboard"));
+              }}
+            >
+              Copy
+            </CopyButton>
+          ),
+          classCode: teaching.code,
+          courseName: courses.find((c) => c._id === teaching.course)!
+            .courseName,
+          group: teaching.group,
+          period: `${teaching.startPeriod} - ${teaching.endPeriod}`,
+          numOfStudents: teaching.numberOfStudents,
+          dayOfWeek: dowNum2String(teaching.dayOfWeek)!,
+        };
+      });
+    } else {
+      data = [];
+    }
+
+    return { data };
+  };
+
   // conditional renderer
   const renderTable = () => {
     const columns: Array<Column<TeachingTable>> = [
@@ -149,13 +167,14 @@ const LecturerRegistrationPage = () => {
       {
         Header: "Teaching ID",
         accessor: "teachingId" as const,
+        width: 100,
       },
       {
-        Header: "Code",
-        accessor: "code" as const,
+        Header: "Class code",
+        accessor: "classCode" as const,
       },
       {
-        Header: "Course Name",
+        Header: "Course name",
         accessor: "courseName" as const,
       },
       {
@@ -536,6 +555,11 @@ const ImportPanelContainer = styled.div`
   @media (max-width: 1220px) {
     transform: translate(-210px, 60px);
   }
+`;
+
+const CopyButton = styled(Button)`
+  margin: 0;
+  padding: 0.5rem;
 `;
 
 export default LecturerRegistrationPage;

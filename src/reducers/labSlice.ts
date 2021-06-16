@@ -69,6 +69,27 @@ export const newLab = createAsyncThunk<
   }
 });
 
+export const createBulkOfLabs = createAsyncThunk<
+  { labs: Lab[]; message: string },
+  Lab[],
+  { rejectValue: { labs: Lab[]; message: string } }
+>("labs/createBulkOfLabs", async (labs, thunkApi) => {
+  try {
+    const { data } = await nodeAPI.post(
+      "/labs/bulk",
+      { labs: [...labs] },
+      {
+        headers: auth(),
+      }
+    );
+    return data as { labs: Lab[]; message: string };
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as { labs: Lab[]; message: string }
+    );
+  }
+});
+
 export const editLab = createAsyncThunk<
   PUTResponse,
   Lab,
@@ -153,6 +174,10 @@ export const LabSlice = createSlice({
       state.labs = state.labs.filter(
         (item) => item._id !== action.payload.lab!._id
       );
+      state.message = action.payload.message;
+    });
+    builder.addCase(createBulkOfLabs.fulfilled, (state, action) => {
+      state.status = "succeeded";
       state.message = action.payload.message;
     });
   },

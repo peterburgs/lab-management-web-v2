@@ -69,15 +69,40 @@ export const newCourse = createAsyncThunk<
   }
 });
 
+export const createBulkOfCourses = createAsyncThunk<
+  { courses: Course[]; message: string },
+  Course[],
+  { rejectValue: { courses: Course[]; message: string } }
+>("courses/createBulkOfCourses", async (courses, thunkApi) => {
+  try {
+    const { data } = await nodeAPI.post(
+      "/courses/bulk",
+      { courses: [...courses] },
+      {
+        headers: auth(),
+      }
+    );
+    return data as { courses: Course[]; message: string };
+  } catch (err) {
+    return thunkApi.rejectWithValue(
+      err.response.data as { courses: Course[]; message: string }
+    );
+  }
+});
+
 export const editCourse = createAsyncThunk<
   PUTResponse,
   Course,
   { rejectValue: PUTResponse }
 >("courses/editCourse", async (course, thunkApi) => {
   try {
-    const { data } = await nodeAPI.put(`/courses/${course._id}`, course, {
-      headers: auth(),
-    });
+    const { data } = await nodeAPI.put(
+      `/courses/${course._id}`,
+      course,
+      {
+        headers: auth(),
+      }
+    );
     return data as PUTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as PUTResponse);
@@ -157,6 +182,13 @@ export const CourseSlice = createSlice({
       );
       state.message = action.payload.message;
     });
+    builder.addCase(
+      createBulkOfCourses.fulfilled,
+      (state, action) => {
+        state.status = "succeeded";
+        state.message = action.payload.message;
+      }
+    );
   },
 });
 

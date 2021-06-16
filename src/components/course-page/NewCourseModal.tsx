@@ -37,7 +37,7 @@ const NewCourseModal = (props: ModalProps) => {
   const onSubmit = async (data: Course) => {
     try {
       data.isHidden = false;
-
+      data.courseName = data.courseName.trim();
       setStatus("pending");
       const actionResult = await dispatch(newCourse(data));
       unwrapResult(actionResult);

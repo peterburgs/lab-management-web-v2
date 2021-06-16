@@ -224,14 +224,14 @@ const UserPage = () => {
       <StyledUserPage>
         <Toolbar>
           <Action>
-            <Tooltip title="Refresh table data">
+            {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>
                 <IconButton
                   onClick={handleRefreshData}
                   icon={<RefreshIcon fontSize="small" />}
                 />
               </IconButtonContainer>
-            </Tooltip>
+            </Tooltip> */}
             <Button
               icon={<AddIcon />}
               onClick={() => setShowNewUserModal(true)}
@@ -277,7 +277,7 @@ const Toolbar = styled.div`
 const Action = styled.div`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   font-size: 0.875rem;
 
   @media (max-width: 600px) {

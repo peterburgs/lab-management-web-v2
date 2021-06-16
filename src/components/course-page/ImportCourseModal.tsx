@@ -9,7 +9,11 @@ import * as XLSX from "xlsx";
 // import models
 import { Course, COURSE_TYPES } from "../../types/model";
 // import reducers
-import { newCourse } from "../../reducers/courseSlice";
+import {
+  createBulkOfCourses,
+  newCourse,
+  resetState,
+} from "../../reducers/courseSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
@@ -81,7 +85,7 @@ const ImportCourseModal = (props: ModalProps) => {
               course._id = strValue;
               break;
             case "course name":
-              course.courseName = strValue;
+              course.courseName = strValue.trim();
               break;
             case "credits":
               course.numberOfCredits = Number(strValue);
@@ -104,11 +108,11 @@ const ImportCourseModal = (props: ModalProps) => {
         //send data to server
         setStatus("pending");
         try {
-          for (let course of courses) {
-            const actionResult = await dispatch(newCourse(course));
-            unwrapResult(actionResult);
-          }
-
+          const actionResult = await dispatch(
+            createBulkOfCourses(courses)
+          );
+          unwrapResult(actionResult);
+          dispatch(resetState());
           dispatch(setShowErrorSnackBar(false));
           dispatch(setSnackBarContent("New courses created"));
           dispatch(setShowSuccessSnackBar(true));

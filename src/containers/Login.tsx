@@ -105,7 +105,7 @@ const Login = () => {
     } catch (err) {
       setLoading(false);
       dispatch(setShowErrorSnackBar(true));
-      dispatch(setSnackBarContent("Permission denied"));
+      dispatch(setSnackBarContent(err.message));
     }
   };
 

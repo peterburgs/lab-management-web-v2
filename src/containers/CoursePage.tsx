@@ -135,14 +135,17 @@ const CoursePage = () => {
       {
         Header: "ID",
         accessor: "id" as const,
+        width: 100,
       },
       {
         Header: "Course Name",
         accessor: "name" as const,
+        minWidth: 200,
       },
       {
         Header: "Number of credits",
         accessor: "numberOfCredits" as const,
+        width: 100,
       },
       {
         Header: "Type",
@@ -238,14 +241,14 @@ const CoursePage = () => {
       <StyledCoursePage>
         <Toolbar>
           <Action isAdmin={role === ROLES.ADMIN}>
-            <Tooltip title="Refresh table data">
+            {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>
                 <IconButton
                   onClick={handleRefreshData}
                   icon={<RefreshIcon fontSize="small" />}
                 />
               </IconButtonContainer>
-            </Tooltip>
+            </Tooltip> */}
             {role === ROLES.ADMIN && (
               <>
                 <Button
@@ -320,7 +323,7 @@ const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
   grid-template-columns: ${({ isAdmin }) =>
-    isAdmin ? "1fr 1fr 1fr 1fr" : "1fr"};
+    isAdmin ? "1fr 1fr 1fr" : "1fr"};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {

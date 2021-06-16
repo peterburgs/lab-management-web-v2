@@ -228,7 +228,103 @@ const AttendancePage = () => {
   }, [selectedYear, semesters]);
 
   // event handler
-  const exportAttendanceCSV = () => {};
+  const exportAttendanceCSV = () => {
+    let sheets: { [index: string]: XLSX.WorkSheet } = {};
+    let sheetNames: string[] = [];
+
+    const headers = [
+      "Day",
+      "Course",
+      "Lab",
+      "Period",
+      "Check in",
+      "Check out",
+      "Lecturer",
+    ];
+
+    // loop through week
+    for (let i = 0; i < selectedSemester.numberOfWeeks; i++) {
+      // Get lab usages by weeks
+      const labUsagesByWeek = (labUsages as LabUsage[])
+        .filter((labUsage) => labUsage.weekNo === i)
+        .sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+
+      let rows: { [index: string]: string }[] = [];
+
+      let hsrows = [{ hpt: 40 }, { hpt: 40 }];
+
+      for (let i = 0; i < labUsagesByWeek.length; i++) {
+        let row: { [index: string]: string } = {};
+        row[headers[0]] = dowNum2String(
+          labUsagesByWeek[i].dayOfWeek
+        )!;
+        row[headers[1]] =
+          courses &&
+          teachings.find(
+            (teaching) => teaching._id === labUsagesByWeek[i].teaching
+          )
+            ? (courses as Course[]).find(
+                (course) =>
+                  course._id ===
+                  teachings.find(
+                    (teaching) =>
+                      teaching._id === labUsagesByWeek[i].teaching
+                  )!.course
+              )!.courseName
+            : "";
+        row[headers[2]] = (labs as Lab[]).find(
+          (item) => item._id === labUsagesByWeek[i].lab
+        )?.labName!;
+        row[
+          headers[3]
+        ] = `${labUsagesByWeek[i].startPeriod} - ${labUsagesByWeek[i].endPeriod}`;
+        row[headers[4]] = labUsagesByWeek[i].checkInAt
+          ? moment(new Date(labUsagesByWeek[i].checkInAt!)).format(
+              "DD/MM/YYYY h:m:s a"
+            )
+          : "pending";
+        row[headers[5]] = labUsagesByWeek[i].checkInAt
+          ? moment(new Date(labUsagesByWeek[i].checkOutAt!)).format(
+              "DD/MM/YYYY h:m:s a"
+            )
+          : "pending";
+        row[headers[6]] =
+          users &&
+          teachings.find(
+            (teaching) => teaching._id === labUsagesByWeek[i].teaching
+          )
+            ? (users as User[]).find(
+                (lecturer) =>
+                  lecturer._id ===
+                  teachings.find(
+                    (teaching) =>
+                      teaching._id === labUsagesByWeek[i].teaching
+                  )!.user
+              )!.fullName
+            : "";
+
+        rows.push(row);
+      }
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      console.log(ws);
+      ws["!rows"] = hsrows;
+      sheets[`Week ${i}`] = ws;
+      sheetNames.push(`Week ${i}`);
+    }
+
+    const fileType =
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileExtension = ".xlsx";
+    const wb = { Sheets: sheets, SheetNames: sheetNames };
+
+    const excelBuffer = XLSX.write(wb, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, "idle_theory_rooms" + fileExtension);
+  };
 
   // Filter lab usages
   useEffect(() => {

@@ -92,8 +92,8 @@ const Usage = ({
                 ? moment(new Date(checkOutAt)).format(
                     "HH:mm:ss DD/MM/YYYY"
                   )
-                : "Pending"
-              : "check in required"}
+                : "pending"
+              : "pending"}
           </CheckOut>
         </>
       ) : (
@@ -124,13 +124,13 @@ interface StyledUsageProps {
 
 const StyledUsage = styled.div<StyledUsageProps>`
   background: ${({ shift }) =>
-    shift === 1 ? "#ffe5ec" : shift === 2 ? "#D7F2FF" : "#EEEAF7"};
+    shift === 1 ? "#C70039" : shift === 2 ? "#16C79A" : "#0075F6"};
   border-left: ${({ shift }) =>
     shift === 1
-      ? "3px solid #fe3f71"
+      ? "3px solid #810000"
       : shift === 2
-      ? "3px solid #4a89a2"
-      : "3px solid #6537c0"};
+      ? "3px solid #02383C"
+      : "3px solid #0900C3"};
   height: 180px;
   display: flex;
   flex-direction: column;
@@ -151,17 +151,20 @@ const CourseName = styled.span`
   font-weight: 500;
   font-size: 14px;
   margin-bottom: 0.5rem;
+  color: white;
 `;
 
 const LecturerName = styled.span`
   font-size: 13px;
   margin-bottom: 0.5rem;
   font-style: italic;
+  color: white;
 `;
 
 const Period = styled.span`
   font-size: 12px;
   margin-bottom: 0.5rem;
+  color: white;
 `;
 
 const ActionButtonContainer = styled.div`
@@ -210,12 +213,14 @@ const CheckIn = styled.div`
   font-size: 13px;
   margin-bottom: 0.5rem;
   font-style: italic;
+  color: white;
 `;
 
 const CheckOut = styled.div`
   font-size: 13px;
   margin-bottom: 0.5rem;
   font-style: italic;
+  color: white;
 `;
 
 export default Usage;

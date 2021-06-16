@@ -119,7 +119,7 @@ const CoursePage = () => {
       type: "array",
     });
     const data = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data, "course_form_template" + fileExtension);
+    FileSaver.saveAs(data, "courses" + fileExtension);
   };
 
   const handleRefreshData = () => {

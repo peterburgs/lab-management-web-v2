@@ -106,7 +106,7 @@ const LabPage = () => {
       type: "array",
     });
     const data = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data, "lab_form_template" + fileExtension);
+    FileSaver.saveAs(data, "labs" + fileExtension);
   };
 
   const handleRefreshData = () => {

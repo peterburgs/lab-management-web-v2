@@ -8,6 +8,8 @@ import {
   setShowSuccessSnackBar,
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
+import { IconButton } from "@material-ui/core";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 interface UsageProps {
   startPeriod: number;
@@ -92,6 +94,23 @@ const Usage = ({
                 : "pending"
               : "pending"}
           </CheckOut>
+          {role === ROLES.LECTURER && (
+            <>
+              <TeachingID>
+                Teaching ID:{" "}
+                <IconButton
+                  onClick={() => {
+                    navigator.clipboard.writeText(teachingId);
+                    dispatch(setShowSuccessSnackBar(true));
+                    dispatch(setSnackBarContent("Copied to clipboard"));
+                  }}
+                  component="span"
+                >
+                  <FileCopyIcon fontSize="small" htmlColor="#fff" />
+                </IconButton>
+              </TeachingID>
+            </>
+          )}
         </>
       ) : (
         <Text>OCCUPIED</Text>
@@ -100,15 +119,6 @@ const Usage = ({
         <ActionButtonContainer>
           {lecturerId === user?._id ? (
             <>
-              <ActionButton
-                onClick={() => {
-                  navigator.clipboard.writeText(teachingId);
-                  dispatch(setShowSuccessSnackBar(true));
-                  dispatch(setSnackBarContent("Copied to clipboard"));
-                }}
-              >
-                Copy Teaching ID
-              </ActionButton>
               <ActionButton onClick={() => onRequestModifyLabUsage(id)}>
                 Modify
               </ActionButton>
@@ -133,7 +143,7 @@ const StyledUsage = styled.div<StyledUsageProps>`
       : shift === 2
       ? "3px solid #02383C"
       : "3px solid #0900C3"};
-  height: 180px;
+  height: 220px;
   display: flex;
   flex-direction: column;
   min-width: 150px;
@@ -141,12 +151,6 @@ const StyledUsage = styled.div<StyledUsageProps>`
   padding: 4px;
   margin-right: 0.5rem;
   position: relative;
-
-  &:hover {
-    & > div {
-      display: flex;
-    }
-  }
 `;
 
 const CourseName = styled.span`
@@ -170,7 +174,7 @@ const Period = styled.span`
 `;
 
 const ActionButtonContainer = styled.div`
-  display: none;
+  display: flex;
   right: 8px;
   position: absolute;
   bottom: 8px;
@@ -179,24 +183,24 @@ const ActionButtonContainer = styled.div`
 const ActionButton = styled.button`
   outline: none;
   background: transparent;
-  color: rgba(0, 0, 0, 0.8);
+  color: white;
   border-radius: 4px;
-  border: 1px solid rgba(0, 0, 0, 0.8);
+  border: 1px solid white;
   cursor: pointer;
   opacity: 0.5;
   margin: 0 2px;
 
   &:active {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: white;
     transform: scale(0.98);
     &:hover {
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: white;
     }
   }
 
   &:hover {
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
   }
 `;
 
@@ -219,6 +223,13 @@ const CheckIn = styled.div`
 `;
 
 const CheckOut = styled.div`
+  font-size: 13px;
+  margin-bottom: 0.5rem;
+  font-style: italic;
+  color: white;
+`;
+
+const TeachingID = styled.div`
   font-size: 13px;
   margin-bottom: 0.5rem;
   font-style: italic;

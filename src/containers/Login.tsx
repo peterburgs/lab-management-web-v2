@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as GoogleIcon } from "../assets/images/google.svg";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@material-ui/core";
+import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/styles";
 import { useTransition, animated } from "@react-spring/web";
@@ -50,20 +45,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     "&:hover .MuiInputLabel-root": {
       color: "white",
     },
-    "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
-      {
-        borderColor: "white",
-      },
+    "&:hover .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+      borderColor: "white",
+    },
     "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-input": {
       color: "white",
     },
     "& .MuiInputLabel-root.Mui-focused": {
       color: "white",
     },
-    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-      {
-        borderColor: "white",
-      },
+    "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+      borderColor: "white",
+    },
   },
 }));
 
@@ -113,7 +106,7 @@ const Login = () => {
     console.log(error);
     setLoading(false);
     dispatch(setShowErrorSnackBar(true));
-    dispatch(setSnackBarContent("Please try again"));
+    dispatch(setSnackBarContent(error.details));
   };
 
   const onRequest = () => {
@@ -237,9 +230,9 @@ const Header = styled.h1`
   font-size: 60px;
   line-height: 1.1;
   font-weight: 800;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   text-align: center;
   color: white;
 `;

@@ -2,13 +2,7 @@ import React, { useRef, useEffect, RefObject } from "react";
 import styled, { css } from "styled-components";
 import Usage from "./Usage";
 import "simplebar/dist/simplebar.min.css";
-import {
-  Course,
-  Lab,
-  LabUsage,
-  Teaching,
-  User,
-} from "../../types/model";
+import { Course, Lab, LabUsage, Teaching, User } from "../../types/model";
 
 interface TimeTableProps {
   labUsages: LabUsage[];
@@ -29,10 +23,7 @@ const TimeTable = ({
   onEditLabUsage,
   onRequestModifyLabUsage,
 }: TimeTableProps) => {
-  const convertPeriodToShift = (
-    startPeriod: number,
-    endPeriod: number
-  ) => {
+  const convertPeriodToShift = (startPeriod: number, endPeriod: number) => {
     if (startPeriod >= 1 && endPeriod <= 5) {
       return 1;
     } else if (startPeriod >= 6 && endPeriod <= 12) {
@@ -45,9 +36,7 @@ const TimeTable = ({
   const renderUsages = () => {
     const cells: JSX.Element[] = [];
     for (let lab of labs) {
-      const usages = labUsages.filter(
-        (usage) => usage.lab === lab._id
-      );
+      const usages = labUsages.filter((usage) => usage.lab === lab._id);
       if (usages.length > 0) {
         // Get usages that have the same dayOfWeek
         const usagesByDayOfWeek: Map<number, LabUsage[]> = new Map();
@@ -83,6 +72,7 @@ const TimeTable = ({
                 )
                 .map((usage) => (
                   <Usage
+                    teachingId={usage.teaching! as string}
                     id={usage._id!}
                     onEditLabUsage={onEditLabUsage}
                     onRequestModifyLabUsage={onRequestModifyLabUsage}
@@ -100,8 +90,7 @@ const TimeTable = ({
                             (course) =>
                               course._id ===
                               teachings.find(
-                                (teaching) =>
-                                  teaching._id === usage.teaching
+                                (teaching) => teaching._id === usage.teaching
                               )!.course
                           )!.courseName
                         : ""
@@ -115,8 +104,7 @@ const TimeTable = ({
                             (lecturer) =>
                               lecturer._id ===
                               teachings.find(
-                                (teaching) =>
-                                  teaching._id === usage.teaching
+                                (teaching) => teaching._id === usage.teaching
                               )!.user
                           )!._id
                         : ""
@@ -130,8 +118,7 @@ const TimeTable = ({
                             (lecturer) =>
                               lecturer._id ===
                               teachings.find(
-                                (teaching) =>
-                                  teaching._id === usage.teaching
+                                (teaching) => teaching._id === usage.teaching
                               )!.user
                           )!.fullName
                         : ""
@@ -205,8 +192,9 @@ const UsageContainer = styled.div`
   width: 100%;
   grid-template-columns: repeat(7, minmax(auto, 1fr));
   grid-template-rows: 50px;
-  grid-auto-rows: 145px;
+  grid-auto-rows: 195px;
   margin-left: 1rem;
+  height: max-content;
 `;
 
 const DayOfWeek = styled.div`

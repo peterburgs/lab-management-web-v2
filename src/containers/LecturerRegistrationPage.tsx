@@ -20,12 +20,7 @@ import DeleteTeachingModal from "../components/lecturer-registration-page/Delete
 import ImportTeachingModal from "../components/lecturer-registration-page/ImportTeachingModal";
 
 // import models
-import {
-  Teaching,
-  Course,
-  ROLES,
-  SEMESTER_STATUSES,
-} from "../types/model";
+import { Teaching, Course, ROLES, SEMESTER_STATUSES } from "../types/model";
 
 // import hooks
 import useFetchTeachingsByOpenRegistrationAndUser from "../hooks/teaching/useGetTeachingsByRegistrationAndUser";
@@ -70,15 +65,11 @@ const dowNum2String = (dow: number) => {
 
 const LecturerRegistrationPage = () => {
   // state
-  const [showNewTeachingModal, setShowNewTeachingModal] =
-    useState(false);
-  const [showDeleteTeachingModal, setShowDeleteTeachingModal] =
-    useState(false);
-  const [teachingIdToDelete, setTeachingIdToDelete] =
-    useState<string>(null!);
+  const [showNewTeachingModal, setShowNewTeachingModal] = useState(false);
+  const [showDeleteTeachingModal, setShowDeleteTeachingModal] = useState(false);
+  const [teachingIdToDelete, setTeachingIdToDelete] = useState<string>(null!);
   const [showImportPanel, setShowImportPanel] = useState(false);
-  const [showImportTeachingModal, setShowImportTeachingModal] =
-    useState(false);
+  const [showImportTeachingModal, setShowImportTeachingModal] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -89,26 +80,17 @@ const LecturerRegistrationPage = () => {
     )
   );
   const openAcademicYear = useAppSelector((state) =>
-    state.academicYears.academicYears.find(
-      (item) => item.isOpening === true
-    )
+    state.academicYears.academicYears.find((item) => item.isOpening === true)
   );
   const openRegistration = useAppSelector((state) =>
-    state.registrations.registrations.find(
-      (reg) => reg.isOpening === true
-    )
+    state.registrations.registrations.find((reg) => reg.isOpening === true)
   );
   const registrationStatus = useAppSelector(
     (state) => state.registrations.status
   );
-  const verifiedUser = useAppSelector(
-    (state) => state.auth.verifiedUser
-  );
+  const verifiedUser = useAppSelector((state) => state.auth.verifiedUser);
   const [teachings, teachingStatus] =
-    useFetchTeachingsByOpenRegistrationAndUser(
-      openRegistration,
-      verifiedUser
-    );
+    useFetchTeachingsByOpenRegistrationAndUser(openRegistration, verifiedUser);
   const [courses, courseStatus] = useGetAllCourses();
   const teachingSearchText = useAppSelector(
     (state) => state.search.teachingSearchText
@@ -253,26 +235,10 @@ const LecturerRegistrationPage = () => {
       } else {
         return (
           <SkeletonContainer>
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
           </SkeletonContainer>
         );
       }
@@ -283,9 +249,7 @@ const LecturerRegistrationPage = () => {
           data={data}
           columns={columns}
           name="Teaching"
-          onClickEditBtn={(id) =>
-            history.push(`/registration/teachings/${id}`)
-          }
+          onClickEditBtn={(id) => history.push(`/registration/teachings/${id}`)}
           onClickDeleteBtn={(id) => {
             setShowDeleteTeachingModal(true);
             setTeachingIdToDelete(id);
@@ -297,26 +261,10 @@ const LecturerRegistrationPage = () => {
     } else {
       return (
         <SkeletonContainer>
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
         </SkeletonContainer>
       );
     }
@@ -325,13 +273,7 @@ const LecturerRegistrationPage = () => {
   const renderContent = () => {
     if (openSemester && openAcademicYear) {
       if (registrationStatus === "pending") {
-        return (
-          <Skeleton
-            variant="rectangular"
-            animation="wave"
-            width={250}
-          />
-        );
+        return <Skeleton variant="rectangular" animation="wave" width={250} />;
       }
       if (registrationStatus === "failed") {
         return (
@@ -351,22 +293,13 @@ const LecturerRegistrationPage = () => {
                     Registration batch {openRegistration.batch}
                   </RegistrationText>
                   <RegistrationDuration>
-                    (
-                    {new Date(
-                      openRegistration.startDate
-                    ).toDateString()}{" "}
-                    -{" "}
-                    {new Date(
-                      openRegistration.endDate
-                    ).toDateString()}
-                    )
+                    ({new Date(openRegistration.startDate).toDateString()} -{" "}
+                    {new Date(openRegistration.endDate).toDateString()})
                   </RegistrationDuration>
                 </Filter>
                 <Action>
                   <Button
-                    onClick={() =>
-                      setShowImportPanel((current) => !current)
-                    }
+                    onClick={() => setShowImportPanel((current) => !current)}
                     icon={<ImportExportIcon />}
                   >
                     Import teachings
@@ -374,9 +307,7 @@ const LecturerRegistrationPage = () => {
                   {showImportPanel && (
                     <ImportPanelContainer>
                       <ImportPanel
-                        setShowImportTeachingModal={
-                          setShowImportTeachingModal
-                        }
+                        setShowImportTeachingModal={setShowImportTeachingModal}
                       />
                     </ImportPanelContainer>
                   )}
@@ -397,7 +328,7 @@ const LecturerRegistrationPage = () => {
           return (
             <NotFoundContainer>
               <NothingImage />
-              <span>There is no opening registration yet</span>
+              <span>No opening registrations</span>
             </NotFoundContainer>
           );
         }
@@ -442,9 +373,7 @@ const LecturerRegistrationPage = () => {
         setShowModal={setShowImportTeachingModal}
         name="Import teachings"
       />
-      <StyledRegistrationPage>
-        {renderContent()}
-      </StyledRegistrationPage>
+      <StyledRegistrationPage>{renderContent()}</StyledRegistrationPage>
     </>
   );
 };

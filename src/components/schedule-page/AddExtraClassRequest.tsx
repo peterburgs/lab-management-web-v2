@@ -15,11 +15,7 @@ import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
-import {
-  Request,
-  REQUEST_TYPES,
-  REQUEST_STATUSES,
-} from "../../types/model";
+import { Request, REQUEST_TYPES, REQUEST_STATUSES } from "../../types/model";
 // import reducers
 import { newRequest } from "../../reducers/requestSlice";
 import {
@@ -36,25 +32,16 @@ interface ModifyLabUsageRequestModalProps extends ModalProps {
   semester: string;
 }
 
-const ModifyLabUsageRequestModal = (
-  props: ModifyLabUsageRequestModalProps
-) => {
+const ModifyLabUsageRequestModal = (props: ModifyLabUsageRequestModalProps) => {
   // call hooks
-  const { register, handleSubmit, errors, control } =
-    useForm<Request>();
+  const { register, handleSubmit, errors, control } = useForm<Request>();
   const dispatch = useAppDispatch();
   const labs = useAppSelector((state) => state.labs.labs);
   const semester = useAppSelector((state) =>
-    state.semesters.semesters.find(
-      (item) => item._id === props.semester
-    )
+    state.semesters.semesters.find((item) => item._id === props.semester)
   );
-  const verifiedUser = useAppSelector(
-    (state) => state.auth.verifiedUser
-  );
-  const labUsages = useAppSelector(
-    (state) => state.schedule.labUsages
-  );
+  const verifiedUser = useAppSelector((state) => state.auth.verifiedUser);
+  const labUsages = useAppSelector((state) => state.schedule.labUsages);
   const [teachings] = useGetAllTeaching();
 
   // useState
@@ -67,10 +54,8 @@ const ModifyLabUsageRequestModal = (
     endB: number
   ) => {
     if (startB >= startA && endB <= endA) return true;
-    if (startB >= startA && startB <= endA && endB >= endA)
-      return true;
-    if (startB <= startA && endB >= startA && endB <= endA)
-      return true;
+    if (startB >= startA && startB <= endA && endB >= endA) return true;
+    if (startB <= startA && endB >= startA && endB <= endA) return true;
     return false;
   };
 
@@ -123,8 +108,8 @@ const ModifyLabUsageRequestModal = (
   const onSubmit = async (data: Request) => {
     if (teachings.length > 0) {
       if (
-        teachings.filter((teaching) => teaching._id === data.teaching)
-          .length > 0
+        teachings.filter((teaching) => teaching._id === data.teaching).length >
+        0
       ) {
         if (
           labUsages.length > 0 &&
@@ -150,21 +135,15 @@ const ModifyLabUsageRequestModal = (
               const actionResult = await dispatch(newRequest(data));
               unwrapResult(actionResult);
               setStatus("idle");
-              dispatch(
-                setSnackBarContent("Create new request successfully")
-              );
+              dispatch(setSnackBarContent("Create new request successfully"));
               dispatch(setShowSuccessSnackBar(true));
               props.setShowModal(false);
             } catch (err) {
               console.log("Failed to create new request", err);
               if (err.response) {
-                dispatch(
-                  setSnackBarContent(err.response.data.message)
-                );
+                dispatch(setSnackBarContent(err.response.data.message));
               } else {
-                dispatch(
-                  setSnackBarContent("Failed to create new request")
-                );
+                dispatch(setSnackBarContent("Failed to create new request"));
               }
               setStatus("idle");
               dispatch(setShowErrorSnackBar(true));
@@ -199,9 +178,7 @@ const ModifyLabUsageRequestModal = (
               inputRef={register({ required: true })}
               name="teaching"
               error={Boolean(errors.teaching)}
-              helperText={
-                errors.teaching && "*This field is required"
-              }
+              helperText={errors.teaching && "*This field is required"}
             />
             <StyledTextField
               label="Title"
@@ -212,12 +189,10 @@ const ModifyLabUsageRequestModal = (
             />
             <StyledTextField
               label="Description"
-              inputRef={register({ required: true })}
+              inputRef={register({ required: false })}
               name="description"
               error={Boolean(errors.description)}
-              helperText={
-                errors.description && "*This field is required"
-              }
+              helperText={errors.description && "*This field is required"}
             />
             <Controller
               name="lab"
@@ -256,13 +231,11 @@ const ModifyLabUsageRequestModal = (
                     onChange={(e) => props.onChange(e.target.value)}
                     label="Week"
                   >
-                    {[...Array(semester.numberOfWeeks)].map(
-                      (_, i) => (
-                        <MenuItem value={i} key={"weekNo" + i}>
-                          {i}
-                        </MenuItem>
-                      )
-                    )}
+                    {[...Array(semester.numberOfWeeks)].map((_, i) => (
+                      <MenuItem value={i} key={"weekNo" + i}>
+                        {i}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </StyledFormControl>
               )}
@@ -299,9 +272,7 @@ const ModifyLabUsageRequestModal = (
               defaultValue={1}
               render={(props) => (
                 <StyledFormControl variant="outlined">
-                  <InputLabel id="start-label">
-                    Start period
-                  </InputLabel>
+                  <InputLabel id="start-label">Start period</InputLabel>
                   <Select
                     labelId="start-label"
                     value={props.value}

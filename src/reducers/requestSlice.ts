@@ -57,9 +57,7 @@ export const newRequest = createAsyncThunk<
     });
     return data as POSTResponse;
   } catch (err) {
-    return thunkApi.rejectWithValue(
-      err.response.data as POSTResponse
-    );
+    return thunkApi.rejectWithValue(err.response.data as POSTResponse);
   }
 });
 
@@ -69,11 +67,9 @@ export const editRequest = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("requests/editRequest", async (request, thunkApi) => {
   try {
-    const { data } = await nodeAPI.put(
-      `/requests/${request._id}`,
-      request,
-      { headers: auth() }
-    );
+    const { data } = await nodeAPI.put(`/requests/${request._id}`, request, {
+      headers: auth(),
+    });
     return data as PUTResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as PUTResponse);
@@ -117,7 +113,6 @@ export const requestSlice = createSlice({
       }
     });
     builder.addCase(newRequest.fulfilled, (state, action) => {
-      state.status = "succeeded";
       state.requests = state.requests.concat(action.payload.request!);
       state.count = state.count + 1;
       state.message = action.payload.message;
@@ -126,9 +121,7 @@ export const requestSlice = createSlice({
       const currentIndex = state.requests.findIndex(
         (reg) => reg._id === action.payload.request!._id
       );
-      state.requests[currentIndex] = _.cloneDeep(
-        action.payload.request!
-      );
+      state.requests[currentIndex] = _.cloneDeep(action.payload.request!);
       state.message = action.payload.message;
     });
   },

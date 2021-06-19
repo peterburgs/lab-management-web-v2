@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled, { css } from "styled-components";
-import {
-  REQUEST_STATUSES,
-  User,
-  Request,
-  ROLES,
-} from "../types/model";
+import { REQUEST_STATUSES, User, Request, ROLES } from "../types/model";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
@@ -33,14 +28,13 @@ enum SORT_BY {
 }
 
 const RequestPage = () => {
-  const [selectedStatus, setSelectedStatus] =
-    useState<REQUEST_STATUSES>(REQUEST_STATUSES.PENDING);
+  const [selectedStatus, setSelectedStatus] = useState<REQUEST_STATUSES>(
+    REQUEST_STATUSES.PENDING
+  );
 
   const [sortBy, setSortBy] = useState<SORT_BY>(null!);
   const [selectedAuthor, setSelectedAuthor] = useState<string>("");
-  const [filteredRequests, setFilterRequests] = useState<Request[]>(
-    []
-  );
+  const [filteredRequests, setFilterRequests] = useState<Request[]>([]);
 
   // call hooks
   const requestSearchText = useAppSelector(
@@ -54,9 +48,7 @@ const RequestPage = () => {
   const [comments] = useGetAllComments();
 
   const role = useAppSelector((state) => state.auth.verifiedRole);
-  const lecturer = useAppSelector(
-    (state) => state.auth.verifiedUser?._id
-  );
+  const lecturer = useAppSelector((state) => state.auth.verifiedUser?._id);
 
   // conditional renderer
   const conditionalRenderer = () => {
@@ -93,15 +85,12 @@ const RequestPage = () => {
                       )!
                     }
                     numberOfComments={
-                      comments.filter(
-                        (item) => item.request === request._id
-                      ).length
+                      comments.filter((item) => item.request === request._id)
+                        .length
                     }
                   />
                 );
-              } else if (
-                request.status === REQUEST_STATUSES.APPROVED
-              ) {
+              } else if (request.status === REQUEST_STATUSES.APPROVED) {
                 return (
                   <RequestCard
                     key={request._id}
@@ -116,9 +105,8 @@ const RequestPage = () => {
                       )!
                     }
                     numberOfComments={
-                      comments.filter(
-                        (item) => item.request === request._id
-                      ).length
+                      comments.filter((item) => item.request === request._id)
+                        .length
                     }
                   />
                 );
@@ -132,9 +120,7 @@ const RequestPage = () => {
                   deniedAt={request.updatedAt}
                   requestId={request._id}
                   user={
-                    (users as User[]).find(
-                      (user) => user._id === request.user
-                    )!
+                    (users as User[]).find((user) => user._id === request.user)!
                   }
                   numberOfComments={123}
                 />
@@ -157,9 +143,7 @@ const RequestPage = () => {
     let filteredRequests = (requests as Request[]).filter(
       (request) =>
         request.status === selectedStatus &&
-        request.title
-          .toLowerCase()
-          .includes(requestSearchText.toLowerCase())
+        request.title.toLowerCase().includes(requestSearchText.toLowerCase())
     );
 
     if (sortBy === SORT_BY.NEWEST) {
@@ -181,29 +165,21 @@ const RequestPage = () => {
     }
 
     setFilterRequests(filteredRequests);
-  }, [
-    requests,
-    selectedStatus,
-    requestSearchText,
-    sortBy,
-    selectedAuthor,
-  ]);
+  }, [requests, selectedStatus, requestSearchText, sortBy, selectedAuthor]);
 
   useEffect(() => {
     if (lecturer && role) {
       if (role === ROLES.LECTURER) {
-        setFilterRequests(
-          _.cloneDeep(
-            (requests as Request[]).filter(
-              (request) =>
-                request.user === lecturer &&
-                request.status === selectedStatus &&
-                request.title
-                  .toLowerCase()
-                  .includes(requestSearchText.toLowerCase())
-            )
-          )
+        const filteredRequests = (requests as Request[]).filter(
+          (request) =>
+            request.user === lecturer &&
+            request.status === selectedStatus &&
+            request.title
+              .toLowerCase()
+              .includes(requestSearchText.toLowerCase())
         );
+
+        setFilterRequests(filteredRequests);
       }
     }
   }, [lecturer, role, requests, selectedStatus, requestSearchText]);
@@ -215,47 +191,36 @@ const RequestPage = () => {
           <StatusContainer>
             <SelectStatusButton
               isSelected={selectedStatus === REQUEST_STATUSES.PENDING}
-              onClick={() =>
-                handleSelectStatus(REQUEST_STATUSES.PENDING)
-              }
+              onClick={() => handleSelectStatus(REQUEST_STATUSES.PENDING)}
             >
               <HourglassEmptyOutlinedIcon fontSize="small" />
               <span>
                 {`${
                   (requests as Request[]).filter(
-                    (request) =>
-                      request.status === REQUEST_STATUSES.PENDING
+                    (request) => request.status === REQUEST_STATUSES.PENDING
                   ).length
                 } pending`}
               </span>
             </SelectStatusButton>
             <SelectStatusButton
-              isSelected={
-                selectedStatus === REQUEST_STATUSES.APPROVED
-              }
-              onClick={() =>
-                handleSelectStatus(REQUEST_STATUSES.APPROVED)
-              }
+              isSelected={selectedStatus === REQUEST_STATUSES.APPROVED}
+              onClick={() => handleSelectStatus(REQUEST_STATUSES.APPROVED)}
             >
               <CheckIcon fontSize="small" />
               <span>{`${
                 (requests as Request[]).filter(
-                  (request) =>
-                    request.status === REQUEST_STATUSES.APPROVED
+                  (request) => request.status === REQUEST_STATUSES.APPROVED
                 ).length
               } approved`}</span>
             </SelectStatusButton>
             <SelectStatusButton
               isSelected={selectedStatus === REQUEST_STATUSES.DENIED}
-              onClick={() =>
-                handleSelectStatus(REQUEST_STATUSES.DENIED)
-              }
+              onClick={() => handleSelectStatus(REQUEST_STATUSES.DENIED)}
             >
               <CloseIcon fontSize="small" />
               <span>{`${
                 (requests as Request[]).filter(
-                  (request) =>
-                    request.status === REQUEST_STATUSES.DENIED
+                  (request) => request.status === REQUEST_STATUSES.DENIED
                 ).length
               } denied`}</span>
             </SelectStatusButton>
@@ -279,10 +244,7 @@ const RequestPage = () => {
               </Select>
             </FormControl>
             {role === ROLES.ADMIN && (
-              <FormControl
-                variant="standard"
-                style={{ minWidth: 120 }}
-              >
+              <FormControl variant="standard" style={{ minWidth: 120 }}>
                 <InputLabel id="author-label">Author</InputLabel>
                 <Select
                   margin="none"
@@ -328,8 +290,7 @@ interface FilterProps {
 
 const Filter = styled.div<FilterProps>`
   display: grid;
-  grid-template-columns: ${({ isAdmin }) =>
-    isAdmin ? "1fr 1fr" : "1fr"};
+  grid-template-columns: ${({ isAdmin }) => (isAdmin ? "1fr 1fr" : "1fr")};
   justify-content: center;
   align-items: center;
   column-gap: 1rem;

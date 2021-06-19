@@ -1,14 +1,12 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { getRequests } from "../../reducers/requestSlice";
+import { getRequests, resetState } from "../../reducers/requestSlice";
 
 const useGetAllRequests = () => {
   const dispatch = useAppDispatch();
   const requests = useAppSelector((state) => state.requests.requests);
-  const requestStatus = useAppSelector(
-    (state) => state.requests.status
-  );
+  const requestStatus = useAppSelector((state) => state.requests.status);
 
   useEffect(() => {
     if (requestStatus === "idle") {
@@ -21,6 +19,12 @@ const useGetAllRequests = () => {
         }
       })();
     }
+
+    return () => {
+      if (requestStatus === "failed" || requestStatus === "succeeded") {
+        dispatch(resetState());
+      }
+    };
   }, [requestStatus, dispatch]);
 
   return [requests, requestStatus];

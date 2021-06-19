@@ -55,9 +55,7 @@ const RequestDetailPage = () => {
   );
 
   const role = useAppSelector((state) => state.auth.verifiedRole);
-  const semesters = useAppSelector(
-    (state) => state.semesters.semesters
-  );
+  const semesters = useAppSelector((state) => state.semesters.semesters);
   const [users] = useGetAllUsers();
   const [courses] = useGetAllCourses();
   const [labUsages] = useGetAllLabUsages();
@@ -76,9 +74,7 @@ const RequestDetailPage = () => {
         const clonedRequest = _.cloneDeep(request);
         clonedRequest.status = REQUEST_STATUSES.APPROVED;
         setApproveStatus("pending");
-        const actionResult = await dispatch(
-          editRequest(clonedRequest)
-        );
+        const actionResult = await dispatch(editRequest(clonedRequest));
         unwrapResult(actionResult);
 
         // UPDATE LAB USAGE
@@ -94,9 +90,7 @@ const RequestDetailPage = () => {
               labUsage.startPeriod = request.startPeriod;
               labUsage.endPeriod = request.endPeriod;
 
-              const actionResult = await dispatch(
-                editLabUsage(labUsage)
-              );
+              const actionResult = await dispatch(editLabUsage(labUsage));
               unwrapResult(actionResult);
             }
           }
@@ -126,9 +120,7 @@ const RequestDetailPage = () => {
                 isHidden: false,
               };
 
-              const actionResult = await dispatch(
-                newLabUsage(labUsage)
-              );
+              const actionResult = await dispatch(newLabUsage(labUsage));
               unwrapResult(actionResult);
             } else {
               dispatch(setSnackBarContent("Cannot find semester"));
@@ -157,9 +149,7 @@ const RequestDetailPage = () => {
         const clonedRequest = _.cloneDeep(request);
         clonedRequest.status = REQUEST_STATUSES.DENIED;
         setDenyStatus("pending");
-        const actionResult = await dispatch(
-          editRequest(clonedRequest)
-        );
+        const actionResult = await dispatch(editRequest(clonedRequest));
         unwrapResult(actionResult);
 
         dispatch(setSnackBarContent("Deny request successfully"));
@@ -178,9 +168,7 @@ const RequestDetailPage = () => {
 
   const renderOldUsage = () => {
     if (request && labUsages.length > 0 && courses.length > 0) {
-      const labUsage = labUsages.find(
-        (item) => item._id === request.labUsage
-      );
+      const labUsage = labUsages.find((item) => item._id === request.labUsage);
       if (labUsage) {
         const teaching = teachings.find(
           (item) => item._id === labUsage.teaching
@@ -200,6 +188,16 @@ const RequestDetailPage = () => {
               <CurrentUsage>
                 <CurrentUsageHeader>Current Usage</CurrentUsageHeader>
                 <StyledFormControl variant="outlined">
+                  <InputLabel id="oldcourse-label">Course</InputLabel>
+                  <Select disabled value={course._id} label="Course">
+                    {(courses as Course[]).map((course, i) => (
+                      <MenuItem value={course._id} key={course._id}>
+                        {course.courseName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </StyledFormControl>
+                <StyledFormControl variant="outlined">
                   <InputLabel id="oldlab-label">Lab</InputLabel>
                   <Select disabled value={lab._id} label="Lab">
                     {(labs as Lab[]).map((lab, i) => (
@@ -217,19 +215,15 @@ const RequestDetailPage = () => {
                     value={request.oldWeekNo}
                     label="Week"
                   >
-                    {[...Array(semester.numberOfWeeks)].map(
-                      (_, i) => (
-                        <MenuItem value={i} key={"weekNo" + i}>
-                          {i}
-                        </MenuItem>
-                      )
-                    )}
+                    {[...Array(semester.numberOfWeeks)].map((_, i) => (
+                      <MenuItem value={i} key={"weekNo" + i}>
+                        {i}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </StyledFormControl>
                 <StyledFormControl variant="outlined">
-                  <InputLabel id="olddow-label">
-                    Day of week
-                  </InputLabel>
+                  <InputLabel id="olddow-label">Day of week</InputLabel>
                   <Select
                     disabled
                     labelId="olddow-label"
@@ -246,9 +240,7 @@ const RequestDetailPage = () => {
                   </Select>
                 </StyledFormControl>
                 <StyledFormControl variant="outlined">
-                  <InputLabel id="oldstart-label">
-                    Start period
-                  </InputLabel>
+                  <InputLabel id="oldstart-label">Start period</InputLabel>
                   <Select
                     disabled
                     labelId="oldstart-label"
@@ -263,9 +255,7 @@ const RequestDetailPage = () => {
                   </Select>
                 </StyledFormControl>
                 <StyledFormControl variant="outlined">
-                  <InputLabel id="oldend-label">
-                    End period
-                  </InputLabel>
+                  <InputLabel id="oldend-label">End period</InputLabel>
                   <Select
                     disabled
                     labelId="oldend-label"
@@ -297,27 +287,31 @@ const RequestDetailPage = () => {
           (item) => item._id === request.labUsage
         );
         if (labUsage) {
-          teaching = teachings.find(
-            (item) => item._id === labUsage.teaching
-          );
+          teaching = teachings.find((item) => item._id === labUsage.teaching);
         }
       }
       if (request.type === REQUEST_TYPES.ADD_EXTRA_CLASS) {
-        teaching = teachings.find(
-          (item) => item._id === request.teaching
-        );
+        teaching = teachings.find((item) => item._id === request.teaching);
       }
       if (teaching) {
         const course = (courses as Course[]).find(
           (item) => item._id === teaching!.course
         );
-        const lab = (labs as Lab[]).find(
-          (item) => item._id === request.lab
-        );
+        const lab = (labs as Lab[]).find((item) => item._id === request.lab);
         if (lab && course) {
           return (
             <NewUsage>
               <NewUsageHeader>New Usage</NewUsageHeader>
+              <StyledFormControl variant="outlined">
+                <InputLabel id="oldcourse-label">Course</InputLabel>
+                <Select disabled value={course._id} label="Course">
+                  {(courses as Course[]).map((course, i) => (
+                    <MenuItem value={course._id} key={course._id}>
+                      {course.courseName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </StyledFormControl>
               <StyledFormControl variant="outlined">
                 <InputLabel id="oldlab-label">Lab</InputLabel>
                 <Select disabled value={lab._id} label="Lab">
@@ -336,9 +330,7 @@ const RequestDetailPage = () => {
                   value={request.weekNo}
                   label="Week"
                 >
-                  <MenuItem value={request.weekNo}>
-                    {request.weekNo}
-                  </MenuItem>
+                  <MenuItem value={request.weekNo}>{request.weekNo}</MenuItem>
                 </Select>
               </StyledFormControl>
               <StyledFormControl variant="outlined">
@@ -359,9 +351,7 @@ const RequestDetailPage = () => {
                 </Select>
               </StyledFormControl>
               <StyledFormControl variant="outlined">
-                <InputLabel id="oldstart-label">
-                  Start period
-                </InputLabel>
+                <InputLabel id="oldstart-label">Start period</InputLabel>
                 <Select
                   disabled
                   labelId="oldstart-label"
@@ -414,26 +404,18 @@ const RequestDetailPage = () => {
                   <StatusBadge status={request.status}>
                     {request.status === REQUEST_STATUSES.PENDING
                       ? "PENDING"
-                      : REQUEST_STATUSES.APPROVED
+                      : request.status === REQUEST_STATUSES.APPROVED
                       ? "APPROVED"
                       : "DENIED"}
                   </StatusBadge>
                   <span>
-                    {new Date(
-                      request.updatedAt!.toString()
-                    ).toDateString() +
+                    {new Date(request.updatedAt!.toString()).toDateString() +
                       " " +
-                      new Date(
-                        request.updatedAt!.toString()
-                      ).getHours() +
+                      new Date(request.updatedAt!.toString()).getHours() +
                       ":" +
-                      new Date(
-                        request.updatedAt!.toString()
-                      ).getMinutes() +
+                      new Date(request.updatedAt!.toString()).getMinutes() +
                       ":" +
-                      new Date(
-                        request.updatedAt!.toString()
-                      ).getSeconds() +
+                      new Date(request.updatedAt!.toString()).getSeconds() +
                       " " +
                       `by ${
                         (users as User[]).find(
@@ -447,11 +429,10 @@ const RequestDetailPage = () => {
                   </span>
                 </Info>
                 <RequestDescription>
-                  {request.description}
+                  {request.description ? request.description : "No description"}
                 </RequestDescription>
                 <UsageContainer>
-                  {request.type ===
-                    REQUEST_TYPES.MODIFY_LAB_USAGE && (
+                  {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE && (
                     <>{renderOldUsage()}</>
                   )}
 
@@ -482,26 +463,10 @@ const RequestDetailPage = () => {
             </Header>
             {commentStatus === "pending" ? (
               <SkeletonContainer>
-                <Skeleton
-                  variant="rectangular"
-                  height={40}
-                  animation="wave"
-                />
-                <Skeleton
-                  variant="rectangular"
-                  height={40}
-                  animation="wave"
-                />
-                <Skeleton
-                  variant="rectangular"
-                  height={40}
-                  animation="wave"
-                />
-                <Skeleton
-                  variant="rectangular"
-                  height={40}
-                  animation="wave"
-                />
+                <Skeleton variant="rectangular" height={40} animation="wave" />
+                <Skeleton variant="rectangular" height={40} animation="wave" />
+                <Skeleton variant="rectangular" height={40} animation="wave" />
+                <Skeleton variant="rectangular" height={40} animation="wave" />
               </SkeletonContainer>
             ) : commentStatus === "succeeded" ? (
               <CommentListContainer>
@@ -519,9 +484,7 @@ const RequestDetailPage = () => {
                 ))}
               </CommentListContainer>
             ) : (
-              <CommentListContainer>
-                No comments yet
-              </CommentListContainer>
+              <CommentListContainer>No comments yet</CommentListContainer>
             )}
 
             <AddComment request={request._id} />
@@ -636,8 +599,7 @@ const ActionButton = styled(Button)<ActionButtonProps>`
   font-size: 15px;
   padding: 0 0.7rem;
   border: 1px solid
-    ${({ theme, action }) =>
-      action === "approve" ? theme.green : theme.red};
+    ${({ theme, action }) => (action === "approve" ? theme.green : theme.red)};
   &:active {
     background-color: ${({ theme, action }) =>
       action === "approve" ? theme.lightGreen : theme.lightRed};

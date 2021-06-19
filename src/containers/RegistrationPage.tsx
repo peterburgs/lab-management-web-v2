@@ -16,6 +16,7 @@ import RegistrationStatus from "../components/common/RegistrationStatus";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import { CheckboxItem } from "../components/common/CheckboxList";
 import RefreshIcon from "@material-ui/icons/Refresh";
+import AddIcon from "@material-ui/icons/Add";
 import _ from "lodash";
 
 // Import modals
@@ -74,13 +75,11 @@ const prepareData = (
       return {
         rowId: teaching._id!,
         courseId: teaching.course as string,
-        courseName: courses.find((c) => c._id === teaching.course)!
-          .courseName,
+        courseName: courses.find((c) => c._id === teaching.course)!.courseName,
         group: teaching.group,
         period: `${teaching.startPeriod} - ${teaching.endPeriod}`,
         numOfStudents: teaching.numberOfStudents,
-        lecturerName: users.find((c) => c._id === teaching.user)!
-          .fullName,
+        lecturerName: users.find((c) => c._id === teaching.user)!.fullName,
         lecturerId: users.find((c) => c._id === teaching.user)!._id,
       };
     });
@@ -95,15 +94,12 @@ const RegistrationPage = () => {
   // useState
   const [showOpenRegistrationModal, setShowOpenRegistrationModal] =
     useState(false);
-  const [showSelectCourseModal, setShowSelectCourseModal] =
-    useState(false);
+  const [showSelectCourseModal, setShowSelectCourseModal] = useState(false);
   const [showCloseRegistrationModal, setShowCloseRegistrationModal] =
     useState(false);
   const [showGenerateScheduleModal, setShowGenerateScheduleModal] =
     useState(false);
-  const [selectedCourses, setSelectedCourses] = useState<
-    CheckboxItem[]
-  >([]);
+  const [selectedCourses, setSelectedCourses] = useState<CheckboxItem[]>([]);
   const [batch, setBatch] = useState(1);
 
   // call hooks
@@ -112,14 +108,10 @@ const RegistrationPage = () => {
       (item) => item.status === SEMESTER_STATUSES.OPENING
     )
   );
-  const openSemesterStatus = useAppSelector(
-    (state) => state.semesters.status
-  );
+  const openSemesterStatus = useAppSelector((state) => state.semesters.status);
 
   const openAcademicYear = useAppSelector((state) =>
-    state.academicYears.academicYears.find(
-      (item) => item.isOpening === true
-    )
+    state.academicYears.academicYears.find((item) => item.isOpening === true)
   );
 
   const openAcademicYearStatus = useAppSelector(
@@ -132,11 +124,10 @@ const RegistrationPage = () => {
   const registrationStatus = useAppSelector(
     (state) => state.registrations.status
   );
-  const [teachings, teachingStatus] =
-    useGetTeachingsByRegistrationBatch(
-      registrations as Registration[],
-      batch
-    );
+  const [teachings, teachingStatus] = useGetTeachingsByRegistrationBatch(
+    registrations as Registration[],
+    batch
+  );
   const [courses, courseStatus] = useGetAllCourses();
   const [users, userStatus] = useGetAllUsers();
   const teachingSearchText = useAppSelector(
@@ -171,9 +162,7 @@ const RegistrationPage = () => {
         setBatch(reg.batch);
       } else {
         const newRegs = _.cloneDeep(registrations);
-        reg = _.cloneDeep(
-          newRegs.sort((a, b) => b.batch - a.batch)
-        )[0];
+        reg = _.cloneDeep(newRegs.sort((a, b) => b.batch - a.batch))[0];
         setBatch(reg.batch);
       }
     }
@@ -254,26 +243,10 @@ const RegistrationPage = () => {
       } else {
         return (
           <SkeletonContainer>
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
-            <Skeleton
-              variant="rectangular"
-              height={40}
-              animation="wave"
-            />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
+            <Skeleton variant="rectangular" height={40} animation="wave" />
           </SkeletonContainer>
         );
       }
@@ -291,26 +264,10 @@ const RegistrationPage = () => {
     } else {
       return (
         <SkeletonContainer>
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
         </SkeletonContainer>
       );
     }
@@ -377,9 +334,7 @@ const RegistrationPage = () => {
           <NotFoundContainer>
             {/* <img alt="Nothing" src={getImage("Nothing.gif")} /> */}
             <span>There is no registration</span>
-            <Button
-              onClick={() => setShowOpenRegistrationModal(true)}
-            >
+            <Button onClick={() => setShowOpenRegistrationModal(true)}>
               Open registration
             </Button>
           </NotFoundContainer>
@@ -390,16 +345,12 @@ const RegistrationPage = () => {
           <>
             <Toolbar>
               <Filter>
-                <RegistrationText>
-                  Registration batch
-                </RegistrationText>
+                <RegistrationText>Registration batch</RegistrationText>
                 <FormControl>
                   <Select
                     variant="standard"
                     value={batch}
-                    onChange={(e) =>
-                      setBatch(e.target.value as number)
-                    }
+                    onChange={(e) => setBatch(e.target.value as number)}
                   >
                     {(registrations as Registration[]).map((reg) => (
                       <MenuItem value={reg.batch} key={reg._id}>
@@ -411,15 +362,11 @@ const RegistrationPage = () => {
                 <RegistrationDuration>
                   (
                   {new Date(
-                    registrations.find(
-                      (reg) => reg.batch === batch
-                    )!.startDate
+                    registrations.find((reg) => reg.batch === batch)!.startDate
                   ).toDateString()}{" "}
                   -{" "}
                   {new Date(
-                    registrations.find(
-                      (reg) => reg.batch === batch
-                    )!.endDate
+                    registrations.find((reg) => reg.batch === batch)!.endDate
                   ).toDateString()}
                   )
                 </RegistrationDuration>
@@ -435,6 +382,7 @@ const RegistrationPage = () => {
                   </IconButtonContainer>
                 </Tooltip> */}
                 <Button
+                  icon={<AddIcon />}
                   onClick={() => {
                     if (
                       (registrations as Registration[]).findIndex(
@@ -455,6 +403,7 @@ const RegistrationPage = () => {
                   Open registration
                 </Button>
                 <Button
+                  icon={<AddIcon />}
                   onClick={() => setShowGenerateScheduleModal(true)}
                 >
                   Generate schedule
@@ -463,9 +412,7 @@ const RegistrationPage = () => {
             </Toolbar>
 
             <RegistrationStatus
-              onCloseBtnClick={() =>
-                setShowCloseRegistrationModal(true)
-              }
+              onCloseBtnClick={() => setShowCloseRegistrationModal(true)}
               registration={
                 (registrations as Registration[]).find(
                   (reg) => reg.batch === batch
@@ -515,9 +462,7 @@ const RegistrationPage = () => {
         setShowModal={setShowGenerateScheduleModal}
         name="Generate schedule"
       />
-      <StyledRegistrationPage>
-        {renderContent()}
-      </StyledRegistrationPage>
+      <StyledRegistrationPage>{renderContent()}</StyledRegistrationPage>
     </>
   );
 };

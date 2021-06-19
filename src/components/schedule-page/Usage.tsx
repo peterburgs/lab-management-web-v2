@@ -1,9 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import { useAppSelector } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import { ROLES } from "../../types/model";
 import OccupiedImage from "../../assets/images/occupied.png";
 import moment from "moment";
+import {
+  setShowSuccessSnackBar,
+  setSnackBarContent,
+} from "../../reducers/notificationSlice";
 
 interface UsageProps {
   startPeriod: number;
@@ -14,6 +18,7 @@ interface UsageProps {
   lecturerId: string;
   checkInAt?: Date;
   checkOutAt?: Date;
+  teachingId: string;
   onEditLabUsage: (id: string) => void;
   onRequestModifyLabUsage: (id: string) => void;
 }
@@ -25,15 +30,13 @@ const Usage = ({
   lecturerName,
   id,
   lecturerId,
+  teachingId,
   onEditLabUsage,
   onRequestModifyLabUsage,
   checkInAt,
   checkOutAt,
 }: UsageProps) => {
-  const convertPeriodToShift = (
-    startPeriod: number,
-    endPeriod: number
-  ) => {
+  const convertPeriodToShift = (startPeriod: number, endPeriod: number) => {
     if (startPeriod >= 1 && endPeriod <= 5) {
       return 1;
     } else if (startPeriod >= 6 && endPeriod <= 12) {
@@ -46,6 +49,8 @@ const Usage = ({
   const role = useAppSelector((state) => state.auth.verifiedRole);
   const user = useAppSelector((state) => state.auth.verifiedUser);
 
+  const dispatch = useAppDispatch();
+
   return (
     <StyledUsage shift={convertPeriodToShift(startPeriod, endPeriod)}>
       {role === ROLES.ADMIN ? (
@@ -56,18 +61,14 @@ const Usage = ({
           <CheckIn>
             Check in:{" "}
             {checkInAt
-              ? moment(new Date(checkInAt)).format(
-                  "HH:mm:ss DD/MM/YYYY"
-                )
+              ? moment(new Date(checkInAt)).format("HH:mm:ss DD/MM/YYYY")
               : "pending"}
           </CheckIn>
           <CheckOut>
             Check out:{" "}
             {checkInAt
               ? checkOutAt
-                ? moment(new Date(checkOutAt)).format(
-                    "HH:mm:ss DD/MM/YYYY"
-                  )
+                ? moment(new Date(checkOutAt)).format("HH:mm:ss DD/MM/YYYY")
                 : "pending"
               : "check in required"}
           </CheckOut>
@@ -80,18 +81,14 @@ const Usage = ({
           <CheckIn>
             Check in:{" "}
             {checkInAt
-              ? moment(new Date(checkInAt)).format(
-                  "HH:mm:ss DD/MM/YYYY"
-                )
+              ? moment(new Date(checkInAt)).format("HH:mm:ss DD/MM/YYYY")
               : "pending"}
           </CheckIn>
           <CheckOut>
             Check out:{" "}
             {checkInAt
               ? checkOutAt
-                ? moment(new Date(checkOutAt)).format(
-                    "HH:mm:ss DD/MM/YYYY"
-                  )
+                ? moment(new Date(checkOutAt)).format("HH:mm:ss DD/MM/YYYY")
                 : "pending"
               : "pending"}
           </CheckOut>
@@ -99,21 +96,26 @@ const Usage = ({
       ) : (
         <Text>OCCUPIED</Text>
       )}
-
-      <ActionButtonContainer>
-        {role === ROLES.ADMIN ? (
-          <>
-            <ActionButton onClick={() => onEditLabUsage(id)}>
-              Edit
-            </ActionButton>
-            <ActionButton>Delete</ActionButton>
-          </>
-        ) : lecturerId === user?._id ? (
-          <ActionButton onClick={() => onRequestModifyLabUsage(id)}>
-            Change lab usage
-          </ActionButton>
-        ) : null}
-      </ActionButtonContainer>
+      {role === ROLES.LECTURER ? (
+        <ActionButtonContainer>
+          {lecturerId === user?._id ? (
+            <>
+              <ActionButton
+                onClick={() => {
+                  navigator.clipboard.writeText(teachingId);
+                  dispatch(setShowSuccessSnackBar(true));
+                  dispatch(setSnackBarContent("Copied to clipboard"));
+                }}
+              >
+                Copy Teaching ID
+              </ActionButton>
+              <ActionButton onClick={() => onRequestModifyLabUsage(id)}>
+                Modify
+              </ActionButton>
+            </>
+          ) : null}
+        </ActionButtonContainer>
+      ) : null}
     </StyledUsage>
   );
 };
@@ -206,7 +208,7 @@ const Text = styled.div`
   justify-content: center;
   font-style: italic;
   font-size: 18px;
-  color: ${({ theme }) => theme.red};
+  color: white;
 `;
 
 const CheckIn = styled.div`

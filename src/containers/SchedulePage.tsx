@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@material-ui/core";
+import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import TimeTable from "../components/schedule-page/TimeTable";
 import Button from "../components/common/Button";
 import { Skeleton } from "@material-ui/core";
@@ -16,6 +11,7 @@ import EditLabUsageModal from "../components/schedule-page/EditLabUsageModal";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as FileSaver from "file-saver";
 import * as XLSX from "xlsx";
+import AddIcon from "@material-ui/icons/Add";
 
 // import hooks
 import useGetLabUsagesBySemester from "../hooks/schedule/useGetLabUsagesBySemester";
@@ -52,32 +48,21 @@ const SchedulePage = () => {
   const dispatch = useAppDispatch();
 
   const [week, setWeek] = useState(2);
-  const [filteredLabUsages, setFilterLabUsages] = useState<
-    LabUsage[]
-  >([]);
+  const [filteredLabUsages, setFilterLabUsages] = useState<LabUsage[]>([]);
 
-  const [selectedSemester, setSelectedSemester] = useState<Semester>(
-    null!
-  );
+  const [selectedSemester, setSelectedSemester] = useState<Semester>(null!);
   const [academicYearSemesters, setAcademicYearSemesters] = useState<
     Semester[]
   >([]);
 
-  const [selectedYear, setSelectedYear] = useState<AcademicYear>(
-    null!
-  );
+  const [selectedYear, setSelectedYear] = useState<AcademicYear>(null!);
 
-  const [labUsageToChange, setLabUsageToChange] =
-    useState<string>("");
+  const [labUsageToChange, setLabUsageToChange] = useState<string>("");
 
-  const [
-    showModifyLabUsageRequestModal,
-    setShowModifyLabUsageRequestModal,
-  ] = useState(false);
-  const [
-    showAddExtraClassRequestModal,
-    setShowAddExtraClassRequestModal,
-  ] = useState(false);
+  const [showModifyLabUsageRequestModal, setShowModifyLabUsageRequestModal] =
+    useState(false);
+  const [showAddExtraClassRequestModal, setShowAddExtraClassRequestModal] =
+    useState(false);
 
   // call hooks
   const [courses] = useGetAllCourses();
@@ -87,9 +72,7 @@ const SchedulePage = () => {
   const academicYears = useAppSelector(
     (state) => state.academicYears.academicYears
   );
-  const semesters = useAppSelector(
-    (state) => state.semesters.semesters
-  );
+  const semesters = useAppSelector((state) => state.semesters.semesters);
 
   const [teachings] = useGetAllTeaching();
   const [labUsages, labUsageStatus] =
@@ -97,9 +80,7 @@ const SchedulePage = () => {
   const academicYearStatus = useAppSelector(
     (state) => state.academicYears.status
   );
-  const semesterStatus = useAppSelector(
-    (state) => state.semesters.status
-  );
+  const semesterStatus = useAppSelector((state) => state.semesters.status);
   const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
 
@@ -108,8 +89,8 @@ const SchedulePage = () => {
   // initialize
   useEffect(() => {
     if (academicYears.length > 0) {
-      const latestAcademicYear = _.cloneDeep(academicYears).sort(
-        (a, b) => moment(b.startDate).diff(moment(a.startDate))
+      const latestAcademicYear = _.cloneDeep(academicYears).sort((a, b) =>
+        moment(b.startDate).diff(moment(a.startDate))
       )[0];
       console.log("*** Academic year:", latestAcademicYear);
       setSelectedYear(latestAcademicYear);
@@ -122,9 +103,8 @@ const SchedulePage = () => {
       console.log("*** Academic year semesters:", acaSemesters);
 
       if (
-        acaSemesters.filter(
-          (item) => item.status === SEMESTER_STATUSES.OPENING
-        ).length > 0
+        acaSemesters.filter((item) => item.status === SEMESTER_STATUSES.OPENING)
+          .length > 0
       ) {
         setSelectedSemester(
           acaSemesters.filter(
@@ -132,9 +112,7 @@ const SchedulePage = () => {
           )[0]!
         );
       } else {
-        setSelectedSemester(
-          acaSemesters.find((item) => item.index === 1)!
-        );
+        setSelectedSemester(acaSemesters.find((item) => item.index === 1)!);
       }
     }
   }, [academicYears, semesters]);
@@ -178,9 +156,7 @@ const SchedulePage = () => {
     return (courses as Course[]).find(
       (course) =>
         course._id ===
-        teachings.find(
-          (teaching) => teaching._id === labUsage.teaching
-        )!.course
+        teachings.find((teaching) => teaching._id === labUsage.teaching)!.course
     )!.courseName;
   };
 
@@ -188,16 +164,13 @@ const SchedulePage = () => {
     return (users as User[]).find(
       (user) =>
         user._id ===
-        teachings.find(
-          (teaching) => teaching._id === labUsage.teaching
-        )!.user
+        teachings.find((teaching) => teaching._id === labUsage.teaching)!.user
     )!.fullName;
   };
 
   const getTheoryRoomName = (labUsage: LabUsage) => {
-    return teachings.find(
-      (teaching) => teaching._id === labUsage.teaching
-    )!.theoryRoom;
+    return teachings.find((teaching) => teaching._id === labUsage.teaching)!
+      .theoryRoom;
   };
 
   const getCell = (labUsage: LabUsage) => {
@@ -291,23 +264,17 @@ const SchedulePage = () => {
         labUsagesByWeekByLab.forEach((item) => {
           if (item.endPeriod <= 5) {
             row[headers[1 + item.dayOfWeek * 3]] = getCell(item);
-            const index = headers.indexOf(
-              headers[1 + item.dayOfWeek * 3]
-            );
+            const index = headers.indexOf(headers[1 + item.dayOfWeek * 3]);
             wscols[index] = { wch: getCourseName(item).length };
           }
           if (item.endPeriod > 5 && item.endPeriod <= 12) {
             row[headers[2 + item.dayOfWeek * 3]] = getCell(item);
-            const index = headers.indexOf(
-              headers[2 + item.dayOfWeek * 3]
-            );
+            const index = headers.indexOf(headers[2 + item.dayOfWeek * 3]);
             wscols[index] = { wch: getCourseName(item).length };
           }
           if (item.endPeriod > 12 && item.endPeriod <= 16) {
             row[headers[3 + item.dayOfWeek * 3]] = getCell(item);
-            const index = headers.indexOf(
-              headers[3 + item.dayOfWeek * 3]
-            );
+            const index = headers.indexOf(headers[3 + item.dayOfWeek * 3]);
             wscols[index] = { wch: getCourseName(item).length };
           }
         });
@@ -411,16 +378,13 @@ const SchedulePage = () => {
           } → ${labUsagesByWeek[i].endPeriod};\n`;
 
           rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
-            rowMorning[
-              headers[labUsagesByWeek[i].dayOfWeek + 1]
-            ].split("\n")[
-              rowMorning[
-                headers[labUsagesByWeek[i].dayOfWeek + 1]
-              ].split("\n").length - 1
+            rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")[
+              rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")
+                .length - 1
             ] === ""
-              ? rowMorning[
-                  headers[labUsagesByWeek[i].dayOfWeek + 1]
-                ].split("\n")[0]
+              ? rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
+                  "\n"
+                )[0]
               : rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]]
                   .split("\n")
                   .sort()
@@ -438,19 +402,15 @@ const SchedulePage = () => {
           } → ${labUsagesByWeek[i].endPeriod};\n`;
 
           rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
-            rowAfternoon[
-              headers[labUsagesByWeek[i].dayOfWeek + 1]
-            ].split("\n")[
-              rowAfternoon[
-                headers[labUsagesByWeek[i].dayOfWeek + 1]
-              ].split("\n").length - 1
+            rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")[
+              rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
+                "\n"
+              ).length - 1
             ] === ""
-              ? rowAfternoon[
-                  headers[labUsagesByWeek[i].dayOfWeek + 1]
-                ].split("\n")[0]
-              : rowAfternoon[
-                  headers[labUsagesByWeek[i].dayOfWeek + 1]
-                ]
+              ? rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
+                  "\n"
+                )[0]
+              : rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]]
                   .split("\n")
                   .sort()
                   .join("\n");
@@ -467,16 +427,13 @@ const SchedulePage = () => {
           } → ${labUsagesByWeek[i].endPeriod};\n`;
 
           rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
-            rowEvening[
-              headers[labUsagesByWeek[i].dayOfWeek + 1]
-            ].split("\n")[
-              rowEvening[
-                headers[labUsagesByWeek[i].dayOfWeek + 1]
-              ].split("\n").length - 1
+            rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")[
+              rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")
+                .length - 1
             ] === ""
-              ? rowEvening[
-                  headers[labUsagesByWeek[i].dayOfWeek + 1]
-                ].split("\n")[0]
+              ? rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
+                  "\n"
+                )[0]
               : rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]]
                   .split("\n")
                   .sort()
@@ -516,26 +473,10 @@ const SchedulePage = () => {
     ) {
       return (
         <SkeletonContainer>
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
         </SkeletonContainer>
       );
     } else if (labUsageStatus === "succeeded") {
@@ -544,9 +485,7 @@ const SchedulePage = () => {
           <Toolbar>
             <Filter>
               <StyledFormControl>
-                <InputLabel id="academic-year-label">
-                  Years
-                </InputLabel>
+                <InputLabel id="academic-year-label">Years</InputLabel>
                 <Select
                   labelId="academic-year-label"
                   id="academic-year-select"
@@ -572,9 +511,7 @@ const SchedulePage = () => {
                 <Select
                   labelId="semester-label"
                   id="semester-select"
-                  value={
-                    selectedSemester ? selectedSemester._id : null
-                  }
+                  value={selectedSemester ? selectedSemester._id : null}
                   onChange={(e) =>
                     setSelectedSemester(
                       academicYearSemesters.filter(
@@ -601,13 +538,11 @@ const SchedulePage = () => {
                   label="Week"
                 >
                   {selectedSemester &&
-                    [...Array(selectedSemester.numberOfWeeks)].map(
-                      (_, i) => (
-                        <MenuItem value={i} key={i}>
-                          {i}
-                        </MenuItem>
-                      )
-                    )}
+                    [...Array(selectedSemester.numberOfWeeks)].map((_, i) => (
+                      <MenuItem value={i} key={i}>
+                        {i}
+                      </MenuItem>
+                    ))}
                 </Select>
               </StyledFormControl>
               {selectedSemester ? (
@@ -625,10 +560,7 @@ const SchedulePage = () => {
               ) : null}
             </Filter>
             <Action>
-              <StyledButton
-                onClick={exportScheduleCSV}
-                icon={<GetAppIcon />}
-              >
+              <StyledButton onClick={exportScheduleCSV} icon={<GetAppIcon />}>
                 Export schedule
               </StyledButton>
               {role === ROLES.ADMIN ? (
@@ -640,6 +572,7 @@ const SchedulePage = () => {
                 </StyledButton>
               ) : (
                 <StyledButton
+                  icon={<AddIcon />}
                   onClick={() => {
                     if (labUsages.length === 0) {
                       dispatch(setShowErrorSnackBar(true));

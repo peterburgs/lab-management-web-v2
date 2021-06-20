@@ -479,7 +479,10 @@ const SchedulePage = () => {
           <Skeleton variant="rectangular" height={40} animation="wave" />
         </SkeletonContainer>
       );
-    } else if (labUsageStatus === "succeeded") {
+    } else if (
+      academicYearStatus === "succeeded" &&
+      semesterStatus === "succeeded"
+    ) {
       return (
         <>
           <Toolbar>
@@ -598,7 +601,11 @@ const SchedulePage = () => {
                 labs={
                   (labs as Lab[]).length > 1
                     ? _.cloneDeep(labs as Lab[]).sort(
-                        (a, b) => b.capacity - a.capacity
+                        (a, b) =>
+                          filteredLabUsages.filter((item) => item.lab === b._id)
+                            .length -
+                          filteredLabUsages.filter((item) => item.lab === a._id)
+                            .length
                       )
                     : (labs as Lab[])
                 }

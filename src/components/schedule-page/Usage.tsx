@@ -9,7 +9,7 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 import { IconButton } from "@material-ui/core";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
+import FileCopyOutlinedIcon from "@material-ui/icons/FileCopyOutlined";
 
 interface UsageProps {
   startPeriod: number;
@@ -72,8 +72,21 @@ const Usage = ({
               ? checkOutAt
                 ? moment(new Date(checkOutAt)).format("HH:mm:ss DD/MM/YYYY")
                 : "pending"
-              : "check in required"}
+              : "pending"}
           </CheckOut>
+          <TeachingID>
+            Teaching ID:{" "}
+            <IconButton
+              onClick={() => {
+                navigator.clipboard.writeText(teachingId);
+                dispatch(setShowSuccessSnackBar(true));
+                dispatch(setSnackBarContent("Copied to clipboard"));
+              }}
+              component="span"
+            >
+              <FileCopyOutlinedIcon fontSize="small" htmlColor="#fff" />
+            </IconButton>
+          </TeachingID>
         </>
       ) : lecturerId === user?._id ? (
         <>
@@ -94,23 +107,19 @@ const Usage = ({
                 : "pending"
               : "pending"}
           </CheckOut>
-          {role === ROLES.LECTURER && (
-            <>
-              <TeachingID>
-                Teaching ID:{" "}
-                <IconButton
-                  onClick={() => {
-                    navigator.clipboard.writeText(teachingId);
-                    dispatch(setShowSuccessSnackBar(true));
-                    dispatch(setSnackBarContent("Copied to clipboard"));
-                  }}
-                  component="span"
-                >
-                  <FileCopyIcon fontSize="small" htmlColor="#fff" />
-                </IconButton>
-              </TeachingID>
-            </>
-          )}
+          <TeachingID>
+            Teaching ID:{" "}
+            <IconButton
+              onClick={() => {
+                navigator.clipboard.writeText(teachingId);
+                dispatch(setShowSuccessSnackBar(true));
+                dispatch(setSnackBarContent("Copied to clipboard"));
+              }}
+              component="span"
+            >
+              <FileCopyOutlinedIcon fontSize="small" htmlColor="#fff" />
+            </IconButton>
+          </TeachingID>
         </>
       ) : (
         <Text>OCCUPIED</Text>
@@ -143,10 +152,10 @@ const StyledUsage = styled.div<StyledUsageProps>`
       : shift === 2
       ? "3px solid #02383C"
       : "3px solid #0900C3"};
-  height: 220px;
+  height: 250px;
   display: flex;
   flex-direction: column;
-  min-width: 150px;
+  width: 150px;
   border-radius: 4px;
   padding: 4px;
   margin-right: 0.5rem;
@@ -175,19 +184,21 @@ const Period = styled.span`
 
 const ActionButtonContainer = styled.div`
   display: flex;
-  right: 8px;
   position: absolute;
-  bottom: 8px;
+  bottom: 10px;
+  left: 0px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ActionButton = styled.button`
   outline: none;
-  background: transparent;
-  color: white;
+  background: white;
+  color: black;
   border-radius: 4px;
   border: 1px solid white;
   cursor: pointer;
-  opacity: 0.5;
   margin: 0 2px;
 
   &:active {

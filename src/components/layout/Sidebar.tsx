@@ -12,7 +12,7 @@ import { ReactComponent as AttendanceIcon } from "../../assets/images/attendance
 
 import styled, { css } from "styled-components";
 import Burger from "./Burger";
-import { useAppSelector } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../store";
 import {
   AcademicYear,
   ROLES,
@@ -23,6 +23,13 @@ import { Skeleton } from "@material-ui/core";
 import useGetAllSemester from "../../hooks/semester/useGetAllSemester";
 import useGetAllAcademicYears from "../../hooks/academicYear/useGetAllAcademicYears";
 import { useHistory } from "react-router";
+import { resetState as resetAcademicYearState } from "../../reducers/academicYearSlice";
+import { resetState as resetRegistrationState } from "../../reducers/registrationSlice";
+import { resetState as resetCourseState } from "../../reducers/courseSlice";
+import { resetState as resetLabState } from "../../reducers/labSlice";
+import { resetState as resetRequestState } from "../../reducers/requestSlice";
+import { resetState as resetUserState } from "../../reducers/userSlice";
+import { resetState as resetScheduleState } from "../../reducers/scheduleSlice";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -30,33 +37,24 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
+  const dispatch = useAppDispatch();
+
   const role = useAppSelector((state) => state.auth.verifiedRole);
 
   const history = useHistory();
   const [semesters, semesterStatus] = useGetAllSemester();
-  const [academicYears, academicYearStatus] =
-    useGetAllAcademicYears();
+  const [academicYears, academicYearStatus] = useGetAllAcademicYears();
 
   // conditional renderer
   const renderBreadcrumbs = () => {
-    if (
-      semesterStatus === "pending" ||
-      academicYearStatus === "pending"
-    ) {
+    if (semesterStatus === "pending" || academicYearStatus === "pending") {
       return (
         <Breadcrumbs isCollapsed={isCollapsed}>
-          <Skeleton
-            variant="rectangular"
-            animation="wave"
-            width={200}
-          />
+          <Skeleton variant="rectangular" animation="wave" width={200} />
         </Breadcrumbs>
       );
     }
-    if (
-      semesterStatus === "succeeded" &&
-      academicYearStatus === "succeeded"
-    ) {
+    if (semesterStatus === "succeeded" && academicYearStatus === "succeeded") {
       const openAcademicYear = (academicYears as AcademicYear[]).find(
         (item) => item.isOpening === true
       );
@@ -73,9 +71,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
             <span
               onClick={() =>
                 history.push(
-                  `/academic-years/semesters/${
-                    (openSemester as Semester)._id
-                  }`
+                  `/academic-years/semesters/${(openSemester as Semester)._id}`
                 )
               }
             >
@@ -112,29 +108,34 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
               isCollapsed={isCollapsed}
               path="/academic-years"
               name="Academic years"
+              onClick={() => dispatch(resetAcademicYearState())}
               icon={<AcademicYearIcon />}
             />
           </>
         ) : null}
         <NavItem
+          onClick={() => dispatch(resetRegistrationState())}
           isCollapsed={isCollapsed}
           path="/registration"
           name="Registration"
           icon={<DashboardIcon />}
         />
         <NavItem
+          onClick={() => dispatch(resetCourseState())}
           isCollapsed={isCollapsed}
           path="/courses"
           name="Courses"
           icon={<CourseIcon />}
         />
         <NavItem
+          onClick={() => dispatch(resetLabState())}
           isCollapsed={isCollapsed}
           path="/labs"
           name="Labs"
           icon={<LabIcon />}
         />
         <NavItem
+          onClick={() => dispatch(resetRequestState())}
           isCollapsed={isCollapsed}
           path="/requests"
           name="Requests"
@@ -143,12 +144,14 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         {role === ROLES.ADMIN ? (
           <>
             <NavItem
+              onClick={() => dispatch(resetUserState())}
               isCollapsed={isCollapsed}
               path="/users"
               name="Users"
               icon={<UserIcon />}
             />
             <NavItem
+              onClick={() => dispatch(resetScheduleState())}
               isCollapsed={isCollapsed}
               path="/attendances"
               name="Attendances"
@@ -158,6 +161,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         ) : null}
 
         <NavItem
+          onClick={() => dispatch(resetScheduleState())}
           isCollapsed={isCollapsed}
           path="/schedule"
           name="Schedule"

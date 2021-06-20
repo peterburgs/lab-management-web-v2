@@ -1,19 +1,12 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import {
-  getLabUsages,
-  resetState,
-} from "../../reducers/scheduleSlice";
+import { getLabUsages, resetState } from "../../reducers/scheduleSlice";
 import { Semester } from "../../types/model";
 
-const useGetLabUsagesBySemester = (
-  semester: Semester | undefined
-) => {
+const useGetLabUsagesBySemester = (semester: Semester | undefined) => {
   const dispatch = useAppDispatch();
-  const labUsages = useAppSelector(
-    (state) => state.schedule.labUsages
-  );
+  const labUsages = useAppSelector((state) => state.schedule.labUsages);
   const labUsageStatus = useAppSelector(
     (state) => state.schedule.labUsageStatus
   );
@@ -21,7 +14,6 @@ const useGetLabUsagesBySemester = (
   useEffect(() => {
     console.log(semester);
     if (labUsageStatus === "idle" && semester) {
-      console.log("hello");
       (async () => {
         try {
           const actionResult = await dispatch(
@@ -37,10 +29,7 @@ const useGetLabUsagesBySemester = (
     }
 
     return () => {
-      if (
-        labUsageStatus === "failed" ||
-        labUsageStatus === "succeeded"
-      ) {
+      if (labUsageStatus === "failed" || labUsageStatus === "succeeded") {
         dispatch(resetState());
       }
     };

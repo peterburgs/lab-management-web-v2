@@ -8,11 +8,18 @@ interface NavItemProps {
   name: string;
   icon: ReactNode;
   isCollapsed: boolean;
+  onClick: () => void;
 }
 
-const NavItem = ({ path, name, icon, isCollapsed }: NavItemProps) => {
+const NavItem = ({ path, name, icon, isCollapsed, onClick }: NavItemProps) => {
   return (
-    <StyledNavItem to={path} exact activeClassName="selected">
+    <StyledNavItem
+      to={path}
+      exact
+      activeClassName="selected"
+      replace={true}
+      onClick={onClick}
+    >
       <NavItemIcon>{icon}</NavItemIcon>
       <NavItemText isCollapsed={isCollapsed}>{name}</NavItemText>
     </StyledNavItem>
@@ -36,7 +43,6 @@ const StyledNavItem = styled(NavLink)`
   &.selected {
     background-color: rgba(0, 0, 0, 0.2);
     opacity: 1;
-    pointer-events: none;
   }
 `;
 

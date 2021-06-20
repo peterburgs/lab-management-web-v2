@@ -177,7 +177,7 @@ const LabName = styled.div`
   padding: 0px 5px;
   color: white;
   font-size: 13px;
-  min-height: 220px;
+  min-height: 250px;
   margin-bottom: 15px;
   display: flex;
   align-items: center;
@@ -192,7 +192,7 @@ const UsageContainer = styled.div`
   width: 100%;
   grid-template-columns: repeat(7, minmax(auto, 1fr));
   grid-template-rows: 50px;
-  grid-auto-rows: 235px;
+  grid-auto-rows: 265px;
   margin-left: 1rem;
   height: max-content;
 `;

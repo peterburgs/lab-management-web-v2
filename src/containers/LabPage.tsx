@@ -28,12 +28,14 @@ import { useHistory } from "react-router";
 import { resetState as resetLabState } from "../reducers/labSlice";
 import ImportLabModal from "../components/lab-page/ImportLabModal";
 import ImportLabPanel from "../components/lab-page/ImportLabPanel";
+import moment from "moment";
 
 type LabTable = {
   rowId: string;
   name: string;
   status: JSX.Element;
   capacity: number;
+  emptyColumn: string;
 };
 
 const prepareData = (
@@ -46,6 +48,7 @@ const prepareData = (
   if (labs.length > 0) {
     data = labs.map((lab) => {
       return {
+        emptyColumn: "",
         rowId: lab._id!,
         name: lab.labName,
         capacity: lab.capacity,
@@ -83,14 +86,22 @@ const LabPage = () => {
   // event handling
 
   const exportCSV = () => {
-    const template = (labs as Lab[]).map((lab, i) => {
+    const template: {
+      STT: string;
+      "Lab name": string;
+      Capacity: number | string;
+    }[] = (labs as Lab[]).map((lab, i) => {
       return {
         STT: String(i + 1),
         "Lab name": lab.labName,
         Capacity: lab.capacity,
       };
     });
-
+    template.push({
+      STT: "Exported date",
+      "Lab name": moment(new Date()).format("DD:MM:YYYY hh:mm:ss A"),
+      Capacity: "",
+    });
     console.log(template);
 
     const fileType =
@@ -127,6 +138,12 @@ const LabPage = () => {
       {
         Header: "Capacity",
         accessor: "capacity" as const,
+      },
+      {
+        Header: "",
+        accessor: "emptyColumn" as const,
+        width: 50,
+        disableSortBy: true,
       },
     ];
     if (labStatus === "succeeded") {

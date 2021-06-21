@@ -1,11 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import ChatBubbleOutlineIcon from "@material-ui/icons/ChatBubbleOutline";
-import {
-  REQUEST_TYPES,
-  REQUEST_STATUSES,
-  User,
-} from "../../types/model";
+import { REQUEST_TYPES, REQUEST_STATUSES, User } from "../../types/model";
 import { Link } from "react-router-dom";
 import HourglassEmptyOutlinedIcon from "@material-ui/icons/HourglassEmptyOutlined";
 import CheckIcon from "@material-ui/icons/Check";
@@ -40,9 +36,7 @@ const RequestCard = ({
       <Container>
         <StatusIconContainer>
           {status === REQUEST_STATUSES.PENDING ? (
-            <HourglassEmptyOutlinedIcon
-              style={{ color: "#0070f3" }}
-            />
+            <HourglassEmptyOutlinedIcon style={{ color: "#0070f3" }} />
           ) : status === REQUEST_STATUSES.APPROVED ? (
             <CheckIcon style={{ color: "#44BD63" }} />
           ) : (
@@ -62,16 +56,15 @@ const RequestCard = ({
           </Header>
           <Info>
             {status === REQUEST_STATUSES.PENDING
-              ? "Open at " +
-                moment(pendingAt!).format("MM-DD-YYYY h:mm:ss a")
+              ? "Create at " + moment(pendingAt!).format("MM-DD-YYYY h:mm:ss A")
               : status === REQUEST_STATUSES.APPROVED
-              ? "Approved at " +
-                moment(approvedAt!).format("MM-DD-YYYY h:mm:ss a")
-              : "Denied at " +
-                moment(deniedAt!).format("MM-DD-YYYY h:mm:ss a")}
+              ? "Approved by Admin at " +
+                moment(approvedAt!).format("MM-DD-YYYY h:mm:ss A")
+              : "Denied by Admin at " +
+                moment(deniedAt!).format("MM-DD-YYYY h:mm:ss A")}
             <span>
               {" "}
-              by {user.fullName} - {user.email}
+              . Requested by {user.fullName} - {user.email}
             </span>
           </Info>
         </ContentContainer>

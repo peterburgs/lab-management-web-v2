@@ -28,6 +28,7 @@ import useGetAllCourses from "../hooks/course/useGetAllCourses";
 import { useAppDispatch, useAppSelector } from "../store";
 import { useHistory } from "react-router";
 import { resetState as resetCourseState } from "../reducers/courseSlice";
+import moment from "moment";
 
 type CourseTable = {
   rowId: string;
@@ -35,6 +36,7 @@ type CourseTable = {
   name: string;
   numberOfCredits: number;
   type: string;
+  emptyColumn: string;
 };
 
 const prepareData = (
@@ -53,6 +55,7 @@ const prepareData = (
         numberOfCredits: course.numberOfCredits,
         type: course.type === COURSE_TYPES.PRACTICAL ? "Practical" : "Theory",
         createdAt: new Date(course.createdAt!).toDateString(),
+        emptyColumn: "",
       };
     });
   } else {
@@ -85,7 +88,13 @@ const CoursePage = () => {
   // handle export template
 
   const exportCSV = () => {
-    const template = (courses as Course[]).map((course, i) => {
+    const template: {
+      STT: string;
+      "Course ID": string;
+      "Course Name": string;
+      "Course type": COURSE_TYPES | string;
+      Credits: number | string;
+    }[] = (courses as Course[]).map((course, i) => {
       return {
         STT: String(i + 1),
         "Course ID": course._id,
@@ -95,7 +104,13 @@ const CoursePage = () => {
         Credits: course.numberOfCredits,
       };
     });
-
+    template.push({
+      STT: "Exported date",
+      "Course ID": moment(new Date()).format("DD:MM:YYYY hh:mm:ss A"),
+      "Course Name": "",
+      "Course type": "",
+      Credits: "",
+    });
     console.log(template);
 
     const fileType =
@@ -139,6 +154,12 @@ const CoursePage = () => {
       {
         Header: "Type",
         accessor: "type" as const,
+      },
+      {
+        Header: "",
+        accessor: "emptyColumn" as const,
+        disableSortBy: true,
+        width: 50,
       },
     ];
     if (courseStatus === "succeeded") {

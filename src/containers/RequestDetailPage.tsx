@@ -192,7 +192,11 @@ const RequestDetailPage = () => {
                   style={{ color: "black" }}
                 >
                   <InputLabel id="oldcourse-label">Course</InputLabel>
-                  <Select disabled value={course._id} label="Course">
+                  <Select
+                    value={course._id}
+                    label="Course"
+                    inputProps={{ "aria-readonly": true }}
+                  >
                     {(courses as Course[]).map((course, i) => (
                       <MenuItem value={course._id} key={course._id}>
                         {course.courseName}
@@ -205,7 +209,11 @@ const RequestDetailPage = () => {
                   style={{ color: "black" }}
                 >
                   <InputLabel id="oldlab-label">Lab</InputLabel>
-                  <Select disabled value={lab._id} label="Lab">
+                  <Select
+                    value={lab._id}
+                    label="Lab"
+                    inputProps={{ "aria-readonly": true }}
+                  >
                     {(labs as Lab[]).map((lab, i) => (
                       <MenuItem value={lab._id} key={lab._id}>
                         {lab.labName}
@@ -219,7 +227,7 @@ const RequestDetailPage = () => {
                 >
                   <InputLabel id="oldweekno-label">Week</InputLabel>
                   <Select
-                    disabled
+                    inputProps={{ "aria-readonly": true }}
                     labelId="oldweekno-label"
                     value={request.oldWeekNo}
                     label="Week"
@@ -237,7 +245,7 @@ const RequestDetailPage = () => {
                 >
                   <InputLabel id="olddow-label">Day of week</InputLabel>
                   <Select
-                    disabled
+                    inputProps={{ "aria-readonly": true }}
                     labelId="olddow-label"
                     value={request.oldDayOfWeek}
                     label="Day of week"
@@ -257,7 +265,7 @@ const RequestDetailPage = () => {
                 >
                   <InputLabel id="oldstart-label">Start period</InputLabel>
                   <Select
-                    disabled
+                    inputProps={{ "aria-readonly": true }}
                     labelId="oldstart-label"
                     value={request.oldStartPeriod}
                     label="Start period"
@@ -275,7 +283,7 @@ const RequestDetailPage = () => {
                 >
                   <InputLabel id="oldend-label">End period</InputLabel>
                   <Select
-                    disabled
+                    inputProps={{ "aria-readonly": true }}
                     labelId="oldend-label"
                     value={request.oldEndPeriod}
                     label="End period"
@@ -322,7 +330,11 @@ const RequestDetailPage = () => {
               <NewUsageHeader>New Usage</NewUsageHeader>
               <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldcourse-label">Course</InputLabel>
-                <Select disabled value={course._id} label="Course">
+                <Select
+                  inputProps={{ "aria-readonly": true }}
+                  value={course._id}
+                  label="Course"
+                >
                   {(courses as Course[]).map((course, i) => (
                     <MenuItem value={course._id} key={course._id}>
                       {course.courseName}
@@ -332,7 +344,11 @@ const RequestDetailPage = () => {
               </StyledFormControl>
               <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldlab-label">Lab</InputLabel>
-                <Select disabled value={lab._id} label="Lab">
+                <Select
+                  inputProps={{ "aria-readonly": true }}
+                  value={lab._id}
+                  label="Lab"
+                >
                   {(labs as Lab[]).map((lab, i) => (
                     <MenuItem value={lab._id} key={lab._id}>
                       {lab.labName}
@@ -343,7 +359,7 @@ const RequestDetailPage = () => {
               <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldweekno-label">Week</InputLabel>
                 <Select
-                  disabled
+                  inputProps={{ "aria-readonly": true }}
                   labelId="oldweekno-label"
                   value={request.weekNo}
                   label="Week"
@@ -354,7 +370,7 @@ const RequestDetailPage = () => {
               <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="olddow-label">Day of week</InputLabel>
                 <Select
-                  disabled
+                  inputProps={{ "aria-readonly": true }}
                   labelId="olddow-label"
                   value={request.dayOfWeek}
                   label="Day of week"
@@ -371,7 +387,7 @@ const RequestDetailPage = () => {
               <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldstart-label">Start period</InputLabel>
                 <Select
-                  disabled
+                  inputProps={{ "aria-readonly": true }}
                   labelId="oldstart-label"
                   value={request.startPeriod}
                   label="Start period"
@@ -386,7 +402,7 @@ const RequestDetailPage = () => {
               <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldend-label">End period</InputLabel>
                 <Select
-                  disabled
+                  inputProps={{ "aria-readonly": true }}
                   labelId="oldend-label"
                   value={request.endPeriod}
                   label="End period"
@@ -407,7 +423,11 @@ const RequestDetailPage = () => {
 
   return (
     <StyledRequestDetailPage>
-      {request && users.length > 0 && (
+      {request &&
+      users.length > 0 &&
+      labUsages.length > 0 &&
+      courses.length > 0 &&
+      labs.length > 0 ? (
         <ScrollArea>
           <>
             <Header>
@@ -427,7 +447,8 @@ const RequestDetailPage = () => {
                       : "DENIED"}
                   </StatusBadge>
                   <span>
-                    {new Date(request.updatedAt!.toString()).toDateString() +
+                    {"Created at " +
+                      new Date(request.updatedAt!.toString()).toDateString() +
                       " " +
                       new Date(request.updatedAt!.toString()).getHours() +
                       ":" +
@@ -508,6 +529,12 @@ const RequestDetailPage = () => {
             <AddComment request={request._id} />
           </>
         </ScrollArea>
+      ) : (
+        <PageSkeletonContainer>
+          <Skeleton variant="rectangular" height={80} animation="wave" />
+          <Skeleton variant="rectangular" height={250} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+        </PageSkeletonContainer>
       )}
     </StyledRequestDetailPage>
   );
@@ -651,7 +678,12 @@ const SkeletonContainer = styled.div`
   grid-template-rows: 1fr 1fr 1fr;
   grid-row-gap: 1rem;
 `;
-
+const PageSkeletonContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2fr 4fr 1fr;
+  grid-row-gap: 1rem;
+`;
 const CurrentUsage = styled.div`
   border-radius: 7px;
   box-shadow: ${({ theme }) => theme.greyShadow};

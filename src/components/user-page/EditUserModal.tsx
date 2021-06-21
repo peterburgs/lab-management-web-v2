@@ -34,9 +34,7 @@ const EditUserModal = (props: ModalProps) => {
 
   // useState
   const [status, setStatus] = useState("idle");
-  const [selectedRoles, setSelectedRoles] = useState<CheckboxItem[]>(
-    []
-  );
+  const [selectedRoles, setSelectedRoles] = useState<CheckboxItem[]>([]);
 
   // handle submit event
   const onSubmit = async (data: User) => {
@@ -122,14 +120,13 @@ const EditUserModal = (props: ModalProps) => {
               defaultValue={user.fullName}
               name="fullName"
               error={Boolean(errors.fullName)}
-              helperText={
-                errors.fullName && "*This field is required"
-              }
+              helperText={errors.fullName && "*This field is required"}
             />
             <StyledTextField
               label="Email"
               inputRef={register({ required: true })}
               defaultValue={user.email}
+              InputProps={{ readOnly: true }}
               name="email"
               error={Boolean(errors.email)}
               helperText={errors.email && "*This field is required"}

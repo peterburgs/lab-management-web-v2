@@ -106,7 +106,7 @@ const Login = () => {
     console.log(error);
     setLoading(false);
     dispatch(setShowErrorSnackBar(true));
-    dispatch(setSnackBarContent(error.message));
+    dispatch(setSnackBarContent("Sign in aborted"));
   };
 
   const onRequest = () => {
@@ -219,7 +219,7 @@ const StyledVideo = styled.video`
 
 const HeaderContainer = styled.div`
   position: fixed;
-  top: 150px;
+  bottom: 60vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -242,7 +242,7 @@ const Header = styled.h1`
 const Action = styled.div`
   z-index: 2;
   position: fixed;
-  top: 300px;
+  bottom: 50vh;
   width: 100%;
   display: flex;
   flex-direction: column;

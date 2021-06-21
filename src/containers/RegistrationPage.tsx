@@ -461,7 +461,7 @@ const RegistrationPage = () => {
       <CloseRegistrationModal
         showModal={showCloseRegistrationModal}
         setShowModal={setShowCloseRegistrationModal}
-        name="Confirm close registration"
+        name="Do you want to close this registration"
       />
       <GenerateScheduleModal
         showModal={showGenerateScheduleModal}

@@ -549,17 +549,21 @@ const SchedulePage = () => {
                 </Select>
               </StyledFormControl>
               {selectedSemester ? (
-                <Text>
-                  From{" "}
-                  {moment(new Date(selectedSemester.startDate!))
-                    .add(week, "weeks")
-                    .format("dddd DD/MM/yyyy")}{" "}
-                  to{" "}
-                  {moment(new Date(selectedSemester.startDate!))
-                    .add(week, "weeks")
-                    .add(6, "days")
-                    .format("dddd DD/MM/yyyy")}
-                </Text>
+                selectedSemester.status === SEMESTER_STATUSES.OPENING ? (
+                  <Text>
+                    From{" "}
+                    {moment(new Date(selectedSemester.startDate!))
+                      .add(week, "weeks")
+                      .format("dddd DD/MM/yyyy")}{" "}
+                    to{" "}
+                    {moment(new Date(selectedSemester.startDate!))
+                      .add(week, "weeks")
+                      .add(6, "days")
+                      .format("dddd DD/MM/yyyy")}
+                  </Text>
+                ) : (
+                  <Text>This semester has not been started</Text>
+                )
               ) : null}
             </Filter>
             <Action>

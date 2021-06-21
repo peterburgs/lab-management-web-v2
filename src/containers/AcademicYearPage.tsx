@@ -16,11 +16,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { useAppDispatch, useAppSelector } from "../store";
 import CloseSemesterModal from "../components/academic-year-page/CloseSemesterModal";
 import EditSemesterModal from "../components/academic-year-page/EditSemesterModal";
-import {
-  AcademicYear,
-  ROLES,
-  SEMESTER_STATUSES,
-} from "../types/model";
+import { AcademicYear, ROLES, SEMESTER_STATUSES } from "../types/model";
 import AddIcon from "@material-ui/icons/Add";
 import moment from "moment";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
@@ -42,11 +38,9 @@ const AcademicYearPage = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showStartAcademicYearModal, setShowStartAcademicYearModal] =
     useState(false);
-  const [showStartSemesterModal, setShowStartSemesterModal] =
-    useState(false);
+  const [showStartSemesterModal, setShowStartSemesterModal] = useState(false);
   const [academicYearType, setAcademicYearType] = useState(0);
-  const [currentExpanding, setCurrentExpanding] =
-    useState<string>("");
+  const [currentExpanding, setCurrentExpanding] = useState<string>("");
 
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -55,12 +49,8 @@ const AcademicYearPage = () => {
     AcademicYear[]
   >([]);
 
-  const semesters = useAppSelector(
-    (state) => state.semesters.semesters
-  );
-  const semesterStatus = useAppSelector(
-    (state) => state.semesters.status
-  );
+  const semesters = useAppSelector((state) => state.semesters.semesters);
+  const semesterStatus = useAppSelector((state) => state.semesters.status);
 
   const academicYears = useAppSelector(
     (state) => state.academicYears.academicYears
@@ -83,7 +73,7 @@ const AcademicYearPage = () => {
             exact={true}
             component={
               <CloseSemesterModal
-                name={"Do you want you close this semester"}
+                name={"Do you want to close this semester"}
                 showModal={true}
                 setShowModal={() => history.goBack()}
               />
@@ -107,7 +97,7 @@ const AcademicYearPage = () => {
             exact={true}
             component={
               <StartSemesterModal
-                name="Are you sure to start this semester?"
+                name="Do you want to start this semester?"
                 showModal={true}
                 setShowModal={() => history.goBack()}
               />
@@ -132,9 +122,7 @@ const AcademicYearPage = () => {
         if (academicYearSearchText) {
           condition =
             condition &&
-            academicYear.name
-              .toLowerCase()
-              .includes(academicYearSearchText);
+            academicYear.name.toLowerCase().includes(academicYearSearchText);
         }
         return condition;
       })
@@ -165,16 +153,8 @@ const AcademicYearPage = () => {
     if (academicYearStatus === "pending") {
       return (
         <SkeletonContainer>
-          <Skeleton
-            variant="rectangular"
-            height={250}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={250}
-            animation="wave"
-          />
+          <Skeleton variant="rectangular" height={250} animation="wave" />
+          <Skeleton variant="rectangular" height={250} animation="wave" />
         </SkeletonContainer>
       );
     } else if (filteredAcademicYears.length > 0) {
@@ -193,9 +173,7 @@ const AcademicYearPage = () => {
                       {academicYear.isOpening && (
                         <IconButton
                           onClick={() =>
-                            history.push(
-                              `/academic-years/${academicYear._id}`
-                            )
+                            history.push(`/academic-years/${academicYear._id}`)
                           }
                           color="primary"
                           component="span"
@@ -214,56 +192,27 @@ const AcademicYearPage = () => {
                     <Text>
                       Start date:{" "}
                       {moment(academicYear.startDate).format(
-                        "MM-DD-YYYY h:mm:ss a"
+                        "MM-DD-YYYY h:mm:ss A"
                       )}
                     </Text>
                     {academicYear.isOpening === false && (
                       <Text>
                         End date:{" "}
                         {moment(academicYear.endDate).format(
-                          "MM-DD-YYYY h:mm:ss a"
+                          "MM-DD-YYYY h:mm:ss A"
                         )}
                       </Text>
                     )}
-                    <Text>
-                      Number of weeks: {academicYear.numberOfWeeks}
-                    </Text>
+                    <Text>Number of weeks: {academicYear.numberOfWeeks}</Text>
                     <Text>
                       Number of semesters:{" "}
                       {semesters
                         ? semesters.filter(
                             (semester) =>
-                              semester.academicYear ===
-                              academicYear._id
+                              semester.academicYear === academicYear._id
                           ).length
                         : 0}
                     </Text>
-                    {/* {academicYear.isOpening && (
-                      <StyledButton
-                        onClick={() => {
-                          if (
-                            semesters.filter(
-                              (semester) =>
-                                semester.academicYear ===
-                                  academicYear._id &&
-                                semester.isOpening === true
-                            ).length > 0
-                          ) {
-                            dispatch(setShowErrorSnackBar(true));
-                            dispatch(
-                              setSnackBarContent(
-                                "All semesters must be closed before opening new one "
-                              )
-                            );
-                          } else {
-                            setShowStartSemesterModal(true);
-                          }
-                        }}
-                        icon={<AddIcon />}
-                      >
-                        <span>Start new semester</span>
-                      </StyledButton>
-                    )} */}
                   </InfoContainer>
                   <ActionContainer>
                     {academicYear.isOpening && (
@@ -299,11 +248,7 @@ const AcademicYearPage = () => {
                 </CollapseButtonContainer>
               </AcademicYearCard>
               <Collapse
-                in={
-                  currentExpanding === academicYear._id
-                    ? isExpanded
-                    : false
-                }
+                in={currentExpanding === academicYear._id ? isExpanded : false}
                 timeout="auto"
                 unmountOnExit
               >
@@ -311,33 +256,31 @@ const AcademicYearPage = () => {
                   (item) => item.academicYear === academicYear._id
                 ).length > 0 ? (
                   semesters
-                    .filter(
-                      (item) => item.academicYear === academicYear._id
-                    )
+                    .filter((item) => item.academicYear === academicYear._id)
                     .map((item) => (
                       <SemesterCard key={item._id}>
                         <InfoContainer>
                           <Header>
                             <span>{item.semesterName}</span>
-                            {academicYear.isOpening && (
-                              <IconButton
-                                onClick={() =>
-                                  history.push(
-                                    `/academic-years/semesters/${item._id}`
-                                  )
-                                }
-                                color="primary"
-                                component="span"
-                              >
-                                <EditIcon />
-                              </IconButton>
-                            )}
+                            {academicYear.isOpening ? (
+                              item.status === SEMESTER_STATUSES.OPENING ? (
+                                <IconButton
+                                  onClick={() =>
+                                    history.push(
+                                      `/academic-years/semesters/${item._id}`
+                                    )
+                                  }
+                                  color="primary"
+                                  component="span"
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                              ) : null
+                            ) : null}
 
-                            {item.status ===
-                            SEMESTER_STATUSES.OPENING ? (
+                            {item.status === SEMESTER_STATUSES.OPENING ? (
                               <OpenBadge>OPENING</OpenBadge>
-                            ) : item.status ===
-                              SEMESTER_STATUSES.FUTURE ? (
+                            ) : item.status === SEMESTER_STATUSES.FUTURE ? (
                               <FutureBadge>FUTURE</FutureBadge>
                             ) : (
                               <ClosedBadge>CLOSED</ClosedBadge>
@@ -348,13 +291,11 @@ const AcademicYearPage = () => {
                             Start date:{" "}
                             {item.startDate
                               ? moment(item.startDate).format(
-                                  "MM-DD-YYYY h:mm:ss a"
+                                  "MM-DD-YYYY h:mm:ss A"
                                 )
-                              : "Not started yet"}
+                              : "Pending"}
                           </Text>
-                          <Text>
-                            Number of weeks: {item.numberOfWeeks}
-                          </Text>
+                          <Text>Number of weeks: {item.numberOfWeeks}</Text>
                         </InfoContainer>
                         {item.status === SEMESTER_STATUSES.OPENING &&
                         academicYear.isOpening ? (
@@ -370,8 +311,7 @@ const AcademicYearPage = () => {
                               Close semester
                             </SemesterActionButton>
                           </ActionContainer>
-                        ) : item.status ===
-                            SEMESTER_STATUSES.FUTURE &&
+                        ) : item.status === SEMESTER_STATUSES.FUTURE &&
                           academicYear.isOpening ? (
                           <ActionContainer>
                             <SemesterActionButton
@@ -389,9 +329,7 @@ const AcademicYearPage = () => {
                       </SemesterCard>
                     ))
                 ) : (
-                  <Text
-                    style={{ textAlign: "center", marginTop: "1rem" }}
-                  >
+                  <Text style={{ textAlign: "center", marginTop: "1rem" }}>
                     No data found
                   </Text>
                 )}
@@ -439,7 +377,7 @@ const AcademicYearPage = () => {
       <StartAcademicYearModal
         setShowModal={setShowStartAcademicYearModal}
         showModal={showStartAcademicYearModal}
-        name="Start academic year"
+        name="Start new academic year"
       />
 
       {renderSemesterModal()}
@@ -545,8 +483,7 @@ const SemesterCard = styled.div`
   margin-top: 1rem;
   padding: 1rem;
   justify-content: space-between;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2),
-    0 2px 4px 0 rgba(0, 0, 0, 0.1),
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 `;
 
@@ -606,45 +543,33 @@ interface SemesterActionButtonProps {
   semesterStatus: SEMESTER_STATUSES;
 }
 
-const SemesterActionButton = styled(
-  Button
-)<SemesterActionButtonProps>`
+const SemesterActionButton = styled(Button)<SemesterActionButtonProps>`
   background-color: ${({ theme, semesterStatus }) =>
     semesterStatus === SEMESTER_STATUSES.OPENING
       ? theme.lightRed
       : theme.lightGreen};
   box-shadow: none;
   color: ${({ theme, semesterStatus }) =>
-    semesterStatus === SEMESTER_STATUSES.OPENING
-      ? theme.red
-      : theme.green};
+    semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
   font-weight: 500;
   font-size: 15px;
   padding: 0 0.7rem;
   border: 1px solid
     ${({ theme, semesterStatus }) =>
-      semesterStatus === SEMESTER_STATUSES.OPENING
-        ? theme.red
-        : theme.green};
+      semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
   &:active {
     background-color: ${({ theme, semesterStatus }) =>
-      semesterStatus === SEMESTER_STATUSES.OPENING
-        ? theme.red
-        : theme.green};
+      semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
     &:hover {
       background-color: ${({ theme, semesterStatus }) =>
-        semesterStatus === SEMESTER_STATUSES.OPENING
-          ? theme.red
-          : theme.green};
+        semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
       color: white;
     }
   }
 
   &:hover {
     background-color: ${({ theme, semesterStatus }) =>
-      semesterStatus === SEMESTER_STATUSES.OPENING
-        ? theme.red
-        : theme.green};
+      semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
     color: white;
   }
 `;

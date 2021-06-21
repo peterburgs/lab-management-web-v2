@@ -8,7 +8,6 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
 
-
 // import model
 import { AcademicYear, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
@@ -30,9 +29,7 @@ const CloseAcademicYearModal = (props: ModalProps) => {
   const academicYear = useAppSelector((state) =>
     state.academicYears.academicYears.find((item) => item._id === id)
   );
-  const semesters = useAppSelector(
-    (state) => state.semesters.semesters
-  );
+  const semesters = useAppSelector((state) => state.semesters.semesters);
   const dispatch = useAppDispatch();
   const { handleSubmit } = useForm<AcademicYear>();
 
@@ -58,19 +55,15 @@ const CloseAcademicYearModal = (props: ModalProps) => {
 
           dispatch(resetRegistrationState());
           dispatch(resetTeachingState());
-          dispatch(
-            setSnackBarContent("Close academic year successfully")
-          );
+          dispatch(setSnackBarContent("Close academic year successfully"));
           dispatch(setShowSuccessSnackBar(true));
           props.setShowModal(false);
         } catch (error) {
-          console.log("Failed to close academic year", error);
+          console.log("Close academic year failed", error);
           if (error.response) {
             dispatch(setSnackBarContent(error.response.data.message));
           } else {
-            dispatch(
-              setSnackBarContent("Failed to close academic year")
-            );
+            dispatch(setSnackBarContent("Close academic year failed"));
           }
           dispatch(setShowErrorSnackBar(true));
           props.setShowModal(false);

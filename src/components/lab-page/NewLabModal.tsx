@@ -26,9 +26,7 @@ const NewLabModal = (props: ModalProps) => {
 
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
-  const semesters = useAppSelector(
-    (state) => state.semesters.semesters
-  );
+  const semesters = useAppSelector((state) => state.semesters.semesters);
 
   // handle new course submit
   const onSubmit = async (data: Lab) => {
@@ -70,9 +68,8 @@ const NewLabModal = (props: ModalProps) => {
 
   return (
     <Modal {...props}>
-      {semesters.filter(
-        (item) => item.status === SEMESTER_STATUSES.OPENING
-      ).length > 0 && (
+      {semesters.filter((item) => item.status === SEMESTER_STATUSES.OPENING)
+        .length > 0 && (
         <div
           style={{
             display: "flex",
@@ -90,9 +87,8 @@ const NewLabModal = (props: ModalProps) => {
               textAlign: "center",
             }}
           >
-            * There is an opening semester. The new labs will not be
-            used for generating schedule but still be able for extra
-            classes.
+            * There is an opening semester. The new labs will not be used for
+            generating schedule but still be accessible for extra classes.
           </div>
         </div>
       )}

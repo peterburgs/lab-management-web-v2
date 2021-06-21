@@ -117,7 +117,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           onClick={() => dispatch(resetRegistrationState())}
           isCollapsed={isCollapsed}
           path="/registration"
-          name="Registration"
+          name="Registrations"
           icon={<DashboardIcon />}
         />
         <NavItem
@@ -164,7 +164,7 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
           onClick={() => dispatch(resetScheduleState())}
           isCollapsed={isCollapsed}
           path="/schedule"
-          name="Schedule"
+          name="Schedules"
           icon={<ScheduleIcon />}
         />
       </NavItemContainer>

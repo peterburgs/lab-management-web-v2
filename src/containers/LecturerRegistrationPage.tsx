@@ -42,6 +42,7 @@ type TeachingTable = {
   period: string;
   numOfStudents: number;
   dayOfWeek: string;
+  emptyColumn: string;
 };
 
 const dowNum2String = (dow: number) => {
@@ -111,6 +112,7 @@ const LecturerRegistrationPage = () => {
       console.log(teachings);
       data = teachings.map((teaching) => {
         return {
+          emptyColumn: "",
           rowId: teaching._id!,
           teachingId: (
             <CopyButton
@@ -180,6 +182,12 @@ const LecturerRegistrationPage = () => {
         Header: "Students",
         accessor: "numOfStudents" as const,
         width: 50,
+      },
+      {
+        Header: "",
+        accessor: "emptyColumn" as const,
+        width: 50,
+        disableSortBy: true,
       },
     ];
 

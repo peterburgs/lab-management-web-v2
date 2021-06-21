@@ -4,11 +4,7 @@ import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
 import { ModalProps } from "../../types/modal";
 import { useForm, Controller } from "react-hook-form";
-import {
-  TextField,
-  FormControlLabel,
-  Checkbox,
-} from "@material-ui/core";
+import { TextField, FormControlLabel, Checkbox } from "@material-ui/core";
 import Button from "../common/Button";
 import { DateTimePicker } from "@material-ui/lab";
 import { unwrapResult } from "@reduxjs/toolkit";
@@ -33,6 +29,7 @@ import {
 } from "../../reducers/registrableCourseSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
+import moment from "moment";
 
 // component props
 interface OpenRegistrationModalProps extends ModalProps {
@@ -55,8 +52,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
     )
   );
   const [status, setStatus] = useState("idle");
-  const [isAllCoursesApplied, setIsAllCoursesApplied] =
-    useState(true);
+  const [isAllCoursesApplied, setIsAllCoursesApplied] = useState(true);
 
   const onSubmit = async (data: Registration) => {
     if (courses.length > 0 && openSemester) {
@@ -70,20 +66,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
         const regResult = actionResult.payload?.registration;
         if (regResult) {
           if (isAllCoursesApplied) {
-            const registrableCourses: RegistrableCourse[] =
-              courses.map((course) => {
-                return {
-                  registration: regResult._id,
-                  course: course._id,
-                };
-              });
-            console.log(registrableCourses);
-            const actionResult = await dispatch(
-              createBulkOfRegistrableCourses(registrableCourses)
-            );
-            unwrapResult(actionResult);
-          } else {
-            const registrableCourses = props.selectedCourses.map(
+            const registrableCourses: RegistrableCourse[] = courses.map(
               (course) => {
                 return {
                   registration: regResult._id,
@@ -91,6 +74,18 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
                 };
               }
             );
+            console.log(registrableCourses);
+            const actionResult = await dispatch(
+              createBulkOfRegistrableCourses(registrableCourses)
+            );
+            unwrapResult(actionResult);
+          } else {
+            const registrableCourses = props.selectedCourses.map((course) => {
+              return {
+                registration: regResult._id,
+                course: course._id,
+              };
+            });
             const actionResult = await dispatch(
               createBulkOfRegistrableCourses(registrableCourses)
             );
@@ -100,9 +95,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
         }
         unwrapResult(actionResult);
 
-        dispatch(
-          setSnackBarContent("Open registration successfully")
-        );
+        dispatch(setSnackBarContent("Open registration successfully"));
         dispatch(setShowSuccessSnackBar(true));
       } catch (err) {
         console.log("Failed to open registration", err);
@@ -142,7 +135,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
         <Controller
           name="endDate"
           control={control}
-          defaultValue={new Date()}
+          defaultValue={moment(new Date()).add(1, "days")}
           rules={{ required: true }}
           render={(props) => (
             <DateTimePicker
@@ -206,8 +199,7 @@ const SubmitButton = styled(Button)`
   background-color: ${({ disabled, theme }) =>
     disabled ? theme.grey : theme.veryLightBlue};
   box-shadow: none;
-  color: ${({ disabled, theme }) =>
-    disabled ? theme.darkGrey : theme.blue};
+  color: ${({ disabled, theme }) => (disabled ? theme.darkGrey : theme.blue)};
   font-weight: 500;
   font-size: 18px;
   margin-top: 1rem;

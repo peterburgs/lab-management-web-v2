@@ -31,6 +31,7 @@ type UserTable = {
   email: string;
   role: string;
   isFaceIdVerified: JSX.Element;
+  emptyColumn: string;
 };
 
 const prepareData = (
@@ -43,6 +44,7 @@ const prepareData = (
   if (users.length > 0) {
     data = users.map((user) => {
       return {
+        emptyColumn: "",
         rowId: user._id,
         id: user._id,
         fullName: user.fullName,
@@ -118,6 +120,12 @@ const UserPage = () => {
         Header: "FaceID",
         accessor: "isFaceIdVerified" as const,
         width: 50,
+      },
+      {
+        Header: "",
+        accessor: "emptyColumn" as const,
+        width: 50,
+        disableSortBy: true,
       },
     ];
     if (userStatus === "succeeded") {

@@ -35,7 +35,6 @@ type CourseTable = {
   name: string;
   numberOfCredits: number;
   type: string;
-  createdAt: string;
 };
 
 const prepareData = (
@@ -52,10 +51,7 @@ const prepareData = (
         id: course._id,
         name: course.courseName,
         numberOfCredits: course.numberOfCredits,
-        type:
-          course.type === COURSE_TYPES.PRACTICAL
-            ? "Practical"
-            : "Theory",
+        type: course.type === COURSE_TYPES.PRACTICAL ? "Practical" : "Theory",
         createdAt: new Date(course.createdAt!).toDateString(),
       };
     });
@@ -69,15 +65,10 @@ const prepareData = (
 const CoursePage = () => {
   // State
   const [showNewCourseModal, setShowNewCourseModal] = useState(false);
-  const [showDeleteCourseModal, setShowDeleteCourseModal] =
-    useState(false);
-  const [courseIdToDelete, setCourseIdToDelete] = useState<string>(
-    null!
-  );
-  const [showImportCoursePanel, setShowImportCoursePanel] =
-    useState(false);
-  const [showImportCourseModal, setShowImportCourseModal] =
-    useState(false);
+  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(false);
+  const [courseIdToDelete, setCourseIdToDelete] = useState<string>(null!);
+  const [showImportCoursePanel, setShowImportCoursePanel] = useState(false);
+  const [showImportCourseModal, setShowImportCourseModal] = useState(false);
 
   // * Call API
   const [courses, courseStatus] = useGetAllCourses();
@@ -100,9 +91,7 @@ const CoursePage = () => {
         "Course ID": course._id,
         "Course Name": course.courseName,
         "Course type":
-          course.type === COURSE_TYPES.THEORY
-            ? "Theory"
-            : "Practical",
+          course.type === COURSE_TYPES.THEORY ? "Theory" : "Practical",
         Credits: course.numberOfCredits,
       };
     });
@@ -150,10 +139,6 @@ const CoursePage = () => {
       {
         Header: "Type",
         accessor: "type" as const,
-      },
-      {
-        Header: "Created At",
-        accessor: "createdAt" as const,
       },
     ];
     if (courseStatus === "succeeded") {
@@ -265,9 +250,7 @@ const CoursePage = () => {
                 {showImportCoursePanel && (
                   <ImportPanelContainer>
                     <ImportCoursePanel
-                      setShowImportCourseModal={
-                        setShowImportCourseModal
-                      }
+                      setShowImportCourseModal={setShowImportCourseModal}
                     />
                   </ImportPanelContainer>
                 )}
@@ -322,8 +305,7 @@ interface ActionProps {
 const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: ${({ isAdmin }) =>
-    isAdmin ? "1fr 1fr 1fr" : "1fr"};
+  grid-template-columns: ${({ isAdmin }) => (isAdmin ? "1fr 1fr 1fr" : "1fr")};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {

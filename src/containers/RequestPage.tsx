@@ -122,7 +122,10 @@ const RequestPage = () => {
                   user={
                     (users as User[]).find((user) => user._id === request.user)!
                   }
-                  numberOfComments={123}
+                  numberOfComments={
+                    comments.filter((item) => item.request === request._id)
+                      .length
+                  }
                 />
               );
             })}
@@ -326,10 +329,11 @@ const SelectStatusButton = styled.button<SelectStatusButtonProps>`
   justify-content: center;
   align-items: center;
 
-  ${({ isSelected }) =>
+  ${({ isSelected, theme }) =>
     isSelected &&
     css`
       opacity: 1;
+      color: ${theme.blue};
     `}
 
   & > span {

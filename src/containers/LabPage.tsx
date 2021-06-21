@@ -34,7 +34,6 @@ type LabTable = {
   name: string;
   status: JSX.Element;
   capacity: number;
-  createdAt: string;
 };
 
 const prepareData = (
@@ -76,9 +75,7 @@ const LabPage = () => {
   const [labs, labStatus] = useGetAllLabs();
 
   // call hooks
-  const labSearchText = useAppSelector(
-    (state) => state.search.labSearchText
-  );
+  const labSearchText = useAppSelector((state) => state.search.labSearchText);
   const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -131,19 +128,13 @@ const LabPage = () => {
         Header: "Capacity",
         accessor: "capacity" as const,
       },
-      {
-        Header: "Created At",
-        accessor: "createdAt" as const,
-      },
     ];
     if (labStatus === "succeeded") {
       const { data } = prepareData(
         (labs as Lab[]).filter(
           (item) =>
             item._id!.includes(labSearchText) ||
-            item.labName
-              .toLowerCase()
-              .includes(labSearchText.toLowerCase())
+            item.labName.toLowerCase().includes(labSearchText.toLowerCase())
         )
       );
       return (
@@ -232,9 +223,7 @@ const LabPage = () => {
             {role === ROLES.ADMIN && (
               <>
                 <Button
-                  onClick={() =>
-                    setShowImportLabPanel((current) => !current)
-                  }
+                  onClick={() => setShowImportLabPanel((current) => !current)}
                   icon={<ImportExportIcon />}
                 >
                   Import labs
@@ -300,8 +289,7 @@ interface ActionProps {
 const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: ${({ isAdmin }) =>
-    isAdmin ? "1fr 1fr 1fr" : "1fr"};
+  grid-template-columns: ${({ isAdmin }) => (isAdmin ? "1fr 1fr 1fr" : "1fr")};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {

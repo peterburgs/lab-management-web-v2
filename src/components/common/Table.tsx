@@ -50,12 +50,7 @@ export interface TableProperties<T extends Record<string, unknown>>
 const headerProps = <T extends Record<string, unknown>>(
   props: any,
   { column }: Meta<T, { column: HeaderGroup<T> }>
-) =>
-  getStyles(
-    props,
-    column && column.disableResizing,
-    column && column.align
-  );
+) => getStyles(props, column && column.disableResizing, column && column.align);
 const cellProps = <T extends Record<string, unknown>>(
   props: any,
   { cell }: Meta<T, { cell: Cell<T> }>
@@ -65,11 +60,7 @@ const cellProps = <T extends Record<string, unknown>>(
     cell.column && cell.column.disableResizing,
     cell.column && cell.column.align
   );
-const getStyles = (
-  props: any,
-  disableResizing = false,
-  align = "left"
-) => [
+const getStyles = (props: any, disableResizing = false, align = "left") => [
   props,
   {
     style: {
@@ -145,9 +136,7 @@ const Table = <T extends Record<string, unknown>>(
                   {column.canResize && (
                     <Resizer
                       {...column.getResizerProps()}
-                      className={`${
-                        column.isResizing ? "isResizing" : ""
-                      }`}
+                      className={`${column.isResizing ? "isResizing" : ""}`}
                     />
                   )}
                 </StyledTh>
@@ -313,7 +302,7 @@ const ActionButtonContainer = styled.div`
   display: flex;
   align-items: center;
   background: #fff;
-  margin-right: 0.5rem;
+  margin-right: 1.5rem;
 `;
 
 const EditButton = styled.button`

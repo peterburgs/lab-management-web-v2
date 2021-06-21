@@ -185,6 +185,7 @@ const LabName = styled.div`
   font-weight: 500;
   min-width: 60px;
   box-shadow: ${({ theme }) => theme.blueShadow};
+  text-align: center;
 `;
 
 const UsageContainer = styled.div`

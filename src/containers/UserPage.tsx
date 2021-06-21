@@ -31,7 +31,6 @@ type UserTable = {
   email: string;
   role: string;
   isFaceIdVerified: JSX.Element;
-  createdAt: string;
 };
 
 const prepareData = (
@@ -49,9 +48,7 @@ const prepareData = (
         fullName: user.fullName,
         email: user.email,
         role: user.roles
-          .map((item) =>
-            item === ROLES.ADMIN ? "Admin" : "Lecturer"
-          )
+          .map((item) => (item === ROLES.ADMIN ? "Admin" : "Lecturer"))
           .join(" & "),
         isFaceIdVerified: user.isFaceIdVerified ? (
           <AvailableBadge>Verified</AvailableBadge>
@@ -71,21 +68,18 @@ const prepareData = (
 const UserPage = () => {
   // State
   const [showNewUserModal, setShowNewUserModal] = useState(false);
-  const [showDeleteUserModal, setShowDeleteUserModal] =
-    useState(false);
-  const [showDeleteFaceIdModal, setShowDeleteFaceIdModal] =
-    useState(false);
+  const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
+  const [showDeleteFaceIdModal, setShowDeleteFaceIdModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState<string>(null!);
-  const [userIdToDeleteFaceId, setUserIdToDeleteFaceId] =
-    useState<string>(null!);
+  const [userIdToDeleteFaceId, setUserIdToDeleteFaceId] = useState<string>(
+    null!
+  );
 
   // * Call API
   const [users, userStatus] = useGetAllUsers();
 
   // call hooks
-  const userSearchText = useAppSelector(
-    (state) => state.search.userSearchText
-  );
+  const userSearchText = useAppSelector((state) => state.search.userSearchText);
   const history = useHistory();
   const dispatch = useAppDispatch();
 
@@ -125,19 +119,13 @@ const UserPage = () => {
         accessor: "isFaceIdVerified" as const,
         width: 50,
       },
-      {
-        Header: "Created At",
-        accessor: "createdAt" as const,
-      },
     ];
     if (userStatus === "succeeded") {
       const { data } = prepareData(
         (users as User[]).filter(
           (item) =>
             item._id.includes(userSearchText) ||
-            item.email
-              .toLowerCase()
-              .includes(userSearchText.toLowerCase())
+            item.email.toLowerCase().includes(userSearchText.toLowerCase())
         )
       );
       return (

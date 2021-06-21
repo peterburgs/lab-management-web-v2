@@ -187,7 +187,10 @@ const RequestDetailPage = () => {
             return (
               <CurrentUsage>
                 <CurrentUsageHeader>Current Usage</CurrentUsageHeader>
-                <StyledFormControl variant="outlined">
+                <StyledFormControl
+                  variant="outlined"
+                  style={{ color: "black" }}
+                >
                   <InputLabel id="oldcourse-label">Course</InputLabel>
                   <Select disabled value={course._id} label="Course">
                     {(courses as Course[]).map((course, i) => (
@@ -197,7 +200,10 @@ const RequestDetailPage = () => {
                     ))}
                   </Select>
                 </StyledFormControl>
-                <StyledFormControl variant="outlined">
+                <StyledFormControl
+                  variant="outlined"
+                  style={{ color: "black" }}
+                >
                   <InputLabel id="oldlab-label">Lab</InputLabel>
                   <Select disabled value={lab._id} label="Lab">
                     {(labs as Lab[]).map((lab, i) => (
@@ -207,7 +213,10 @@ const RequestDetailPage = () => {
                     ))}
                   </Select>
                 </StyledFormControl>
-                <StyledFormControl variant="outlined">
+                <StyledFormControl
+                  variant="outlined"
+                  style={{ color: "black" }}
+                >
                   <InputLabel id="oldweekno-label">Week</InputLabel>
                   <Select
                     disabled
@@ -222,7 +231,10 @@ const RequestDetailPage = () => {
                     ))}
                   </Select>
                 </StyledFormControl>
-                <StyledFormControl variant="outlined">
+                <StyledFormControl
+                  variant="outlined"
+                  style={{ color: "black" }}
+                >
                   <InputLabel id="olddow-label">Day of week</InputLabel>
                   <Select
                     disabled
@@ -239,7 +251,10 @@ const RequestDetailPage = () => {
                     <MenuItem value={6}>Sunday</MenuItem>
                   </Select>
                 </StyledFormControl>
-                <StyledFormControl variant="outlined">
+                <StyledFormControl
+                  variant="outlined"
+                  style={{ color: "black" }}
+                >
                   <InputLabel id="oldstart-label">Start period</InputLabel>
                   <Select
                     disabled
@@ -254,7 +269,10 @@ const RequestDetailPage = () => {
                     ))}
                   </Select>
                 </StyledFormControl>
-                <StyledFormControl variant="outlined">
+                <StyledFormControl
+                  variant="outlined"
+                  style={{ color: "black" }}
+                >
                   <InputLabel id="oldend-label">End period</InputLabel>
                   <Select
                     disabled
@@ -302,7 +320,7 @@ const RequestDetailPage = () => {
           return (
             <NewUsage>
               <NewUsageHeader>New Usage</NewUsageHeader>
-              <StyledFormControl variant="outlined">
+              <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldcourse-label">Course</InputLabel>
                 <Select disabled value={course._id} label="Course">
                   {(courses as Course[]).map((course, i) => (
@@ -312,7 +330,7 @@ const RequestDetailPage = () => {
                   ))}
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined">
+              <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldlab-label">Lab</InputLabel>
                 <Select disabled value={lab._id} label="Lab">
                   {(labs as Lab[]).map((lab, i) => (
@@ -322,7 +340,7 @@ const RequestDetailPage = () => {
                   ))}
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined">
+              <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldweekno-label">Week</InputLabel>
                 <Select
                   disabled
@@ -333,7 +351,7 @@ const RequestDetailPage = () => {
                   <MenuItem value={request.weekNo}>{request.weekNo}</MenuItem>
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined">
+              <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="olddow-label">Day of week</InputLabel>
                 <Select
                   disabled
@@ -350,7 +368,7 @@ const RequestDetailPage = () => {
                   <MenuItem value={6}>Sunday</MenuItem>
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined">
+              <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldstart-label">Start period</InputLabel>
                 <Select
                   disabled
@@ -365,7 +383,7 @@ const RequestDetailPage = () => {
                   ))}
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined">
+              <StyledFormControl variant="outlined" style={{ color: "black" }}>
                 <InputLabel id="oldend-label">End period</InputLabel>
                 <Select
                   disabled

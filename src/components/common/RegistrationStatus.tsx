@@ -25,7 +25,8 @@ const RegistrationStatus = ({
             renderer={({ days, hours, minutes, seconds }) => (
               <TimeRemainContainer>
                 <span>
-                  Time left: {days} days {hours} hours {minutes} min {seconds} sec
+                  Time left: {days} days {hours} hours {minutes} min {seconds}{" "}
+                  sec
                 </span>
               </TimeRemainContainer>
             )}
@@ -39,7 +40,7 @@ const RegistrationStatus = ({
           )}
         </>
       ) : (
-        <Text>CLOSED</Text>
+        <Text>THIS REGISTRATION BATCH HAS BEEN CLOSED</Text>
       )}
     </StyledRegistrationStatus>
   );

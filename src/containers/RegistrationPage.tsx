@@ -182,26 +182,32 @@ const RegistrationPage = () => {
       {
         Header: "Course ID",
         accessor: "courseId" as const,
+        width: 100,
       },
       {
         Header: "Group",
         accessor: "group" as const,
+        width: 20,
       },
       {
         Header: "Period",
         accessor: "period" as const,
+        width: 50,
       },
       {
-        Header: "Number of students",
+        Header: "Students",
         accessor: "numOfStudents" as const,
+        width: 50,
       },
       {
         Header: "Lecturer ID",
         accessor: "lecturerId" as const,
+        width: 100,
       },
       {
         Header: "Lecturer name",
         accessor: "lecturerName" as const,
+        width: 100,
       },
     ];
     if (courseStatus === "succeeded" && userStatus === "succeeded") {

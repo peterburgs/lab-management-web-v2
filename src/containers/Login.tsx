@@ -106,7 +106,7 @@ const Login = () => {
     console.log(error);
     setLoading(false);
     dispatch(setShowErrorSnackBar(true));
-    dispatch(setSnackBarContent(error.details));
+    dispatch(setSnackBarContent(error.message));
   };
 
   const onRequest = () => {
@@ -183,9 +183,11 @@ const Login = () => {
           const AnimatedComp = animatedComponents[item];
           return <AnimatedComp style={style} />;
         })}
-        <NavigateButton onClick={handleNavigate}>
-          {index === 1 ? "Back" : "Next"}
-        </NavigateButton>
+        {!loading && (
+          <NavigateButton onClick={handleNavigate}>
+            {index === 1 ? "Back" : "Next"}
+          </NavigateButton>
+        )}
       </Action>
     </StyledLogin>
   );

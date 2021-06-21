@@ -342,10 +342,12 @@ const AttendancePage = () => {
       {
         Header: "Check in at",
         accessor: "checkIn" as const,
+        disableSortBy: true,
       },
       {
         Header: "Check out at",
         accessor: "checkOut" as const,
+        disableSortBy: true,
       },
       {
         Header: "Lecturer",
@@ -617,6 +619,8 @@ const PendingeBadge = styled.div`
   padding: 0 0.5rem;
   font-weight: 600;
   border-radius: 10px;
+  width: 150;
+  text-align: center;
 `;
 const CheckedBadge = styled.div`
   background-color: ${({ theme }) => theme.green};
@@ -625,5 +629,7 @@ const CheckedBadge = styled.div`
   padding: 0 0.5rem;
   font-weight: 600;
   border-radius: 10px;
+  width: 150;
+  text-align: center;
 `;
 export default AttendancePage;

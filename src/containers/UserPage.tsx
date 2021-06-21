@@ -200,13 +200,13 @@ const UserPage = () => {
       <DeleteUserModal
         showModal={showDeleteUserModal}
         setShowModal={setShowDeleteUserModal}
-        name="Confirm delete user"
+        name="Do you want to remove this user?"
         userId={userIdToDelete}
       />
       <DeleteFaceIDModal
         showModal={showDeleteFaceIdModal}
         setShowModal={setShowDeleteFaceIdModal}
-        name="Confirm delete face ID"
+        name="Do you want to remove this Face ID"
         userId={userIdToDeleteFaceId}
       />
       <StyledUserPage>

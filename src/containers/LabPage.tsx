@@ -206,7 +206,7 @@ const LabPage = () => {
       <DeleteLabModal
         showModal={showDeleteLabModal}
         setShowModal={setShowDeleteLabModal}
-        name="Confirm delete lab"
+        name="Do you want to remove this lab?"
         labId={labIdToDelete}
       />
       <StyledLabPage>

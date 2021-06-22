@@ -175,20 +175,22 @@ const Login = () => {
       <StyledVideo autoPlay muted loop>
         <source src={backgroundVideo} type="video/mp4" />
       </StyledVideo>
-      <HeaderContainer>
-        <Header>Lab Management</Header>
-      </HeaderContainer>
-      <Action>
-        {transition((style, item) => {
-          const AnimatedComp = animatedComponents[item];
-          return <AnimatedComp style={style} />;
-        })}
-        {!loading && (
-          <NavigateButton onClick={handleNavigate}>
-            {index === 1 ? "Back" : "Next"}
-          </NavigateButton>
-        )}
-      </Action>
+      <Content>
+        <HeaderContainer>
+          <Header>Lab Management</Header>
+        </HeaderContainer>
+        <Action>
+          {transition((style, item) => {
+            const AnimatedComp = animatedComponents[item];
+            return <AnimatedComp style={style} />;
+          })}
+          {!loading && (
+            <NavigateButton onClick={handleNavigate}>
+              {index === 1 ? "Back" : "Next"}
+            </NavigateButton>
+          )}
+        </Action>
+      </Content>
     </StyledLogin>
   );
 };
@@ -218,8 +220,6 @@ const StyledVideo = styled.video`
 `;
 
 const HeaderContainer = styled.div`
-  position: fixed;
-  bottom: 60vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -240,9 +240,6 @@ const Header = styled.h1`
 `;
 
 const Action = styled.div`
-  z-index: 2;
-  position: fixed;
-  bottom: 50vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -296,6 +293,13 @@ const Icon = styled.span`
     width: 20px;
     height: 20px;
   }
+`;
+
+const Content = styled.div`
+  z-index: 2;
+  position: fixed;
+  bottom: 50vh;
+  width: 100%;
 `;
 
 export default Login;

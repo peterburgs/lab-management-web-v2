@@ -11,11 +11,7 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { ReactComponent as WarningImage } from "../../assets/images/warning.svg";
 
 // import models
-import {
-  AcademicYear,
-  Semester,
-  SEMESTER_STATUSES,
-} from "../../types/model";
+import { AcademicYear, Semester, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
 import { startAcademicYear } from "../../reducers/academicYearSlice";
 import {
@@ -31,16 +27,10 @@ import { startSemester } from "../../reducers/semesterSlice";
 const StartAcademicYearModal = (props: ModalProps) => {
   const [status, setStatus] = useState("idle");
   const dispatch = useAppDispatch();
-  const { register, handleSubmit, errors, control } =
-    useForm<AcademicYear>();
+  const { register, handleSubmit, errors, control } = useForm<AcademicYear>();
 
   const onSubmit = async (data: AcademicYear) => {
     try {
-      let startYear = moment(data.startDate).year();
-      let endYear = moment(data.startDate)
-        .add(data.numberOfWeeks, "weeks")
-        .year();
-      data.name = `${startYear} - ${endYear}`;
       data.isOpening = true;
       data.isHidden = false;
       console.log(data);
@@ -56,22 +46,16 @@ const StartAcademicYearModal = (props: ModalProps) => {
           startDate: i === 0 ? data.startDate : undefined,
           numberOfWeeks: i === 2 ? 8 : 17,
           status:
-            i === 0
-              ? SEMESTER_STATUSES.OPENING
-              : SEMESTER_STATUSES.FUTURE,
+            i === 0 ? SEMESTER_STATUSES.OPENING : SEMESTER_STATUSES.FUTURE,
           academicYear: res.academicYear!._id,
 
           startPracticalWeek: 2,
           isHidden: false,
         };
-        const savedSemesterResult = await dispatch(
-          startSemester(semester)
-        );
+        const savedSemesterResult = await dispatch(startSemester(semester));
         unwrapResult(savedSemesterResult);
       }
-      dispatch(
-        setSnackBarContent("Start academic year successfully")
-      );
+      dispatch(setSnackBarContent("Start academic year successfully"));
       dispatch(setShowSuccessSnackBar(true));
       props.setShowModal(false);
     } catch (err) {
@@ -94,7 +78,7 @@ const StartAcademicYearModal = (props: ModalProps) => {
 
   return (
     <Modal {...props}>
-            <div
+      <div
         style={{
           display: "flex",
           justifyContent: "center",
@@ -104,6 +88,16 @@ const StartAcademicYearModal = (props: ModalProps) => {
         <WarningImage style={{ height: "100px" }} />
       </div>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
+        <StyledTextField
+          label="Name"
+          inputRef={register({ required: true })}
+          name="name"
+          defaultValue={`${moment(new Date()).year()} - ${
+            Number(moment(new Date()).year()) + 1
+          }`}
+          error={Boolean(errors.name)}
+          helperText={errors.name && "*This field is required"}
+        />
         <Controller
           name="startDate"
           control={control}
@@ -140,9 +134,7 @@ const StartAcademicYearModal = (props: ModalProps) => {
           defaultValue={42}
           error={Boolean(errors.numberOfWeeks)}
           type="number"
-          helperText={
-            errors.numberOfWeeks && "*This field is required"
-          }
+          helperText={errors.numberOfWeeks && "*This field is required"}
         />
         <StyledButton
           disabled={status === "pending"}

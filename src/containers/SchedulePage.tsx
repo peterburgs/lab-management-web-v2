@@ -10,7 +10,7 @@ import PrivateRoute from "./PrivateRoute";
 import EditLabUsageModal from "../components/schedule-page/EditLabUsageModal";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as FileSaver from "file-saver";
-import * as XLSX from "xlsx";
+import * as XLSX from "sheetjs-style";
 import AddIcon from "@material-ui/icons/Add";
 
 // import hooks
@@ -43,6 +43,7 @@ import {
   setShowErrorSnackBar,
   setSnackBarContent,
 } from "../reducers/notificationSlice";
+import { jsx } from "@emotion/react";
 
 const SchedulePage = () => {
   const dispatch = useAppDispatch();
@@ -82,6 +83,7 @@ const SchedulePage = () => {
   );
   const semesterStatus = useAppSelector((state) => state.semesters.status);
   const role = useAppSelector((state) => state.auth.verifiedRole);
+  const verifiedUser = useAppSelector((state) => state.auth.verifiedUser);
   const history = useHistory();
 
   // useEffect
@@ -90,7 +92,7 @@ const SchedulePage = () => {
   useEffect(() => {
     if (academicYears.length > 0) {
       const latestAcademicYear = _.cloneDeep(academicYears).sort((a, b) =>
-        moment(b.startDate).diff(moment(a.startDate))
+        moment(b.createdAt).diff(moment(a.createdAt))
       )[0];
       console.log("*** Academic year:", latestAcademicYear);
       setSelectedYear(latestAcademicYear);
@@ -124,6 +126,9 @@ const SchedulePage = () => {
         (item) => item.academicYear === selectedYear._id
       );
       setAcademicYearSemesters(academicYearSemesters);
+      setSelectedSemester(
+        academicYearSemesters.find((item) => item.index === 1)!
+      );
     }
   }, [selectedYear, semesters]);
 
@@ -174,9 +179,20 @@ const SchedulePage = () => {
   };
 
   const getCell = (labUsage: LabUsage) => {
-    return `${getCourseName(labUsage)} \nCBGD:${getLecturerName(
+    if (role === ROLES.LECTURER) {
+      const teaching = teachings.filter(
+        (item) => item._id === labUsage.teaching
+      )[0];
+      if (teaching.user !== verifiedUser?._id) {
+        return "OCCUPIED";
+      }
+      return `${getCourseName(labUsage)} \nLecturer:${getLecturerName(
+        labUsage
+      )} \nPeriod: ${labUsage.startPeriod} → ${labUsage.endPeriod}`;
+    }
+    return `${getCourseName(labUsage)} \nLecturer:${getLecturerName(
       labUsage
-    )} \nTiết: ${labUsage.startPeriod} → ${labUsage.endPeriod}`;
+    )} \nPeriod: ${labUsage.startPeriod} → ${labUsage.endPeriod}`;
   };
 
   const exportScheduleCSV = () => {
@@ -212,13 +228,14 @@ const SchedulePage = () => {
     for (let i = 0; i < selectedSemester.numberOfWeeks; i++) {
       // Get lab usages by weeks
       const labUsagesByWeek = (labUsages as LabUsage[]).filter(
-        (labUsage) => labUsage.weekNo === i
+        (labUsage) =>
+          labUsage.weekNo === i && labUsage.semester === selectedSemester._id
       );
 
       let rows: { [index: string]: string }[] = [];
 
       let wscols = headers.map((column) => {
-        return { wch: 30 };
+        return { wch: 15 };
       });
 
       let hsrows = [{ hpt: 40 }];
@@ -281,6 +298,30 @@ const SchedulePage = () => {
         console.log(row);
         rows.push(row);
       }
+      let lastRow: { [index: string]: string } = {};
+      lastRow[headers[0]] = "Exported date";
+      lastRow[headers[1]] = moment(new Date()).format("DD:MM:YYYY hh:mm:ss A");
+      lastRow[headers[2]] = "";
+      lastRow[headers[3]] = "";
+      lastRow[headers[4]] = "";
+      lastRow[headers[5]] = "";
+      lastRow[headers[6]] = "";
+      lastRow[headers[7]] = "";
+      lastRow[headers[8]] = "";
+      lastRow[headers[9]] = "";
+      lastRow[headers[10]] = "";
+      lastRow[headers[11]] = "";
+      lastRow[headers[12]] = "";
+      lastRow[headers[13]] = "";
+      lastRow[headers[14]] = "";
+      lastRow[headers[15]] = "";
+      lastRow[headers[16]] = "";
+      lastRow[headers[17]] = "";
+      lastRow[headers[18]] = "";
+      lastRow[headers[19]] = "";
+      lastRow[headers[20]] = "";
+      lastRow[headers[21]] = "";
+      rows.push(lastRow);
       const ws = XLSX.utils.json_to_sheet(rows);
       console.log(ws);
       const merge = [
@@ -295,6 +336,47 @@ const SchedulePage = () => {
       ws["!cols"] = wscols;
       ws["!rows"] = hsrows;
       ws["!merges"] = merge;
+      for (let i = 0; i <= labs.length + 1; i++) {
+        for (let j = 1; j <= 22; j++) {
+          if (j === 1 || i === 0) {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 16,
+                bold: true,
+                color: { rgb: "000000" },
+              },
+              fill: {
+                fgColor: { rgb: "FFFFAA00" },
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+              alignment: { vertical: "center", horizontal: "center" },
+            };
+          } else {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 15,
+                color: { rgb: "000000" },
+              },
+              alignment: {
+                wrapText: true,
+                vertical: "center",
+                horizontal: "center",
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+            };
+          }
+        }
+      }
       sheets[`Week ${i}`] = ws;
       sheetNames.push(`Week ${i}`);
     }
@@ -331,12 +413,16 @@ const SchedulePage = () => {
     for (let i = 0; i < selectedSemester.numberOfWeeks; i++) {
       // Get lab usages by weeks
       const labUsagesByWeek = (labUsages as LabUsage[]).filter(
-        (labUsage) => labUsage.weekNo === i
+        (labUsage) =>
+          labUsage.weekNo === i && labUsage.semester === selectedSemester._id
       );
 
       let rows: { [index: string]: string }[] = [];
+      let wscols = headers.map((column) => {
+        return { wch: 30 };
+      });
 
-      let hsrows = [{ hpt: 40 }, { hpt: 40 }];
+      let hsrows = [{ hpt: 40 }, { hpt: 70 }, { hpt: 70 }, { hpt: 70 }];
 
       let rowMorning: { [index: string]: string } = {};
       let rowAfternoon: { [index: string]: string } = {};
@@ -376,48 +462,21 @@ const SchedulePage = () => {
           ] += `${getTheoryRoomName(labUsagesByWeek[i])}: ${
             labUsagesByWeek[i].startPeriod
           } → ${labUsagesByWeek[i].endPeriod};\n`;
-
-          rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
-            rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")[
-              rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")
-                .length - 1
-            ] === ""
-              ? rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
-                  "\n"
-                )[0]
-              : rowMorning[headers[labUsagesByWeek[i].dayOfWeek + 1]]
-                  .split("\n")
-                  .sort()
-                  .join("\n");
         }
 
         if (
-          labUsagesByWeek[i].endPeriod > 5 &&
-          labUsagesByWeek[i].endPeriod <= 12
+          labUsagesByWeek[i].startPeriod > 5 &&
+          labUsagesByWeek[i].endPeriod <= 11
         ) {
           rowAfternoon[
             headers[labUsagesByWeek[i].dayOfWeek + 1]
           ] += `${getTheoryRoomName(labUsagesByWeek[i])}: ${
             labUsagesByWeek[i].startPeriod
           } → ${labUsagesByWeek[i].endPeriod};\n`;
-
-          rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
-            rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")[
-              rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
-                "\n"
-              ).length - 1
-            ] === ""
-              ? rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
-                  "\n"
-                )[0]
-              : rowAfternoon[headers[labUsagesByWeek[i].dayOfWeek + 1]]
-                  .split("\n")
-                  .sort()
-                  .join("\n");
         }
 
         if (
-          labUsagesByWeek[i].endPeriod > 12 &&
+          labUsagesByWeek[i].startPeriod > 11 &&
           labUsagesByWeek[i].endPeriod <= 16
         ) {
           rowEvening[
@@ -425,19 +484,6 @@ const SchedulePage = () => {
           ] += `${getTheoryRoomName(labUsagesByWeek[i])}: ${
             labUsagesByWeek[i].startPeriod
           } → ${labUsagesByWeek[i].endPeriod};\n`;
-
-          rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]] =
-            rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")[
-              rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]].split("\n")
-                .length - 1
-            ] === ""
-              ? rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]].split(
-                  "\n"
-                )[0]
-              : rowEvening[headers[labUsagesByWeek[i].dayOfWeek + 1]]
-                  .split("\n")
-                  .sort()
-                  .join("\n");
         }
       }
       rows.push(rowMorning);
@@ -447,6 +493,48 @@ const SchedulePage = () => {
       const ws = XLSX.utils.json_to_sheet(rows);
       console.log(ws);
       ws["!rows"] = hsrows;
+      ws["!cols"] = wscols;
+      for (let i = 0; i <= 3; i++) {
+        for (let j = 1; j <= 8; j++) {
+          if (j === 1 || i === 0) {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 16,
+                bold: true,
+                color: { rgb: "000000" },
+              },
+              fill: {
+                fgColor: { rgb: "FFFFAA00" },
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+              alignment: { vertical: "center", horizontal: "center" },
+            };
+          } else {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 15,
+                color: { rgb: "000000" },
+              },
+              alignment: {
+                wrapText: true,
+                vertical: "center",
+                horizontal: "center",
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+            };
+          }
+        }
+      }
       sheets[`Week ${i}`] = ws;
       sheetNames.push(`Week ${i}`);
     }
@@ -593,7 +681,7 @@ const SchedulePage = () => {
                     }
                   }}
                 >
-                  Make request to add extra class
+                  Add extra class
                 </StyledButton>
               )}
             </Action>
@@ -766,7 +854,7 @@ const StyledFormControl = materialUiStyled(FormControl)({
 });
 
 const Text = styled.div`
-  font-size: 16px;
+  font-size: 13px;
 `;
 
 export default SchedulePage;

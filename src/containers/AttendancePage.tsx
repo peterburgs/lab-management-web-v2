@@ -6,7 +6,7 @@ import { Skeleton } from "@material-ui/core";
 import { styled as materialUiStyled } from "@material-ui/styles";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import * as FileSaver from "file-saver";
-import * as XLSX from "xlsx";
+import * as XLSX from "sheetjs-style";
 import GetAppIcon from "@material-ui/icons/GetApp";
 
 // import hooks
@@ -146,7 +146,8 @@ const AttendancePage = () => {
               <PendingeBadge>Pending</PendingeBadge>
             ),
             lecturer:
-              users &&
+              users.length > 0 &&
+              teachings.length > 0 &&
               teachings.find((teaching) => teaching._id === labUsage.teaching)
                 ? users.find(
                     (lecturer) =>
@@ -154,7 +155,15 @@ const AttendancePage = () => {
                       teachings.find(
                         (teaching) => teaching._id === labUsage.teaching
                       )!.user
-                  )!.fullName
+                  )
+                  ? users.find(
+                      (lecturer) =>
+                        lecturer._id ===
+                        teachings.find(
+                          (teaching) => teaching._id === labUsage.teaching
+                        )!.user
+                    )!.fullName
+                  : ""
                 : "",
           };
         });
@@ -169,7 +178,7 @@ const AttendancePage = () => {
   useEffect(() => {
     if (academicYears.length > 0) {
       const latestAcademicYear = _.cloneDeep(academicYears).sort((a, b) =>
-        moment(b.startDate).diff(moment(a.startDate))
+        moment(b.createdAt).diff(moment(a.createdAt))
       )[0];
       console.log("*** Academic year:", latestAcademicYear);
       setSelectedYear(latestAcademicYear);
@@ -203,6 +212,9 @@ const AttendancePage = () => {
         (item) => item.academicYear === selectedYear._id
       );
       setAcademicYearSemesters(academicYearSemesters);
+      setSelectedSemester(
+        academicYearSemesters.find((item) => item.index === 1)!
+      );
     }
   }, [selectedYear, semesters]);
 
@@ -219,71 +231,147 @@ const AttendancePage = () => {
       "Check in",
       "Check out",
       "Lecturer",
+      "Lecturer ID",
     ];
 
     // loop through week
     for (let i = 0; i < selectedSemester.numberOfWeeks; i++) {
       // Get lab usages by weeks
       const labUsagesByWeek = (labUsages as LabUsage[])
-        .filter((labUsage) => labUsage.weekNo === i)
+        .filter(
+          (labUsage) =>
+            labUsage.weekNo === i && labUsage.semester === selectedSemester._id
+        )
         .sort((a, b) => a.dayOfWeek - b.dayOfWeek);
 
       let rows: { [index: string]: string }[] = [];
+      let wscols = headers.map((column) => {
+        return { wch: 30 };
+      });
+      let hsrows: { hpt: number }[] = labUsagesByWeek.map((_, __) => {
+        return {
+          hpt: 40,
+        };
+      });
+      hsrows.push({ hpt: 40 });
 
-      let hsrows = [{ hpt: 40 }, { hpt: 40 }];
-
-      for (let i = 0; i < labUsagesByWeek.length; i++) {
+      for (let j = 0; j < labUsagesByWeek.length; j++) {
         let row: { [index: string]: string } = {};
-        row[headers[0]] = dowNum2String(labUsagesByWeek[i].dayOfWeek)!;
+        row[headers[0]] = dowNum2String(labUsagesByWeek[j].dayOfWeek)!;
         row[headers[1]] =
           courses &&
           teachings.find(
-            (teaching) => teaching._id === labUsagesByWeek[i].teaching
+            (teaching) => teaching._id === labUsagesByWeek[j].teaching
           )
             ? (courses as Course[]).find(
                 (course) =>
                   course._id ===
                   teachings.find(
-                    (teaching) => teaching._id === labUsagesByWeek[i].teaching
+                    (teaching) => teaching._id === labUsagesByWeek[j].teaching
                   )!.course
               )!.courseName
             : "";
         row[headers[2]] = (labs as Lab[]).find(
-          (item) => item._id === labUsagesByWeek[i].lab
+          (item) => item._id === labUsagesByWeek[j].lab
         )?.labName!;
         row[
           headers[3]
-        ] = `${labUsagesByWeek[i].startPeriod} - ${labUsagesByWeek[i].endPeriod}`;
-        row[headers[4]] = labUsagesByWeek[i].checkInAt
-          ? moment(new Date(labUsagesByWeek[i].checkInAt!)).format(
+        ] = `${labUsagesByWeek[j].startPeriod} - ${labUsagesByWeek[j].endPeriod}`;
+        row[headers[4]] = labUsagesByWeek[j].checkInAt
+          ? moment(new Date(labUsagesByWeek[j].checkInAt!)).format(
               "DD/MM/YYYY h:m:s A"
             )
           : "pending";
-        row[headers[5]] = labUsagesByWeek[i].checkInAt
-          ? moment(new Date(labUsagesByWeek[i].checkOutAt!)).format(
+        row[headers[5]] = labUsagesByWeek[j].checkInAt
+          ? moment(new Date(labUsagesByWeek[j].checkOutAt!)).format(
               "DD/MM/YYYY h:m:s A"
             )
           : "pending";
         row[headers[6]] =
           users &&
           teachings.find(
-            (teaching) => teaching._id === labUsagesByWeek[i].teaching
+            (teaching) => teaching._id === labUsagesByWeek[j].teaching
           )
             ? (users as User[]).find(
                 (lecturer) =>
                   lecturer._id ===
                   teachings.find(
-                    (teaching) => teaching._id === labUsagesByWeek[i].teaching
+                    (teaching) => teaching._id === labUsagesByWeek[j].teaching
                   )!.user
               )!.fullName
+            : "";
+        row[headers[7]] =
+          users &&
+          teachings.find(
+            (teaching) => teaching._id === labUsagesByWeek[j].teaching
+          )
+            ? (users as User[]).find(
+                (lecturer) =>
+                  lecturer._id ===
+                  teachings.find(
+                    (teaching) => teaching._id === labUsagesByWeek[j].teaching
+                  )!.user
+              )!._id
             : "";
 
         rows.push(row);
       }
-
+      let lastRow: { [index: string]: string } = {};
+      lastRow[headers[0]] = "Exported date";
+      lastRow[headers[1]] = moment(new Date()).format("DD:MM:YYYY hh:mm:ss A");
+      lastRow[headers[2]] = "";
+      lastRow[headers[3]] = "";
+      lastRow[headers[4]] = "";
+      lastRow[headers[5]] = "";
+      lastRow[headers[6]] = "";
+      lastRow[headers[7]] = "";
+      rows.push(lastRow);
       const ws = XLSX.utils.json_to_sheet(rows);
       console.log(ws);
       ws["!rows"] = hsrows;
+      ws["!cols"] = wscols;
+      for (let i = 0; i <= labUsagesByWeek.length + 1; i++) {
+        for (let j = 1; j <= headers.length; j++) {
+          if (i === 0) {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 16,
+                bold: true,
+                color: { rgb: "000000" },
+              },
+              fill: {
+                fgColor: { rgb: "FFFFAA00" },
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+              alignment: { vertical: "center", horizontal: "center" },
+            };
+          } else {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 15,
+                color: { rgb: "000000" },
+              },
+              alignment: {
+                wrapText: true,
+                vertical: "center",
+                horizontal: "center",
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+            };
+          }
+        }
+      }
+
       sheets[`Week ${i}`] = ws;
       sheetNames.push(`Week ${i}`);
     }
@@ -298,7 +386,7 @@ const AttendancePage = () => {
       type: "array",
     });
     const data = new Blob([excelBuffer], { type: fileType });
-    FileSaver.saveAs(data, "idle_theory_rooms" + fileExtension);
+    FileSaver.saveAs(data, "Attendances" + fileExtension);
   };
 
   // Filter lab usages
@@ -411,7 +499,7 @@ const AttendancePage = () => {
           <Skeleton variant="rectangular" height={40} animation="wave" />
         </SkeletonContainer>
       );
-    } else if (labUsageStatus === "succeeded") {
+    } else {
       return (
         <>
           <Toolbar>
@@ -478,17 +566,22 @@ const AttendancePage = () => {
                 </Select>
               </StyledFormControl>
               {selectedSemester ? (
-                <Text>
-                  From{" "}
-                  {moment(new Date(selectedSemester.startDate!))
-                    .add(week, "weeks")
-                    .format("dddd DD/MM/yyyy")}{" "}
-                  to{" "}
-                  {moment(new Date(selectedSemester.startDate!))
-                    .add(week, "weeks")
-                    .add(6, "days")
-                    .format("dddd DD/MM/yyyy")}
-                </Text>
+                selectedSemester.status === SEMESTER_STATUSES.OPENING ||
+                selectedSemester.status === SEMESTER_STATUSES.CLOSED ? (
+                  <Text>
+                    From{" "}
+                    {moment(new Date(selectedSemester.startDate!))
+                      .add(week, "weeks")
+                      .format("dddd DD/MM/yyyy")}{" "}
+                    to{" "}
+                    {moment(new Date(selectedSemester.startDate!))
+                      .add(week, "weeks")
+                      .add(6, "days")
+                      .format("dddd DD/MM/yyyy")}
+                  </Text>
+                ) : (
+                  "This semester has not been started"
+                )
               ) : null}
             </Filter>
             <Action>
@@ -504,13 +597,6 @@ const AttendancePage = () => {
           </Toolbar>
           <TableContainer>{renderTable()}</TableContainer>
         </>
-      );
-    } else {
-      return (
-        <NotFoundContainer>
-          <NothingImage />
-          <span>No usage found</span>
-        </NotFoundContainer>
       );
     }
   };
@@ -633,4 +719,5 @@ const CheckedBadge = styled.div`
   border-radius: 10px;
   text-align: center;
 `;
+
 export default AttendancePage;

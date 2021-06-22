@@ -41,7 +41,7 @@ const AcademicYearPage = () => {
   const [showStartSemesterModal, setShowStartSemesterModal] = useState(false);
   const [academicYearType, setAcademicYearType] = useState(0);
   const [currentExpanding, setCurrentExpanding] = useState<string>("");
-
+  const [sortByNewest, setSortByNewest] = useState(1);
   const history = useHistory();
   const dispatch = useAppDispatch();
 
@@ -111,8 +111,8 @@ const AcademicYearPage = () => {
 
   // useEffect
   useEffect(() => {
-    setFilteredAcademicYears(
-      (academicYears as AcademicYear[]).filter((academicYear) => {
+    const viewedAcademicYears = (academicYears as AcademicYear[]).filter(
+      (academicYear) => {
         let condition = true;
         if (academicYearType === 0) condition = condition && true;
         if (academicYearType === 1)
@@ -125,20 +125,20 @@ const AcademicYearPage = () => {
             academicYear.name.toLowerCase().includes(academicYearSearchText);
         }
         return condition;
-      })
+      }
     );
-  }, [academicYearType, academicYears, academicYearSearchText]);
-
-  useEffect(() => {
-    if (academicYears.length > 0) {
-      const clonedAcademicYears = _.cloneDeep(academicYears);
-      setFilteredAcademicYears(
-        clonedAcademicYears.sort((a, b) =>
-          moment(b.startDate).diff(moment(a.startDate))
-        )
+    const _academicYears = _.cloneDeep(viewedAcademicYears);
+    if (sortByNewest === 1) {
+      _academicYears.sort((a, b) =>
+        moment(b.createdAt).diff(moment(a.createdAt))
+      );
+    } else {
+      _academicYears.sort((a, b) =>
+        moment(a.createdAt).diff(moment(b.createdAt))
       );
     }
-  }, [academicYears]);
+    setFilteredAcademicYears(_academicYears);
+  }, [academicYearType, academicYears, academicYearSearchText, sortByNewest]);
 
   const handleExpanding = (id: string) => {
     if (currentExpanding === id) {
@@ -383,20 +383,33 @@ const AcademicYearPage = () => {
       {renderSemesterModal()}
       <StyledAcademicYear>
         <Toolbar>
-          <FormControl style={{ minWidth: "100px" }}>
-            <InputLabel id="view-label">View</InputLabel>
-            <Select
-              labelId="view-label"
-              value={academicYearType}
-              onChange={(e) => setAcademicYearType(e.target.value)}
-              label="View"
-            >
-              <MenuItem value={0}>All</MenuItem>
-              <MenuItem value={1}>Opening</MenuItem>
-              <MenuItem value={2}>Closed</MenuItem>
-            </Select>
-          </FormControl>
-
+          <Filter>
+            <FormControl style={{ minWidth: "100px" }}>
+              <InputLabel id="view-label">View</InputLabel>
+              <Select
+                labelId="view-label"
+                value={academicYearType}
+                onChange={(e) => setAcademicYearType(e.target.value)}
+                label="View"
+              >
+                <MenuItem value={0}>All</MenuItem>
+                <MenuItem value={1}>Opening</MenuItem>
+                <MenuItem value={2}>Closed</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl style={{ minWidth: "100px", marginLeft: "1rem" }}>
+              <InputLabel id="sort-by-label">Sort by</InputLabel>
+              <Select
+                labelId="sort-by-label"
+                value={sortByNewest}
+                onChange={(e) => setSortByNewest(e.target.value)}
+                label="Sort by"
+              >
+                <MenuItem value={1}>Newest</MenuItem>
+                <MenuItem value={0}>Oldest</MenuItem>
+              </Select>
+            </FormControl>
+          </Filter>
           <Button
             icon={<AddIcon />}
             onClick={() => {
@@ -637,5 +650,7 @@ const StyledButton = styled(Button)`
   width: 170px;
   padding: 0;
 `;
-
+const Filter = styled.div`
+  display: flex;
+`;
 export default AcademicYearPage;

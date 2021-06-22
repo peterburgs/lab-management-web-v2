@@ -16,7 +16,7 @@ import ImportCoursePanel from "../components/course-page/ImportCoursePanel";
 import ImportCourseModal from "../components/course-page/ImportCourseModal";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as FileSaver from "file-saver";
-import * as XLSX from "xlsx";
+import * as XLSX from "sheetjs-style";
 
 // import models
 import { Course, COURSE_TYPES, ROLES } from "../types/model";
@@ -116,7 +116,65 @@ const CoursePage = () => {
     const fileType =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
+    let wscols = [
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+      { wch: 30 },
+    ];
+
+    let hsrows: { hpt: number }[] = (courses as Course[]).map((_, __) => {
+      return {
+        hpt: 40,
+      };
+    });
     const ws = XLSX.utils.json_to_sheet(template);
+    ws["!rows"] = hsrows;
+    ws["!cols"] = wscols;
+    if ((courses as Course[]).length > 0) {
+      for (let i = 0; i <= (courses as Course[]).length + 1; i++) {
+        for (let j = 1; j <= 5; j++) {
+          if (i === 0) {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 16,
+                bold: true,
+                color: { rgb: "000000" },
+              },
+              fill: {
+                fgColor: { rgb: "FFFFAA00" },
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+              alignment: { vertical: "center", horizontal: "center" },
+            };
+          } else {
+            ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
+              font: {
+                sz: 15,
+                color: { rgb: "000000" },
+              },
+              alignment: {
+                wrapText: true,
+                vertical: "center",
+                horizontal: "center",
+              },
+              border: {
+                top: { style: "medium", color: { rgb: "000000" } },
+                bottom: { style: "medium", color: { rgb: "000000" } },
+                left: { style: "medium", color: { rgb: "000000" } },
+                right: { style: "medium", color: { rgb: "000000" } },
+              },
+            };
+          }
+        }
+      }
+    }
     const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
     const excelBuffer = XLSX.write(wb, {
       bookType: "xlsx",

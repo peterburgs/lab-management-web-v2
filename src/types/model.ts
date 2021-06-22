@@ -180,4 +180,5 @@ export type AcademicYear = {
   endDate: Date;
   isOpening: boolean;
   isHidden: boolean;
+  createdAt?: Date;
 };

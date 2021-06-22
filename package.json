@@ -60,6 +60,7 @@
     "react-spinners": "^0.10.6",
     "react-table": "^7.6.3",
     "react-to-print": "^2.12.4",
+    "sheetjs-style": "^0.15.7",
     "simplebar-react": "^2.3.0",
     "styled-components": "^5.2.1",
     "typescript": "~3.8.2",

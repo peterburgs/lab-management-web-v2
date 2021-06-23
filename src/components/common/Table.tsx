@@ -30,6 +30,7 @@ import "simplebar/dist/simplebar.min.css";
 import { ReactComponent as Image } from "../../assets/images/empty.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserSlash } from "@fortawesome/free-solid-svg-icons";
+import { ReactComponent as NothingImage } from "../../assets/images/nothing.svg";
 
 // Define the interface for the props of this component
 export interface TableProperties<T extends Record<string, unknown>>
@@ -156,8 +157,8 @@ const Table = <T extends Record<string, unknown>>(
           {/* tbody */}
           {rows.length === 0 ? (
             <EmptyImage>
-              <Image />
-              <div>There is nothing to show</div>
+              <NothingImage />
+              <div>No data found</div>
             </EmptyImage>
           ) : (
             rows.map((row) => {

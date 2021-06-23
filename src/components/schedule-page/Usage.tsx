@@ -59,6 +59,7 @@ const Usage = ({
         <>
           <CourseName>{courseName}</CourseName>
           <LecturerName>{lecturerName}</LecturerName>
+          <LecturerName>{lecturerId}</LecturerName>
           <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
           <CheckIn>
             Check in:{" "}
@@ -92,6 +93,7 @@ const Usage = ({
         <>
           <CourseName>{courseName}</CourseName>
           <LecturerName>{lecturerName}</LecturerName>
+          <LecturerName>{lecturerId}</LecturerName>
           <Period>{`Period: ${startPeriod} - ${endPeriod}`}</Period>
           <CheckIn>
             Check in:{" "}

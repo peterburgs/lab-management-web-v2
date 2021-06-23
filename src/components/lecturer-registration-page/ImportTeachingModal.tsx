@@ -29,14 +29,10 @@ const ImportTeachingModal = (props: ModalProps) => {
 
   // get opening registration
   const openRegistration = useAppSelector((state) =>
-    state.registrations.registrations.find(
-      (reg) => reg.isOpening === true
-    )
+    state.registrations.registrations.find((reg) => reg.isOpening === true)
   );
   // get verified user
-  const verifiedUser = useAppSelector(
-    (state) => state.auth.verifiedUser
-  );
+  const verifiedUser = useAppSelector((state) => state.auth.verifiedUser);
 
   // Fetch registrable courses
   const [registrableCourses, registrableCourseStatus] =
@@ -106,7 +102,7 @@ const ImportTeachingModal = (props: ModalProps) => {
                 }/${data.length} are invalid and will be dropped.`
               )
             );
-            dispatch(setShowErrorSnackBar(true));
+            dispatch(setShowSuccessSnackBar(true));
             break;
           }
 
@@ -177,9 +173,7 @@ const ImportTeachingModal = (props: ModalProps) => {
               ) {
                 dispatch(
                   setSnackBarContent(
-                    `${index}/${
-                      data.length
-                    } teachings are ACCEPTED. ${
+                    `${index}/${data.length} teachings are ACCEPTED. ${
                       data.length - index
                     }/${data.length} are invalid and will be dropped.`
                   )
@@ -228,9 +222,7 @@ const ImportTeachingModal = (props: ModalProps) => {
             if (err.response) {
               dispatch(setSnackBarContent(err.response.data.message));
             } else {
-              dispatch(
-                setSnackBarContent("Failed to create teachings")
-              );
+              dispatch(setSnackBarContent("Failed to create teachings"));
             }
             dispatch(setShowErrorSnackBar(true));
           } finally {
@@ -347,8 +339,7 @@ const SubmitButton = styled(Button)`
   background-color: ${({ disabled, theme }) =>
     disabled ? theme.grey : theme.veryLightBlue};
   box-shadow: none;
-  color: ${({ disabled, theme }) =>
-    disabled ? theme.darkGrey : theme.blue};
+  color: ${({ disabled, theme }) => (disabled ? theme.darkGrey : theme.blue)};
   font-weight: 500;
   font-size: 18px;
   margin-top: 1rem;

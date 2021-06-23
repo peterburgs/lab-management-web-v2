@@ -50,16 +50,10 @@ const RegistrationPage = React.lazy(
 const LecturerRegistrationPage = React.lazy(
   () => import("./containers/LecturerRegistrationPage")
 );
-const CoursePage = React.lazy(
-  () => import("./containers/CoursePage")
-);
-const SchedulePage = React.lazy(
-  () => import("./containers/SchedulePage")
-);
+const CoursePage = React.lazy(() => import("./containers/CoursePage"));
+const SchedulePage = React.lazy(() => import("./containers/SchedulePage"));
 const LabPage = React.lazy(() => import("./containers/LabPage"));
-const RequestPage = React.lazy(
-  () => import("./containers/RequestPage")
-);
+const RequestPage = React.lazy(() => import("./containers/RequestPage"));
 const UserPage = React.lazy(() => import("./containers/UserPage"));
 const RequestDetailPage = React.lazy(
   () => import("./containers/RequestDetailPage")
@@ -67,9 +61,7 @@ const RequestDetailPage = React.lazy(
 const AcademicYearPage = React.lazy(
   () => import("./containers/AcademicYearPage")
 );
-const AttendancePage = React.lazy(
-  () => import("./containers/AttendancePage")
-);
+const AttendancePage = React.lazy(() => import("./containers/AttendancePage"));
 
 // material-ui theme
 const theme = createTheme({
@@ -106,9 +98,7 @@ const App = () => {
   const isAuthenticated = useAppSelector(
     (state) => state.auth.verifiedToken !== null
   );
-  const verifiedRole = useAppSelector(
-    (state) => state.auth.verifiedRole
-  );
+  const verifiedRole = useAppSelector((state) => state.auth.verifiedRole);
   const dispatch = useAppDispatch();
 
   // event handling
@@ -189,11 +179,7 @@ const App = () => {
               {!isAuthenticated && (
                 <>
                   <Route path="/" render={() => <AuthCheck />} />
-                  <Route
-                    path="/login"
-                    exact
-                    render={() => <Login />}
-                  />
+                  <Route path="/login" exact render={() => <Login />} />
                 </>
               )}
               {/* Private routes */}
@@ -216,10 +202,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: 0,
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -248,10 +231,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: 0,
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -280,10 +260,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: 0,
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -312,10 +289,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: 0,
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -344,10 +318,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: 0,
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -376,10 +347,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: "0px",
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -412,10 +380,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: "0px",
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -444,10 +409,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: "0px",
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }
@@ -476,10 +438,7 @@ const App = () => {
                               : "calc(100vw - 240px)",
                             position: "absolute",
                             right: "0px",
-                            top:
-                              window.innerWidth < 1220
-                                ? "-80px"
-                                : "0px",
+                            top: window.innerWidth < 1220 ? "-80px" : "0px",
                           }}
                         />
                       }

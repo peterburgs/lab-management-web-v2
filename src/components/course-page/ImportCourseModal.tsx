@@ -39,13 +39,7 @@ const ImportCourseModal = (props: ModalProps) => {
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let data = XLSX.utils.sheet_to_json(sheet);
 
-      const attrs = [
-        "#",
-        "course id",
-        "course name",
-        "credits",
-        "course type",
-      ];
+      const attrs = ["#", "course id", "course name", "credits", "course type"];
 
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
@@ -82,7 +76,7 @@ const ImportCourseModal = (props: ModalProps) => {
 
           switch (key.toLowerCase()) {
             case "course id":
-              course._id = strValue;
+              course._id = strValue.trim();
               break;
             case "course name":
               course.courseName = strValue.trim();
@@ -108,9 +102,7 @@ const ImportCourseModal = (props: ModalProps) => {
         //send data to server
         setStatus("pending");
         try {
-          const actionResult = await dispatch(
-            createBulkOfCourses(courses)
-          );
+          const actionResult = await dispatch(createBulkOfCourses(courses));
           unwrapResult(actionResult);
           dispatch(resetState());
           dispatch(setShowErrorSnackBar(false));
@@ -235,8 +227,7 @@ const SubmitButton = styled(Button)`
   background-color: ${({ disabled, theme }) =>
     disabled ? theme.grey : theme.veryLightBlue};
   box-shadow: none;
-  color: ${({ disabled, theme }) =>
-    disabled ? theme.darkGrey : theme.blue};
+  color: ${({ disabled, theme }) => (disabled ? theme.darkGrey : theme.blue)};
   font-weight: 500;
   font-size: 18px;
   margin-top: 1rem;

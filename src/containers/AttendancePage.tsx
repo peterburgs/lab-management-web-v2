@@ -45,6 +45,7 @@ type AttendanceTable = {
   checkIn: string | JSX.Element;
   checkOut: string | JSX.Element;
   lecturer: string;
+  lecturerId: string;
 };
 
 const dowNum2String = (dow: number) => {
@@ -163,6 +164,26 @@ const AttendancePage = () => {
                           (teaching) => teaching._id === labUsage.teaching
                         )!.user
                     )!.fullName
+                  : ""
+                : "",
+            lecturerId:
+              users.length > 0 &&
+              teachings.length > 0 &&
+              teachings.find((teaching) => teaching._id === labUsage.teaching)
+                ? users.find(
+                    (lecturer) =>
+                      lecturer._id ===
+                      teachings.find(
+                        (teaching) => teaching._id === labUsage.teaching
+                      )!.user
+                  )
+                  ? users.find(
+                      (lecturer) =>
+                        lecturer._id ===
+                        teachings.find(
+                          (teaching) => teaching._id === labUsage.teaching
+                        )!.user
+                    )!._id
                   : ""
                 : "",
           };
@@ -443,6 +464,10 @@ const AttendancePage = () => {
         Header: "Lecturer",
         accessor: "lecturer" as const,
       },
+      {
+        Header: "Lecturer ID",
+        accessor: "lecturerId" as const,
+      },
     ];
 
     if (labUsageStatus === "succeeded") {
@@ -499,7 +524,10 @@ const AttendancePage = () => {
           <Skeleton variant="rectangular" height={40} animation="wave" />
         </SkeletonContainer>
       );
-    } else {
+    } else if (
+      academicYearStatus === "succeeded" &&
+      semesterStatus === "succeeded"
+    ) {
       return (
         <>
           <Toolbar>
@@ -597,6 +625,13 @@ const AttendancePage = () => {
           </Toolbar>
           <TableContainer>{renderTable()}</TableContainer>
         </>
+      );
+    } else {
+      return (
+        <NotFoundContainer>
+          <NothingImage />
+          <span>No schedule found</span>
+        </NotFoundContainer>
       );
     }
   };

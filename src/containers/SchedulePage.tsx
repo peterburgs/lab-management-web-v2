@@ -179,20 +179,24 @@ const SchedulePage = () => {
   };
 
   const getCell = (labUsage: LabUsage) => {
+    const teaching = teachings.filter(
+      (item) => item._id === labUsage.teaching
+    )[0];
     if (role === ROLES.LECTURER) {
-      const teaching = teachings.filter(
-        (item) => item._id === labUsage.teaching
-      )[0];
       if (teaching.user !== verifiedUser?._id) {
         return "OCCUPIED";
       }
-      return `${getCourseName(labUsage)} \nLecturer:${getLecturerName(
+      return `${getCourseName(labUsage)} \nLecturer: ${getLecturerName(
         labUsage
-      )} \nPeriod: ${labUsage.startPeriod} → ${labUsage.endPeriod}`;
+      )} \nLecturer ID: ${teaching.user} \nPeriod: ${labUsage.startPeriod} → ${
+        labUsage.endPeriod
+      }`;
     }
-    return `${getCourseName(labUsage)} \nLecturer:${getLecturerName(
+    return `${getCourseName(labUsage)} \nLecturer: ${getLecturerName(
       labUsage
-    )} \nPeriod: ${labUsage.startPeriod} → ${labUsage.endPeriod}`;
+    )} \nLecturer ID: ${teaching.user} \nPeriod: ${labUsage.startPeriod} → ${
+      labUsage.endPeriod
+    }`;
   };
 
   const exportScheduleCSV = () => {

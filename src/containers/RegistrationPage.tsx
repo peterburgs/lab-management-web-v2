@@ -433,8 +433,8 @@ const RegistrationPage = () => {
     } else if (!openSemester || !openAcademicYear) {
       return (
         <NotFoundContainer>
-          <img alt="Nothing" src={getImage("Nothing.gif")} />
-          <span>There is no open academic year or open semester</span>
+          <NothingImage />
+          <span>No data found</span>
         </NotFoundContainer>
       );
     }

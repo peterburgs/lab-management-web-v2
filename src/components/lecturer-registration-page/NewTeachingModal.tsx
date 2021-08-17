@@ -33,22 +33,17 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import useGetRegistrableCoursesByRegistration from "../../hooks/registrableCourse/useGetRegistrableCoursesByRegistration";
 
 const NewTeachingModal = (props: ModalProps) => {
-  const { register, handleSubmit, errors, control } =
-    useForm<Teaching>();
+  const { register, handleSubmit, errors, control } = useForm<Teaching>();
 
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
 
   // get opening registration
   const openRegistration = useAppSelector((state) =>
-    state.registrations.registrations.find(
-      (reg) => reg.isOpening === true
-    )
+    state.registrations.registrations.find((reg) => reg.isOpening === true)
   );
   // get verified user
-  const verifiedUser = useAppSelector(
-    (state) => state.auth.verifiedUser
-  );
+  const verifiedUser = useAppSelector((state) => state.auth.verifiedUser);
 
   const openSemester = useAppSelector((state) =>
     state.semesters.semesters.find(
@@ -88,9 +83,7 @@ const NewTeachingModal = (props: ModalProps) => {
           if (err.response) {
             dispatch(setSnackBarContent(err.response.data.message));
           } else {
-            dispatch(
-              setSnackBarContent("Failed to create new teaching")
-            );
+            dispatch(setSnackBarContent("Failed to create new teaching"));
           }
           dispatch(setShowErrorSnackBar(true));
         } finally {
@@ -113,26 +106,10 @@ const NewTeachingModal = (props: ModalProps) => {
     if (registrableCourseStatus === "pending") {
       return (
         <SkeletonContainer>
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
-          <Skeleton
-            variant="rectangular"
-            height={40}
-            animation="wave"
-          />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton variant="rectangular" height={40} animation="wave" />
         </SkeletonContainer>
       );
     }
@@ -167,34 +144,36 @@ const NewTeachingModal = (props: ModalProps) => {
             name="numberOfStudents"
             error={Boolean(errors.numberOfStudents)}
             type="number"
-            helperText={
-              errors.numberOfStudents && "*This field is required"
-            }
+            helperText={errors.numberOfStudents && "*This field is required"}
           />
           <StyledTextField
             label="Theory room"
             inputRef={register({ required: true })}
             name="theoryRoom"
             error={Boolean(errors.theoryRoom)}
-            helperText={
-              errors.theoryRoom && "*This field is required"
-            }
+            helperText={errors.theoryRoom && "*This field is required"}
           />
           <StyledTextField
             label="Number of practical weeks"
             inputRef={register({ required: true })}
             defaultValue={
-              openSemester
-                ? Math.floor(openSemester.numberOfWeeks / 2 - 2)
-                : 0
+              openSemester ? Math.floor(openSemester.numberOfWeeks / 2 - 1) : 0
             }
             name="numberOfPracticalWeeks"
             error={Boolean(errors.numberOfPracticalWeeks)}
             type="number"
             helperText={
-              errors.numberOfPracticalWeeks &&
-              "*This field is required"
+              errors.numberOfPracticalWeeks && "*This field is required"
             }
+          />
+          <StyledTextField
+            label="Start from week"
+            inputRef={register({ required: true })}
+            defaultValue={2}
+            name="startPracticalWeek"
+            error={Boolean(errors.startPracticalWeek)}
+            type="number"
+            helperText={errors.startPracticalWeek && "*This field is required"}
           />
           <Controller
             name="dayOfWeek"
@@ -281,9 +260,7 @@ const NewTeachingModal = (props: ModalProps) => {
 
   return (
     <Modal {...props}>
-      <StyledForm onSubmit={handleSubmit(onSubmit)}>
-        {renderForm()}
-      </StyledForm>
+      <StyledForm onSubmit={handleSubmit(onSubmit)}>{renderForm()}</StyledForm>
     </Modal>
   );
 };

@@ -25,36 +25,41 @@ const NewUserModal = (props: ModalProps) => {
   const { register, handleSubmit, errors } = useForm<User>();
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
-  const [selectedRoles, setSelectedRoles] = useState<CheckboxItem[]>(
-    []
-  );
+  const [selectedRoles, setSelectedRoles] = useState<CheckboxItem[]>([
+    { _id: "1", name: "Lecturer" },
+  ]);
 
   // handle new course submit
   const onSubmit = async (data: User) => {
-    try {
-      data.isHidden = false;
-      data.isFaceIdVerified = false;
-      data.roles = selectedRoles.map((role) => {
-        return role._id === "0" ? ROLES.ADMIN : ROLES.LECTURER;
-      });
-      console.log(data);
-      setStatus("pending");
-      const actionResult = await dispatch(newUser(data));
-      unwrapResult(actionResult);
+    if (selectedRoles.length) {
+      try {
+        data.isHidden = false;
+        data.isFaceIdVerified = false;
+        data.roles = selectedRoles.map((role) => {
+          return role._id === "0" ? ROLES.ADMIN : ROLES.LECTURER;
+        });
+        console.log(data);
+        setStatus("pending");
+        const actionResult = await dispatch(newUser(data));
+        unwrapResult(actionResult);
 
-      dispatch(setSnackBarContent("New user created"));
-      dispatch(setShowSuccessSnackBar(true));
-    } catch (err) {
-      console.log("Failed to create new user", err);
-      if (err.response) {
-        dispatch(setSnackBarContent(err.response.data.message));
-      } else {
-        dispatch(setSnackBarContent("Failed to create new user"));
+        dispatch(setSnackBarContent("New user created"));
+        dispatch(setShowSuccessSnackBar(true));
+      } catch (err) {
+        console.log("Failed to create new user", err);
+        if (err.response) {
+          dispatch(setSnackBarContent(err.response.data.message));
+        } else {
+          dispatch(setSnackBarContent("Failed to create new user"));
+        }
+        dispatch(setShowErrorSnackBar(true));
+      } finally {
+        setStatus("idle");
+        props.setShowModal(false);
       }
+    } else {
+      dispatch(setSnackBarContent("Please select a role"));
       dispatch(setShowErrorSnackBar(true));
-    } finally {
-      setStatus("idle");
-      props.setShowModal(false);
     }
   };
 

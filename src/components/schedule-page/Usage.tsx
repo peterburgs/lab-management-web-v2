@@ -157,7 +157,9 @@ const StyledUsage = styled.div<StyledUsageProps>`
   height: 250px;
   display: flex;
   flex-direction: column;
-  width: 150px;
+  width: max-content;
+  min-width: 9rem;
+  max-width: 13rem;
   border-radius: 4px;
   padding: 4px;
   margin-right: 0.5rem;

@@ -298,7 +298,7 @@ const Icon = styled.span`
 const Content = styled.div`
   z-index: 2;
   position: fixed;
-  bottom: 50vh;
+  top: 35%;
   width: 100%;
 `;
 

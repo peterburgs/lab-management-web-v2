@@ -139,7 +139,7 @@ const TimeTable = ({
       <LabContainer>
         <Padding />
         {labs.map((lab) => (
-          <LabName key={lab._id}>{lab.labName}</LabName>
+          <LabName key={lab._id}>{`${lab.labName} (${lab.capacity})`}</LabName>
         ))}
       </LabContainer>
       <UsageContainer>

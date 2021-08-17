@@ -1,15 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import AvatarButton from "./AvatarButton";
 import AvatarPanel from "./AvatarPanel";
 import NotificationButton from "./NotificationButton";
 import NotificationPanel from "./NotificationPanel";
 import { Box } from "@material-ui/core";
-import {
-  Semester,
-  Registration,
-  SEMESTER_STATUSES,
-} from "../../types/model";
+import { Semester, Registration, SEMESTER_STATUSES } from "../../types/model";
 import Countdown from "react-countdown";
 import { unwrapResult } from "@reduxjs/toolkit";
 import _ from "lodash";
@@ -53,8 +49,9 @@ const TopNavBar = ({
     )
   );
 
-  const [registrations, registrationStatus] =
-    useGetRegistrationBySemester(openSemester?._id);
+  const [registrations, registrationStatus] = useGetRegistrationBySemester(
+    openSemester?._id
+  );
   const location = useLocation();
 
   // event handler
@@ -62,9 +59,7 @@ const TopNavBar = ({
   // handle close registration automatically
   const handleRegAutoClose = async () => {
     const clonedRegistration = _.cloneDeep(
-      (registrations as Registration[]).find(
-        (reg) => reg.isOpening === true
-      )
+      (registrations as Registration[]).find((reg) => reg.isOpening === true)
     );
     if (clonedRegistration) {
       try {
@@ -80,15 +75,27 @@ const TopNavBar = ({
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {
-          dispatch(
-            setSnackBarContent("Failed to close registration")
-          );
+          dispatch(setSnackBarContent("Failed to close registration"));
         }
         dispatch(setShowErrorSnackBar(true));
       }
     }
   };
-
+  // useEffect to verify end date of registration
+  useEffect(() => {
+    const clonedRegistration = _.cloneDeep(
+      (registrations as Registration[]).find((reg) => reg.isOpening === true)
+    );
+    if (clonedRegistration) {
+      if (
+        new Date(clonedRegistration.endDate).getTime() <= new Date().getTime()
+      ) {
+        (async () => {
+          handleRegAutoClose();
+        })();
+      }
+    }
+  }, [registrations]);
   const renderCountdown = () => {
     if (registrationStatus === "succeeded") {
       const openingReg = (registrations as Registration[]).find(
@@ -114,12 +121,12 @@ const TopNavBar = ({
       {renderCountdown()}
       <StyledTopNavBar>
         <SearchBarContainer onClick={handleClosePanel}>
-          {location.pathname !== "/schedule" && location.pathname !== "/attendances" ? (
+          {location.pathname !== "/schedule" &&
+          location.pathname !== "/attendances" ? (
             location.pathname !== "/registration" ? (
               <AppSearchBar />
             ) : (
-              registrations.length > 0 &&
-              openSemester && <AppSearchBar />
+              registrations.length > 0 && openSemester && <AppSearchBar />
             )
           ) : null}
         </SearchBarContainer>

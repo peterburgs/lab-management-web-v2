@@ -165,7 +165,7 @@ const ImportTeachingModal = (props: ModalProps) => {
             }
 
             // check if courses are in registrable courses
-            if (key === "class code") {
+            if (key.toLowerCase() === "class code") {
               if (
                 !(registrableCourses as RegistrableCourse[]).find(
                   (item) => item.course === teaching.course
@@ -175,7 +175,9 @@ const ImportTeachingModal = (props: ModalProps) => {
                   setSnackBarContent(
                     `${index}/${data.length} teachings are ACCEPTED. ${
                       data.length - index
-                    }/${data.length} are invalid and will be dropped.`
+                    }/${
+                      data.length
+                    } are not allowed to register and will be dropped.`
                   )
                 );
                 dispatch(setShowErrorSnackBar(true));

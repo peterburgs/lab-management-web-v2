@@ -31,8 +31,7 @@ import useGetRegistrableCoursesByRegistration from "../../hooks/registrableCours
 
 const EditTeachingModal = (props: ModalProps) => {
   // call hooks
-  const { register, handleSubmit, errors, control } =
-    useForm<Teaching>();
+  const { register, handleSubmit, errors, control } = useForm<Teaching>();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const teaching = useAppSelector((state) =>
@@ -40,9 +39,7 @@ const EditTeachingModal = (props: ModalProps) => {
   );
   // get opening registration
   const openRegistration = useAppSelector((state) =>
-    state.registrations.registrations.find(
-      (reg) => reg.isOpening === true
-    )
+    state.registrations.registrations.find((reg) => reg.isOpening === true)
   );
   // Fetch registrable courses
   const [registrableCourses, registrableCourseStatus] =
@@ -71,15 +68,11 @@ const EditTeachingModal = (props: ModalProps) => {
             console.log(clonedTeaching);
 
             setStatus("pending");
-            const actionResult = await dispatch(
-              editTeaching(clonedTeaching)
-            );
+            const actionResult = await dispatch(editTeaching(clonedTeaching));
             unwrapResult(actionResult);
 
             setStatus("idle");
-            dispatch(
-              setSnackBarContent("Edit teaching successfully")
-            );
+            dispatch(setSnackBarContent("Edit teaching successfully"));
             dispatch(setShowSuccessSnackBar(true));
             props.setShowModal(false);
           } catch (err) {
@@ -134,9 +127,7 @@ const EditTeachingModal = (props: ModalProps) => {
               name="numberOfStudents"
               error={Boolean(errors.numberOfStudents)}
               type="number"
-              helperText={
-                errors.numberOfStudents && "*This field is required"
-              }
+              helperText={errors.numberOfStudents && "*This field is required"}
             />
             <StyledTextField
               label="Theory room"
@@ -144,9 +135,7 @@ const EditTeachingModal = (props: ModalProps) => {
               defaultValue={teaching.theoryRoom}
               name="theoryRoom"
               error={Boolean(errors.theoryRoom)}
-              helperText={
-                errors.theoryRoom && "*This field is required"
-              }
+              helperText={errors.theoryRoom && "*This field is required"}
             />
             <StyledTextField
               label="Number of practical weeks"
@@ -156,8 +145,18 @@ const EditTeachingModal = (props: ModalProps) => {
               error={Boolean(errors.numberOfPracticalWeeks)}
               type="number"
               helperText={
-                errors.numberOfPracticalWeeks &&
-                "*This field is required"
+                errors.numberOfPracticalWeeks && "*This field is required"
+              }
+            />
+            <StyledTextField
+              label="Start from week"
+              inputRef={register({ required: true })}
+              defaultValue={teaching.startPracticalWeek}
+              name="startPracticalWeek"
+              error={Boolean(errors.startPracticalWeek)}
+              type="number"
+              helperText={
+                errors.startPracticalWeek && "*This field is required"
               }
             />
             <Controller
@@ -191,9 +190,7 @@ const EditTeachingModal = (props: ModalProps) => {
               rules={{ required: true }}
               render={(props) => (
                 <StyledFormControl variant="outlined">
-                  <InputLabel id="start-label">
-                    Start period
-                  </InputLabel>
+                  <InputLabel id="start-label">Start period</InputLabel>
                   <Select
                     labelId="start-label"
                     value={props.value}

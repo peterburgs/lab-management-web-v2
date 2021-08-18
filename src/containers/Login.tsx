@@ -103,7 +103,6 @@ const Login = () => {
   };
 
   const onFailure = (error: any) => {
-    console.log(error);
     setLoading(false);
     dispatch(setShowErrorSnackBar(true));
     dispatch(setSnackBarContent("Sign in aborted"));

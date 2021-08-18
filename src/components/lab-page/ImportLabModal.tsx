@@ -12,7 +12,6 @@ import { Lab, SEMESTER_STATUSES } from "../../types/model";
 // import reducers
 import {
   createBulkOfLabs,
-  newLab,
   resetState,
 } from "../../reducers/labSlice";
 import {
@@ -22,7 +21,6 @@ import {
 } from "../../reducers/notificationSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
-import { red } from "@material-ui/core/colors";
 
 const ImportLabModal = (props: ModalProps) => {
   const dispatch = useAppDispatch();
@@ -95,13 +93,14 @@ const ImportLabModal = (props: ModalProps) => {
             case "capacity":
               lab.capacity = Number(strValue);
               break;
+            case "description":
+              lab.description = strValue;
+              break;
           }
         }
 
         labs.push(lab);
       }
-
-      console.log(labs);
 
       if (labs.length > 0) {
         //send data to server
@@ -114,7 +113,6 @@ const ImportLabModal = (props: ModalProps) => {
           dispatch(setSnackBarContent("New labs created"));
           dispatch(setShowSuccessSnackBar(true));
         } catch (err) {
-          console.log("Failed to create labs", err);
           if (err.response) {
             dispatch(setSnackBarContent(err.response.data.message));
           } else {

@@ -9,10 +9,7 @@ import * as XLSX from "xlsx";
 // import models
 import { Teaching, RegistrableCourse } from "../../types/model";
 // import reducers
-import {
-  createBulkOfTeachings,
-  newTeaching,
-} from "../../reducers/teachingSlice";
+import { createBulkOfTeachings } from "../../reducers/teachingSlice";
 import {
   setShowErrorSnackBar,
   setShowSuccessSnackBar,
@@ -29,10 +26,14 @@ const ImportTeachingModal = (props: ModalProps) => {
 
   // get opening registration
   const openRegistration = useAppSelector((state) =>
-    state.registrations.registrations.find((reg) => reg.isOpening === true)
+    state.registrations.registrations.find(
+      (reg) => reg.isOpening === true
+    )
   );
   // get verified user
-  const verifiedUser = useAppSelector((state) => state.auth.verifiedUser);
+  const verifiedUser = useAppSelector(
+    (state) => state.auth.verifiedUser
+  );
 
   // Fetch registrable courses
   const [registrableCourses, registrableCourseStatus] =
@@ -173,7 +174,9 @@ const ImportTeachingModal = (props: ModalProps) => {
               ) {
                 dispatch(
                   setSnackBarContent(
-                    `${index}/${data.length} teachings are ACCEPTED. ${
+                    `${index}/${
+                      data.length
+                    } teachings are ACCEPTED. ${
                       data.length - index
                     }/${
                       data.length
@@ -194,8 +197,6 @@ const ImportTeachingModal = (props: ModalProps) => {
           }
         }
 
-        console.log(teachings);
-
         if (teachings.length > 0) {
           setStatus("pending");
           try {
@@ -210,8 +211,6 @@ const ImportTeachingModal = (props: ModalProps) => {
               };
             });
 
-            console.log(prepareData);
-
             const actionResult = await dispatch(
               createBulkOfTeachings(prepareData)
             );
@@ -220,11 +219,12 @@ const ImportTeachingModal = (props: ModalProps) => {
             dispatch(setSnackBarContent("New teachings created"));
             dispatch(setShowSuccessSnackBar(true));
           } catch (err) {
-            console.log("Failed to create teachings", err);
             if (err.response) {
               dispatch(setSnackBarContent(err.response.data.message));
             } else {
-              dispatch(setSnackBarContent("Failed to create teachings"));
+              dispatch(
+                setSnackBarContent("Failed to create teachings")
+              );
             }
             dispatch(setShowErrorSnackBar(true));
           } finally {
@@ -286,11 +286,6 @@ const StyledForm = styled.form`
   flex-direction: column;
 `;
 
-const ModalText = styled.div`
-  font-size: 13px;
-  margin-bottom: 1rem;
-`;
-
 const InputFile = styled.input`
   display: none;
 `;
@@ -341,7 +336,8 @@ const SubmitButton = styled(Button)`
   background-color: ${({ disabled, theme }) =>
     disabled ? theme.grey : theme.veryLightBlue};
   box-shadow: none;
-  color: ${({ disabled, theme }) => (disabled ? theme.darkGrey : theme.blue)};
+  color: ${({ disabled, theme }) =>
+    disabled ? theme.darkGrey : theme.blue};
   font-weight: 500;
   font-size: 18px;
   margin-top: 1rem;

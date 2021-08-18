@@ -3,14 +3,12 @@ import styled from "styled-components";
 import { Column } from "react-table";
 import Table from "../components/common/Table";
 import Button from "../components/common/Button";
-import IconButton from "../components/common/IconButton";
-import { Skeleton, Tooltip } from "@material-ui/core";
+import { Skeleton } from "@material-ui/core";
 import NewCourseModal from "../components/course-page/NewCourseModal";
 import AddIcon from "@material-ui/icons/Add";
 import EditCourseModal from "../components/course-page/EditCourseModal";
 import PrivateRoute from "./PrivateRoute";
 import DeleteCourseModal from "../components/course-page/DeleteCourseModal";
-import RefreshIcon from "@material-ui/icons/Refresh";
 import ImportExportIcon from "@material-ui/icons/ImportExport";
 import ImportCoursePanel from "../components/course-page/ImportCoursePanel";
 import ImportCourseModal from "../components/course-page/ImportCourseModal";
@@ -25,9 +23,8 @@ import { Course, COURSE_TYPES, ROLES } from "../types/model";
 
 // import hooks
 import useGetAllCourses from "../hooks/course/useGetAllCourses";
-import { useAppDispatch, useAppSelector } from "../store";
+import { useAppSelector } from "../store";
 import { useHistory } from "react-router";
-import { resetState as resetCourseState } from "../reducers/courseSlice";
 import moment from "moment";
 
 type CourseTable = {
@@ -53,7 +50,10 @@ const prepareData = (
         id: course._id,
         name: course.courseName,
         numberOfCredits: course.numberOfCredits,
-        type: course.type === COURSE_TYPES.PRACTICAL ? "Practical" : "Theory",
+        type:
+          course.type === COURSE_TYPES.PRACTICAL
+            ? "Practical"
+            : "Theory",
         createdAt: new Date(course.createdAt!).toDateString(),
         emptyColumn: "",
       };
@@ -68,10 +68,15 @@ const prepareData = (
 const CoursePage = () => {
   // State
   const [showNewCourseModal, setShowNewCourseModal] = useState(false);
-  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(false);
-  const [courseIdToDelete, setCourseIdToDelete] = useState<string>(null!);
-  const [showImportCoursePanel, setShowImportCoursePanel] = useState(false);
-  const [showImportCourseModal, setShowImportCourseModal] = useState(false);
+  const [showDeleteCourseModal, setShowDeleteCourseModal] =
+    useState(false);
+  const [courseIdToDelete, setCourseIdToDelete] = useState<string>(
+    null!
+  );
+  const [showImportCoursePanel, setShowImportCoursePanel] =
+    useState(false);
+  const [showImportCourseModal, setShowImportCourseModal] =
+    useState(false);
 
   // * Call API
   const [courses, courseStatus] = useGetAllCourses();
@@ -82,7 +87,6 @@ const CoursePage = () => {
   );
   const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
-  const dispatch = useAppDispatch();
 
   // event handling
   // handle export template
@@ -100,7 +104,9 @@ const CoursePage = () => {
         "Course ID": course._id,
         "Course Name": course.courseName,
         "Course type":
-          course.type === COURSE_TYPES.THEORY ? "Theory" : "Practical",
+          course.type === COURSE_TYPES.THEORY
+            ? "Theory"
+            : "Practical",
         Credits: course.numberOfCredits,
       };
     });
@@ -111,7 +117,6 @@ const CoursePage = () => {
       "Course type": "",
       Credits: "",
     });
-    console.log(template);
 
     const fileType =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
@@ -124,11 +129,13 @@ const CoursePage = () => {
       { wch: 30 },
     ];
 
-    let hsrows: { hpt: number }[] = (courses as Course[]).map((_, __) => {
-      return {
-        hpt: 40,
-      };
-    });
+    let hsrows: { hpt: number }[] = (courses as Course[]).map(
+      (_, __) => {
+        return {
+          hpt: 40,
+        };
+      }
+    );
     const ws = XLSX.utils.json_to_sheet(template);
     ws["!rows"] = hsrows;
     ws["!cols"] = wscols;
@@ -182,10 +189,6 @@ const CoursePage = () => {
     });
     const data = new Blob([excelBuffer], { type: fileType });
     FileSaver.saveAs(data, "courses" + fileExtension);
-  };
-
-  const handleRefreshData = () => {
-    dispatch(resetCourseState());
   };
 
   const renderTable = () => {
@@ -304,6 +307,7 @@ const CoursePage = () => {
       />
       <StyledCoursePage>
         <Toolbar>
+          <Total>Total:&nbsp;{courses.length}</Total>
           <Action isAdmin={role === ROLES.ADMIN}>
             {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>
@@ -329,7 +333,9 @@ const CoursePage = () => {
                 {showImportCoursePanel && (
                   <ImportPanelContainer>
                     <ImportCoursePanel
-                      setShowImportCourseModal={setShowImportCourseModal}
+                      setShowImportCourseModal={
+                        setShowImportCourseModal
+                      }
                     />
                   </ImportPanelContainer>
                 )}
@@ -384,7 +390,8 @@ interface ActionProps {
 const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: ${({ isAdmin }) => (isAdmin ? "1fr 1fr 1fr" : "1fr")};
+  grid-template-columns: ${({ isAdmin }) =>
+    isAdmin ? "1fr 1fr 1fr" : "1fr"};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {
@@ -406,11 +413,8 @@ const TableContainer = styled.div`
   overflow: hidden;
 `;
 
-const IconButtonContainer = styled.div`
-  display: flex;
-  width: 40px;
-  box-sizing: border-box;
-  justify-self: end;
+const Total = styled.div`
+  font-size: 13px;
 `;
 
 const ImportPanelContainer = styled.div`

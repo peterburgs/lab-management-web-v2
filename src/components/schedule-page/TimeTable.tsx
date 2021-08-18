@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, RefObject } from "react";
-import styled, { css } from "styled-components";
+import React from "react";
+import styled from "styled-components";
 import Usage from "./Usage";
 import "simplebar/dist/simplebar.min.css";
 import { Course, Lab, LabUsage, Teaching, User } from "../../types/model";
@@ -54,7 +54,6 @@ const TimeTable = ({
             }
           }
         }
-        console.log(usagesByDayOfWeek);
         usagesByDayOfWeek.forEach((usages, dayOfWeek) => {
           cells.push(
             <Cell
@@ -130,7 +129,6 @@ const TimeTable = ({
         });
       }
     }
-    console.log(cells);
     return cells;
   };
 

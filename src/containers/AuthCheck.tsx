@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useHistory } from "react-router";
 import { useAppDispatch } from "../store";
-import { resetState, verify } from "../reducers/authSlice";
+import { verify } from "../reducers/authSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 import {
   setShowErrorSnackBar,

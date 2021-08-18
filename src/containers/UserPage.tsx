@@ -3,14 +3,12 @@ import styled from "styled-components";
 import { Column } from "react-table";
 import Table from "../components/common/Table";
 import Button from "../components/common/Button";
-import IconButton from "../components/common/IconButton";
-import { Skeleton, Tooltip } from "@material-ui/core";
+import { Skeleton } from "@material-ui/core";
 import NewUserModal from "../components/user-page/NewUserModal";
 import AddIcon from "@material-ui/icons/Add";
 import EditUserModal from "../components/user-page/EditUserModal";
 import PrivateRoute from "./PrivateRoute";
 import DeleteUserModal from "../components/user-page/DeleteUserModal";
-import RefreshIcon from "@material-ui/icons/Refresh";
 
 // import models
 import { ROLES, User } from "../types/model";
@@ -19,9 +17,8 @@ import { ROLES, User } from "../types/model";
 
 // import hooks
 import useGetAllUsers from "../hooks/user/useGetAllUsers";
-import { useAppSelector, useAppDispatch } from "../store";
+import { useAppSelector } from "../store";
 import { useHistory } from "react-router";
-import { resetState as resetUserState } from "../reducers/userSlice";
 import DeleteFaceIDModal from "../components/user-page/DeleteFaceIDModal";
 
 type UserTable = {
@@ -50,7 +47,9 @@ const prepareData = (
         fullName: user.fullName,
         email: user.email,
         role: user.roles
-          .map((item) => (item === ROLES.ADMIN ? "Admin" : "Lecturer"))
+          .map((item) =>
+            item === ROLES.ADMIN ? "Admin" : "Lecturer"
+          )
           .join(" & "),
         isFaceIdVerified: user.isFaceIdVerified ? (
           <AvailableBadge>Verified</AvailableBadge>
@@ -70,26 +69,24 @@ const prepareData = (
 const UserPage = () => {
   // State
   const [showNewUserModal, setShowNewUserModal] = useState(false);
-  const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
-  const [showDeleteFaceIdModal, setShowDeleteFaceIdModal] = useState(false);
+  const [showDeleteUserModal, setShowDeleteUserModal] =
+    useState(false);
+  const [showDeleteFaceIdModal, setShowDeleteFaceIdModal] =
+    useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState<string>(null!);
-  const [userIdToDeleteFaceId, setUserIdToDeleteFaceId] = useState<string>(
-    null!
-  );
+  const [userIdToDeleteFaceId, setUserIdToDeleteFaceId] =
+    useState<string>(null!);
 
   // * Call API
   const [users, userStatus] = useGetAllUsers();
 
   // call hooks
-  const userSearchText = useAppSelector((state) => state.search.userSearchText);
+  const userSearchText = useAppSelector(
+    (state) => state.search.userSearchText
+  );
   const history = useHistory();
-  const dispatch = useAppDispatch();
 
   // event handling
-
-  const handleRefreshData = () => {
-    dispatch(resetUserState());
-  };
 
   const renderTable = () => {
     const columns: Array<Column<UserTable>> = [
@@ -133,7 +130,9 @@ const UserPage = () => {
         (users as User[]).filter(
           (item) =>
             item._id.includes(userSearchText) ||
-            item.email.toLowerCase().includes(userSearchText.toLowerCase())
+            item.email
+              .toLowerCase()
+              .includes(userSearchText.toLowerCase())
         )
       );
       return (
@@ -293,13 +292,6 @@ const TableContainer = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
-`;
-
-const IconButtonContainer = styled.div`
-  display: flex;
-  width: 40px;
-  box-sizing: border-box;
-  justify-self: end;
 `;
 
 const NotAvailableBadge = styled.div`

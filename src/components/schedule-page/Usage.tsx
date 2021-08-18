@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { ROLES } from "../../types/model";
-import OccupiedImage from "../../assets/images/occupied.png";
 import moment from "moment";
 import {
   setShowSuccessSnackBar,
@@ -38,7 +37,10 @@ const Usage = ({
   checkInAt,
   checkOutAt,
 }: UsageProps) => {
-  const convertPeriodToShift = (startPeriod: number, endPeriod: number) => {
+  const convertPeriodToShift = (
+    startPeriod: number,
+    endPeriod: number
+  ) => {
     if (startPeriod >= 1 && endPeriod <= 5) {
       return 1;
     } else if (startPeriod >= 6 && endPeriod <= 12) {
@@ -64,14 +66,18 @@ const Usage = ({
           <CheckIn>
             Check in:{" "}
             {checkInAt
-              ? moment(new Date(checkInAt)).format("HH:mm:ss DD/MM/YYYY")
+              ? moment(new Date(checkInAt)).format(
+                  "HH:mm:ss DD/MM/YYYY"
+                )
               : "pending"}
           </CheckIn>
           <CheckOut>
             Check out:{" "}
             {checkInAt
               ? checkOutAt
-                ? moment(new Date(checkOutAt)).format("HH:mm:ss DD/MM/YYYY")
+                ? moment(new Date(checkOutAt)).format(
+                    "HH:mm:ss DD/MM/YYYY"
+                  )
                 : "pending"
               : "pending"}
           </CheckOut>
@@ -85,7 +91,10 @@ const Usage = ({
               }}
               component="span"
             >
-              <FileCopyOutlinedIcon fontSize="small" htmlColor="#fff" />
+              <FileCopyOutlinedIcon
+                fontSize="small"
+                htmlColor="#fff"
+              />
             </IconButton>
           </TeachingID>
         </>
@@ -98,14 +107,18 @@ const Usage = ({
           <CheckIn>
             Check in:{" "}
             {checkInAt
-              ? moment(new Date(checkInAt)).format("HH:mm:ss DD/MM/YYYY")
+              ? moment(new Date(checkInAt)).format(
+                  "HH:mm:ss DD/MM/YYYY"
+                )
               : "pending"}
           </CheckIn>
           <CheckOut>
             Check out:{" "}
             {checkInAt
               ? checkOutAt
-                ? moment(new Date(checkOutAt)).format("HH:mm:ss DD/MM/YYYY")
+                ? moment(new Date(checkOutAt)).format(
+                    "HH:mm:ss DD/MM/YYYY"
+                  )
                 : "pending"
               : "pending"}
           </CheckOut>
@@ -119,7 +132,10 @@ const Usage = ({
               }}
               component="span"
             >
-              <FileCopyOutlinedIcon fontSize="small" htmlColor="#fff" />
+              <FileCopyOutlinedIcon
+                fontSize="small"
+                htmlColor="#fff"
+              />
             </IconButton>
           </TeachingID>
         </>
@@ -130,7 +146,9 @@ const Usage = ({
         <ActionButtonContainer>
           {lecturerId === user?._id ? (
             <>
-              <ActionButton onClick={() => onRequestModifyLabUsage(id)}>
+              <ActionButton
+                onClick={() => onRequestModifyLabUsage(id)}
+              >
                 Modify
               </ActionButton>
             </>
@@ -157,9 +175,7 @@ const StyledUsage = styled.div<StyledUsageProps>`
   height: 250px;
   display: flex;
   flex-direction: column;
-  width: max-content;
-  min-width: 9rem;
-  max-width: 13rem;
+  width: 13rem;
   border-radius: 4px;
   padding: 4px;
   margin-right: 0.5rem;

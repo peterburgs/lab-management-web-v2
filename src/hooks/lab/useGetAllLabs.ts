@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { getLabs, resetState } from "../../reducers/labSlice";
+import { getLabs } from "../../reducers/labSlice";
 
 const useGetAllLabs = () => {
   const dispatch = useAppDispatch();

@@ -61,7 +61,6 @@ const EditSemesterModal = (props: ModalProps) => {
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to edit semester", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

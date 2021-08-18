@@ -8,9 +8,6 @@ const useGetAllSemesters = () => {
   const semesters = useAppSelector(
     (state) => state.semesters.semesters
   );
-  const academicYears = useAppSelector(
-    (state) => state.academicYears.academicYears
-  );
   const academicYearStatus = useAppSelector(
     (state) => state.academicYears.status
   );

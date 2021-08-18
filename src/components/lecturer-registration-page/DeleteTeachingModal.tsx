@@ -42,7 +42,6 @@ const DeleteTeachingModal = (props: DeleteTeachingModalProps) => {
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to delete teaching", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

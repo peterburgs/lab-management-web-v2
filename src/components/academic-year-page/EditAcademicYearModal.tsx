@@ -46,7 +46,6 @@ const EditAcademicYearModal = (props: ModalProps) => {
         clonedAcademicYear.startDate = data.startDate;
         clonedAcademicYear.numberOfWeeks = data.numberOfWeeks;
         setStatus("pending");
-        console.log(data);
         const actionResult = await dispatch(
           editAcademicYear(clonedAcademicYear)
         );
@@ -59,7 +58,6 @@ const EditAcademicYearModal = (props: ModalProps) => {
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to edit academic year", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

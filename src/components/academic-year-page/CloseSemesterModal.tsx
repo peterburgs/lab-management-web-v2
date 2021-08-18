@@ -57,7 +57,6 @@ const CloseSemesterModal = (props: ModalProps) => {
           dispatch(setShowSuccessSnackBar(true));
           props.setShowModal(false);
         } catch (error) {
-          console.log("Failed to close semester", error);
           if (error.response) {
             dispatch(setSnackBarContent(error.response.data.message));
           } else {

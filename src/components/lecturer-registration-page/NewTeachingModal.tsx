@@ -79,7 +79,6 @@ const NewTeachingModal = (props: ModalProps) => {
           dispatch(setSnackBarContent("New teaching created"));
           dispatch(setShowSuccessSnackBar(true));
         } catch (err) {
-          console.log("Failed to create new teaching", err);
           if (err.response) {
             dispatch(setSnackBarContent(err.response.data.message));
           } else {

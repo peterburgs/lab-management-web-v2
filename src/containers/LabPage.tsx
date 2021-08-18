@@ -3,14 +3,12 @@ import styled from "styled-components";
 import { Column } from "react-table";
 import Table from "../components/common/Table";
 import Button from "../components/common/Button";
-import IconButton from "../components/common/IconButton";
-import { Skeleton, Tooltip } from "@material-ui/core";
+import { Skeleton } from "@material-ui/core";
 import NewLabModal from "../components/lab-page/NewLabModal";
 import EditLabModal from "../components/lab-page/EditLabModal";
 import DeleteLabModal from "../components/lab-page/DeleteLabModal";
 import PrivateRoute from "./PrivateRoute";
 import AddIcon from "@material-ui/icons/Add";
-import RefreshIcon from "@material-ui/icons/Refresh";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import * as FileSaver from "file-saver";
 import * as XLSX from "sheetjs-style";
@@ -23,9 +21,8 @@ import { Lab, ROLES } from "../types/model";
 
 // import hooks
 import useGetAllLabs from "../hooks/lab/useGetAllLabs";
-import { useAppSelector, useAppDispatch } from "../store";
+import { useAppSelector } from "../store";
 import { useHistory } from "react-router";
-import { resetState as resetLabState } from "../reducers/labSlice";
 import ImportLabModal from "../components/lab-page/ImportLabModal";
 import ImportLabPanel from "../components/lab-page/ImportLabPanel";
 import moment from "moment";
@@ -35,6 +32,7 @@ type LabTable = {
   name: string;
   status: JSX.Element;
   capacity: number;
+  description: string;
   emptyColumn: string;
 };
 
@@ -52,6 +50,7 @@ const prepareData = (
         rowId: lab._id!,
         name: lab.labName,
         capacity: lab.capacity,
+        description: lab.description ? lab.description : "",
         status: lab.isAvailableForCurrentUsing ? (
           <AvailableBadge>Available</AvailableBadge>
         ) : (
@@ -78,10 +77,11 @@ const LabPage = () => {
   const [labs, labStatus] = useGetAllLabs();
 
   // call hooks
-  const labSearchText = useAppSelector((state) => state.search.labSearchText);
+  const labSearchText = useAppSelector(
+    (state) => state.search.labSearchText
+  );
   const role = useAppSelector((state) => state.auth.verifiedRole);
   const history = useHistory();
-  const dispatch = useAppDispatch();
 
   // event handling
 
@@ -95,6 +95,7 @@ const LabPage = () => {
         "#": String(i + 1),
         "Lab name": lab.labName,
         Capacity: lab.capacity,
+        Description: lab.description ? lab.description : "",
       };
     });
     template.push({
@@ -102,7 +103,6 @@ const LabPage = () => {
       "Lab name": moment(new Date()).format("DD:MM:YYYY hh:mm:ss A"),
       Capacity: "",
     });
-    console.log(template);
 
     const fileType =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
@@ -120,7 +120,7 @@ const LabPage = () => {
     ws["!cols"] = wscols;
     if ((labs as Lab[]).length > 0) {
       for (let i = 0; i <= (labs as Lab[]).length + 1; i++) {
-        for (let j = 1; j <= 3; j++) {
+        for (let j = 1; j <= 4; j++) {
           if (i === 0) {
             ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
               font: {
@@ -170,10 +170,6 @@ const LabPage = () => {
     FileSaver.saveAs(data, "labs" + fileExtension);
   };
 
-  const handleRefreshData = () => {
-    dispatch(resetLabState());
-  };
-
   const renderTable = () => {
     const columns: Array<Column<LabTable>> = [
       {
@@ -193,6 +189,10 @@ const LabPage = () => {
         accessor: "capacity" as const,
       },
       {
+        Header: "Description",
+        accessor: "capacity" as const,
+      },
+      {
         Header: "",
         accessor: "emptyColumn" as const,
         width: 50,
@@ -204,7 +204,9 @@ const LabPage = () => {
         (labs as Lab[]).filter(
           (item) =>
             item._id!.includes(labSearchText) ||
-            item.labName.toLowerCase().includes(labSearchText.toLowerCase())
+            item.labName
+              .toLowerCase()
+              .includes(labSearchText.toLowerCase())
         )
       );
       return (
@@ -281,6 +283,7 @@ const LabPage = () => {
       />
       <StyledLabPage>
         <Toolbar>
+          <Total>Total:&nbsp;{labs.length}</Total>
           <Action isAdmin={role === ROLES.ADMIN}>
             {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>
@@ -293,7 +296,9 @@ const LabPage = () => {
             {role === ROLES.ADMIN && (
               <>
                 <Button
-                  onClick={() => setShowImportLabPanel((current) => !current)}
+                  onClick={() =>
+                    setShowImportLabPanel((current) => !current)
+                  }
                   icon={<ImportExportIcon />}
                 >
                   Import labs
@@ -340,7 +345,7 @@ const SkeletonContainer = styled.div`
 const Toolbar = styled.div`
   padding-top: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   box-sizing: border-box;
 
   @media (max-width: 600px) {
@@ -359,7 +364,8 @@ interface ActionProps {
 const Action = styled.div<ActionProps>`
   display: grid;
   column-gap: 1rem;
-  grid-template-columns: ${({ isAdmin }) => (isAdmin ? "1fr 1fr 1fr" : "1fr")};
+  grid-template-columns: ${({ isAdmin }) =>
+    isAdmin ? "1fr 1fr 1fr" : "1fr"};
   font-size: 0.875rem;
 
   @media (max-width: 600px) {
@@ -379,13 +385,6 @@ const TableContainer = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
-`;
-
-const IconButtonContainer = styled.div`
-  display: flex;
-  width: 40px;
-  box-sizing: border-box;
-  justify-self: end;
 `;
 
 const ImportPanelContainer = styled.div`
@@ -416,6 +415,10 @@ const AvailableBadge = styled.div`
   padding: 0 0.5rem;
   font-weight: 600;
   border-radius: 10px;
+`;
+
+const Total = styled.div`
+  font-size: 13px;
 `;
 
 export default LabPage;

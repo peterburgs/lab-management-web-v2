@@ -40,7 +40,6 @@ export const getAcademicYears = createAsyncThunk<
       headers: auth(),
       params: { ...filter },
     });
-    console.log(data);
     return data as GETResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as GETResponse);
@@ -55,7 +54,6 @@ export const startAcademicYear = createAsyncThunk<
   "academicYears/startAcademicYear",
   async (academicYear, thunkApi) => {
     try {
-      console.log(academicYear);
       const { data } = await nodeAPI.post(
         "/academic-years",
         academicYear,

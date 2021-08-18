@@ -62,7 +62,7 @@ export const newUser = createAsyncThunk<
     const { data } = await nodeAPI.post("/users", user, {
       headers: auth(),
     });
-    const res = await faceAPI.post(
+    await faceAPI.post(
       "/user",
       { id: user._id, email: user.email, fullName: user.fullName },
       { headers: auth() }
@@ -81,7 +81,7 @@ export const deleteFaceID = createAsyncThunk<
   { rejectValue: PUTResponse }
 >("user/deleteFaceID", async (user, thunkApi) => {
   try {
-    const res = await faceAPI.delete(`/face/${user._id}`, {
+    await faceAPI.delete(`/face/${user._id}`, {
       headers: auth(),
     });
     const { data } = await nodeAPI.put(`/users/${user._id}`, user, {

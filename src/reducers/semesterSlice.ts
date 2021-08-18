@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { Semester, SEMESTER_STATUSES } from "../types/model";
+import { Semester } from "../types/model";
 import { nodeAPI, auth } from "../api";
 import _ from "lodash";
 
@@ -44,7 +44,6 @@ export const getSemesters = createAsyncThunk<
       headers: auth(),
       params: { ...filter },
     });
-    console.log(data);
     return data as GETResponse;
   } catch (err) {
     return thunkApi.rejectWithValue(err.response.data as GETResponse);
@@ -57,7 +56,6 @@ export const startSemester = createAsyncThunk<
   { rejectValue: POSTResponse }
 >("semesters/startSemester", async (semester, thunkApi) => {
   try {
-    console.log(semester);
     const { data } = await nodeAPI.post("/semesters", semester, {
       headers: auth(),
     });

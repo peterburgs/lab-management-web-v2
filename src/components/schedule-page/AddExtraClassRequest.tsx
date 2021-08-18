@@ -11,7 +11,6 @@ import {
   FormControl,
 } from "@material-ui/core";
 import Button from "../common/Button";
-import _ from "lodash";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 // import models
@@ -67,21 +66,6 @@ const ModifyLabUsageRequestModal = (props: ModifyLabUsageRequestModalProps) => {
     labId: string
   ) => {
     if (labUsages.length > 0) {
-      console.log(labUsages);
-      console.log(
-        labUsages.filter(
-          (item) =>
-            item.weekNo === weekNo &&
-            item.dayOfWeek === dayOfWeek &&
-            checkPeriod(
-              item.startPeriod,
-              item.endPeriod,
-              startPeriod,
-              endPeriod
-            ) &&
-            item.lab === labId
-        )
-      );
       if (
         labUsages.filter(
           (item) =>
@@ -115,7 +99,6 @@ const ModifyLabUsageRequestModal = (props: ModifyLabUsageRequestModalProps) => {
           labUsages.length > 0 &&
           labs.find((item) => item._id === data.lab)
         ) {
-          console.log(data);
           if (
             isValidLabUsage(
               data.weekNo,
@@ -130,7 +113,6 @@ const ModifyLabUsageRequestModal = (props: ModifyLabUsageRequestModalProps) => {
               data.uId = verifiedUser!._id;
               data.status = REQUEST_STATUSES.PENDING;
               data.type = REQUEST_TYPES.ADD_EXTRA_CLASS;
-              console.log(data);
               setStatus("pending");
               const actionResult = await dispatch(newRequest(data));
               unwrapResult(actionResult);
@@ -139,7 +121,6 @@ const ModifyLabUsageRequestModal = (props: ModifyLabUsageRequestModalProps) => {
               dispatch(setShowSuccessSnackBar(true));
               props.setShowModal(false);
             } catch (err) {
-              console.log("Failed to create new request", err);
               if (err.response) {
                 dispatch(setSnackBarContent(err.response.data.message));
               } else {

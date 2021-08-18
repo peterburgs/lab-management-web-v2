@@ -16,7 +16,11 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import { useAppDispatch, useAppSelector } from "../store";
 import CloseSemesterModal from "../components/academic-year-page/CloseSemesterModal";
 import EditSemesterModal from "../components/academic-year-page/EditSemesterModal";
-import { AcademicYear, ROLES, SEMESTER_STATUSES } from "../types/model";
+import {
+  AcademicYear,
+  ROLES,
+  SEMESTER_STATUSES,
+} from "../types/model";
 import AddIcon from "@material-ui/icons/Add";
 import moment from "moment";
 import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
@@ -38,9 +42,9 @@ const AcademicYearPage = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showStartAcademicYearModal, setShowStartAcademicYearModal] =
     useState(false);
-  const [showStartSemesterModal, setShowStartSemesterModal] = useState(false);
   const [academicYearType, setAcademicYearType] = useState(0);
-  const [currentExpanding, setCurrentExpanding] = useState<string>("");
+  const [currentExpanding, setCurrentExpanding] =
+    useState<string>("");
   const [sortByNewest, setSortByNewest] = useState(1);
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -49,8 +53,12 @@ const AcademicYearPage = () => {
     AcademicYear[]
   >([]);
 
-  const semesters = useAppSelector((state) => state.semesters.semesters);
-  const semesterStatus = useAppSelector((state) => state.semesters.status);
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
+  );
+  const semesterStatus = useAppSelector(
+    (state) => state.semesters.status
+  );
 
   const academicYears = useAppSelector(
     (state) => state.academicYears.academicYears
@@ -111,22 +119,24 @@ const AcademicYearPage = () => {
 
   // useEffect
   useEffect(() => {
-    const viewedAcademicYears = (academicYears as AcademicYear[]).filter(
-      (academicYear) => {
-        let condition = true;
-        if (academicYearType === 0) condition = condition && true;
-        if (academicYearType === 1)
-          condition = condition && academicYear.isOpening === true;
-        if (academicYearType === 2)
-          condition = condition && academicYear.isOpening === false;
-        if (academicYearSearchText) {
-          condition =
-            condition &&
-            academicYear.name.toLowerCase().includes(academicYearSearchText);
-        }
-        return condition;
+    const viewedAcademicYears = (
+      academicYears as AcademicYear[]
+    ).filter((academicYear) => {
+      let condition = true;
+      if (academicYearType === 0) condition = condition && true;
+      if (academicYearType === 1)
+        condition = condition && academicYear.isOpening === true;
+      if (academicYearType === 2)
+        condition = condition && academicYear.isOpening === false;
+      if (academicYearSearchText) {
+        condition =
+          condition &&
+          academicYear.name
+            .toLowerCase()
+            .includes(academicYearSearchText);
       }
-    );
+      return condition;
+    });
     const _academicYears = _.cloneDeep(viewedAcademicYears);
     if (sortByNewest === 1) {
       _academicYears.sort((a, b) =>
@@ -138,7 +148,12 @@ const AcademicYearPage = () => {
       );
     }
     setFilteredAcademicYears(_academicYears);
-  }, [academicYearType, academicYears, academicYearSearchText, sortByNewest]);
+  }, [
+    academicYearType,
+    academicYears,
+    academicYearSearchText,
+    sortByNewest,
+  ]);
 
   const handleExpanding = (id: string) => {
     if (currentExpanding === id) {
@@ -153,8 +168,16 @@ const AcademicYearPage = () => {
     if (academicYearStatus === "pending") {
       return (
         <SkeletonContainer>
-          <Skeleton variant="rectangular" height={250} animation="wave" />
-          <Skeleton variant="rectangular" height={250} animation="wave" />
+          <Skeleton
+            variant="rectangular"
+            height={250}
+            animation="wave"
+          />
+          <Skeleton
+            variant="rectangular"
+            height={250}
+            animation="wave"
+          />
         </SkeletonContainer>
       );
     } else if (filteredAcademicYears.length > 0) {
@@ -173,7 +196,9 @@ const AcademicYearPage = () => {
                       {academicYear.isOpening && (
                         <IconButton
                           onClick={() =>
-                            history.push(`/academic-years/${academicYear._id}`)
+                            history.push(
+                              `/academic-years/${academicYear._id}`
+                            )
                           }
                           color="primary"
                           component="span"
@@ -203,13 +228,16 @@ const AcademicYearPage = () => {
                         )}
                       </Text>
                     )}
-                    <Text>Number of weeks: {academicYear.numberOfWeeks}</Text>
+                    <Text>
+                      Number of weeks: {academicYear.numberOfWeeks}
+                    </Text>
                     <Text>
                       Number of semesters:{" "}
                       {semesters
                         ? semesters.filter(
                             (semester) =>
-                              semester.academicYear === academicYear._id
+                              semester.academicYear ===
+                              academicYear._id
                           ).length
                         : 0}
                     </Text>
@@ -248,7 +276,11 @@ const AcademicYearPage = () => {
                 </CollapseButtonContainer>
               </AcademicYearCard>
               <Collapse
-                in={currentExpanding === academicYear._id ? isExpanded : false}
+                in={
+                  currentExpanding === academicYear._id
+                    ? isExpanded
+                    : false
+                }
                 timeout="auto"
                 unmountOnExit
               >
@@ -256,14 +288,17 @@ const AcademicYearPage = () => {
                   (item) => item.academicYear === academicYear._id
                 ).length > 0 ? (
                   semesters
-                    .filter((item) => item.academicYear === academicYear._id)
+                    .filter(
+                      (item) => item.academicYear === academicYear._id
+                    )
                     .map((item) => (
                       <SemesterCard key={item._id}>
                         <InfoContainer>
                           <Header>
                             <span>{item.semesterName}</span>
                             {academicYear.isOpening ? (
-                              item.status === SEMESTER_STATUSES.OPENING ? (
+                              item.status ===
+                              SEMESTER_STATUSES.OPENING ? (
                                 <IconButton
                                   onClick={() =>
                                     history.push(
@@ -278,9 +313,11 @@ const AcademicYearPage = () => {
                               ) : null
                             ) : null}
 
-                            {item.status === SEMESTER_STATUSES.OPENING ? (
+                            {item.status ===
+                            SEMESTER_STATUSES.OPENING ? (
                               <OpenBadge>OPENING</OpenBadge>
-                            ) : item.status === SEMESTER_STATUSES.FUTURE ? (
+                            ) : item.status ===
+                              SEMESTER_STATUSES.FUTURE ? (
                               <FutureBadge>FUTURE</FutureBadge>
                             ) : (
                               <ClosedBadge>CLOSED</ClosedBadge>
@@ -295,7 +332,9 @@ const AcademicYearPage = () => {
                                 )
                               : "Pending"}
                           </Text>
-                          <Text>Number of weeks: {item.numberOfWeeks}</Text>
+                          <Text>
+                            Number of weeks: {item.numberOfWeeks}
+                          </Text>
                         </InfoContainer>
                         {item.status === SEMESTER_STATUSES.OPENING &&
                         academicYear.isOpening ? (
@@ -311,7 +350,8 @@ const AcademicYearPage = () => {
                               Close semester
                             </SemesterActionButton>
                           </ActionContainer>
-                        ) : item.status === SEMESTER_STATUSES.FUTURE &&
+                        ) : item.status ===
+                            SEMESTER_STATUSES.FUTURE &&
                           academicYear.isOpening ? (
                           <ActionContainer>
                             <SemesterActionButton
@@ -329,7 +369,9 @@ const AcademicYearPage = () => {
                       </SemesterCard>
                     ))
                 ) : (
-                  <Text style={{ textAlign: "center", marginTop: "1rem" }}>
+                  <Text
+                    style={{ textAlign: "center", marginTop: "1rem" }}
+                  >
                     No data found
                   </Text>
                 )}
@@ -397,7 +439,9 @@ const AcademicYearPage = () => {
                 <MenuItem value={2}>Closed</MenuItem>
               </Select>
             </FormControl>
-            <FormControl style={{ minWidth: "100px", marginLeft: "1rem" }}>
+            <FormControl
+              style={{ minWidth: "100px", marginLeft: "1rem" }}
+            >
               <InputLabel id="sort-by-label">Sort by</InputLabel>
               <Select
                 labelId="sort-by-label"
@@ -418,7 +462,6 @@ const AcademicYearPage = () => {
                   (item) => item.isOpening === true
                 ).length > 0
               ) {
-                console.log("hello");
                 dispatch(
                   setSnackBarContent(
                     "An academic year is opening. Cannot start new one."
@@ -496,7 +539,8 @@ const SemesterCard = styled.div`
   margin-top: 1rem;
   padding: 1rem;
   justify-content: space-between;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2),
+    0 2px 4px 0 rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 `;
 
@@ -556,33 +600,45 @@ interface SemesterActionButtonProps {
   semesterStatus: SEMESTER_STATUSES;
 }
 
-const SemesterActionButton = styled(Button)<SemesterActionButtonProps>`
+const SemesterActionButton = styled(
+  Button
+)<SemesterActionButtonProps>`
   background-color: ${({ theme, semesterStatus }) =>
     semesterStatus === SEMESTER_STATUSES.OPENING
       ? theme.lightRed
       : theme.lightGreen};
   box-shadow: none;
   color: ${({ theme, semesterStatus }) =>
-    semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
+    semesterStatus === SEMESTER_STATUSES.OPENING
+      ? theme.red
+      : theme.green};
   font-weight: 500;
   font-size: 15px;
   padding: 0 0.7rem;
   border: 1px solid
     ${({ theme, semesterStatus }) =>
-      semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
+      semesterStatus === SEMESTER_STATUSES.OPENING
+        ? theme.red
+        : theme.green};
   &:active {
     background-color: ${({ theme, semesterStatus }) =>
-      semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
+      semesterStatus === SEMESTER_STATUSES.OPENING
+        ? theme.red
+        : theme.green};
     &:hover {
       background-color: ${({ theme, semesterStatus }) =>
-        semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
+        semesterStatus === SEMESTER_STATUSES.OPENING
+          ? theme.red
+          : theme.green};
       color: white;
     }
   }
 
   &:hover {
     background-color: ${({ theme, semesterStatus }) =>
-      semesterStatus === SEMESTER_STATUSES.OPENING ? theme.red : theme.green};
+      semesterStatus === SEMESTER_STATUSES.OPENING
+        ? theme.red
+        : theme.green};
     color: white;
   }
 `;
@@ -646,10 +702,6 @@ const NotFoundContainer = styled.div`
   }
 `;
 
-const StyledButton = styled(Button)`
-  width: 170px;
-  padding: 0;
-`;
 const Filter = styled.div`
   display: flex;
 `;

@@ -33,8 +33,7 @@ interface EditLabUsageModalProps extends ModalProps {
 
 const EditLabUsageModal = (props: EditLabUsageModalProps) => {
   // call hooks
-  const { register, handleSubmit, errors, control } =
-    useForm<LabUsage>();
+  const { handleSubmit, control } = useForm<LabUsage>();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const labUsage = useAppSelector((state) =>
@@ -134,7 +133,6 @@ const EditLabUsageModal = (props: EditLabUsageModalProps) => {
             dispatch(setShowSuccessSnackBar(true));
             props.setShowModal(false);
           } catch (err) {
-            console.log("Failed to edit lab usage", err);
             if (err.response) {
               dispatch(setSnackBarContent(err.response.data.message));
             } else {

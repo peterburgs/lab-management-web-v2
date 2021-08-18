@@ -7,7 +7,6 @@ import {
   REQUEST_STATUSES,
   REQUEST_TYPES,
   ROLES,
-  Semester,
   Teaching,
   User,
 } from "../types/model";
@@ -19,7 +18,6 @@ import {
   FormControl,
 } from "@material-ui/core";
 import { styled as materialStyled } from "@material-ui/styles";
-import SimpleBar from "simplebar-react";
 import Button from "../components/common/Button";
 import CommentComponent from "../components/request-detail-page/Comment";
 import "simplebar/dist/simplebar.min.css";
@@ -35,7 +33,6 @@ import {
   setSnackBarContent,
 } from "../reducers/notificationSlice";
 import useGetAllLabUsages from "../hooks/schedule/useGetAllLabUsages";
-import UsageInfo from "../components/request-detail-page/UsageInfo";
 import useGetAllTeaching from "../hooks/teaching/useGetAllTeachings";
 import useGetAllLabs from "../hooks/lab/useGetAllLabs";
 import _ from "lodash";
@@ -55,7 +52,9 @@ const RequestDetailPage = () => {
   );
 
   const role = useAppSelector((state) => state.auth.verifiedRole);
-  const semesters = useAppSelector((state) => state.semesters.semesters);
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
+  );
   const [users] = useGetAllUsers();
   const [courses] = useGetAllCourses();
   const [labUsages] = useGetAllLabUsages();
@@ -74,7 +73,9 @@ const RequestDetailPage = () => {
         const clonedRequest = _.cloneDeep(request);
         clonedRequest.status = REQUEST_STATUSES.APPROVED;
         setApproveStatus("pending");
-        const actionResult = await dispatch(editRequest(clonedRequest));
+        const actionResult = await dispatch(
+          editRequest(clonedRequest)
+        );
         unwrapResult(actionResult);
 
         // UPDATE LAB USAGE
@@ -90,7 +91,9 @@ const RequestDetailPage = () => {
               labUsage.startPeriod = request.startPeriod;
               labUsage.endPeriod = request.endPeriod;
 
-              const actionResult = await dispatch(editLabUsage(labUsage));
+              const actionResult = await dispatch(
+                editLabUsage(labUsage)
+              );
               unwrapResult(actionResult);
             }
           }
@@ -120,7 +123,9 @@ const RequestDetailPage = () => {
                 isHidden: false,
               };
 
-              const actionResult = await dispatch(newLabUsage(labUsage));
+              const actionResult = await dispatch(
+                newLabUsage(labUsage)
+              );
               unwrapResult(actionResult);
             } else {
               dispatch(setSnackBarContent("Cannot find semester"));
@@ -132,7 +137,6 @@ const RequestDetailPage = () => {
         dispatch(setSnackBarContent("Approve request successfully"));
         dispatch(setShowSuccessSnackBar(true));
       } catch (err) {
-        console.log("Failed to approve request", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {
@@ -149,7 +153,9 @@ const RequestDetailPage = () => {
         const clonedRequest = _.cloneDeep(request);
         clonedRequest.status = REQUEST_STATUSES.DENIED;
         setDenyStatus("pending");
-        const actionResult = await dispatch(editRequest(clonedRequest));
+        const actionResult = await dispatch(
+          editRequest(clonedRequest)
+        );
         unwrapResult(actionResult);
 
         dispatch(setSnackBarContent("Deny request successfully"));
@@ -168,7 +174,9 @@ const RequestDetailPage = () => {
 
   const renderOldUsage = () => {
     if (request && labUsages.length > 0 && courses.length > 0) {
-      const labUsage = labUsages.find((item) => item._id === request.labUsage);
+      const labUsage = labUsages.find(
+        (item) => item._id === request.labUsage
+      );
       if (labUsage) {
         const teaching = teachings.find(
           (item) => item._id === labUsage.teaching
@@ -232,18 +240,22 @@ const RequestDetailPage = () => {
                     value={request.oldWeekNo}
                     label="Week"
                   >
-                    {[...Array(semester.numberOfWeeks)].map((_, i) => (
-                      <MenuItem value={i} key={"weekNo" + i}>
-                        {i}
-                      </MenuItem>
-                    ))}
+                    {[...Array(semester.numberOfWeeks)].map(
+                      (_, i) => (
+                        <MenuItem value={i} key={"weekNo" + i}>
+                          {i}
+                        </MenuItem>
+                      )
+                    )}
                   </Select>
                 </StyledFormControl>
                 <StyledFormControl
                   variant="outlined"
                   style={{ color: "black" }}
                 >
-                  <InputLabel id="olddow-label">Day of week</InputLabel>
+                  <InputLabel id="olddow-label">
+                    Day of week
+                  </InputLabel>
                   <Select
                     inputProps={{ "aria-readonly": true }}
                     labelId="olddow-label"
@@ -263,7 +275,9 @@ const RequestDetailPage = () => {
                   variant="outlined"
                   style={{ color: "black" }}
                 >
-                  <InputLabel id="oldstart-label">Start period</InputLabel>
+                  <InputLabel id="oldstart-label">
+                    Start period
+                  </InputLabel>
                   <Select
                     inputProps={{ "aria-readonly": true }}
                     labelId="oldstart-label"
@@ -281,7 +295,9 @@ const RequestDetailPage = () => {
                   variant="outlined"
                   style={{ color: "black" }}
                 >
-                  <InputLabel id="oldend-label">End period</InputLabel>
+                  <InputLabel id="oldend-label">
+                    End period
+                  </InputLabel>
                   <Select
                     inputProps={{ "aria-readonly": true }}
                     labelId="oldend-label"
@@ -313,22 +329,31 @@ const RequestDetailPage = () => {
           (item) => item._id === request.labUsage
         );
         if (labUsage) {
-          teaching = teachings.find((item) => item._id === labUsage.teaching);
+          teaching = teachings.find(
+            (item) => item._id === labUsage.teaching
+          );
         }
       }
       if (request.type === REQUEST_TYPES.ADD_EXTRA_CLASS) {
-        teaching = teachings.find((item) => item._id === request.teaching);
+        teaching = teachings.find(
+          (item) => item._id === request.teaching
+        );
       }
       if (teaching) {
         const course = (courses as Course[]).find(
           (item) => item._id === teaching!.course
         );
-        const lab = (labs as Lab[]).find((item) => item._id === request.lab);
+        const lab = (labs as Lab[]).find(
+          (item) => item._id === request.lab
+        );
         if (lab && course) {
           return (
             <NewUsage>
               <NewUsageHeader>New Usage</NewUsageHeader>
-              <StyledFormControl variant="outlined" style={{ color: "black" }}>
+              <StyledFormControl
+                variant="outlined"
+                style={{ color: "black" }}
+              >
                 <InputLabel id="oldcourse-label">Course</InputLabel>
                 <Select
                   inputProps={{ "aria-readonly": true }}
@@ -342,7 +367,10 @@ const RequestDetailPage = () => {
                   ))}
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined" style={{ color: "black" }}>
+              <StyledFormControl
+                variant="outlined"
+                style={{ color: "black" }}
+              >
                 <InputLabel id="oldlab-label">Lab</InputLabel>
                 <Select
                   inputProps={{ "aria-readonly": true }}
@@ -356,7 +384,10 @@ const RequestDetailPage = () => {
                   ))}
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined" style={{ color: "black" }}>
+              <StyledFormControl
+                variant="outlined"
+                style={{ color: "black" }}
+              >
                 <InputLabel id="oldweekno-label">Week</InputLabel>
                 <Select
                   inputProps={{ "aria-readonly": true }}
@@ -364,10 +395,15 @@ const RequestDetailPage = () => {
                   value={request.weekNo}
                   label="Week"
                 >
-                  <MenuItem value={request.weekNo}>{request.weekNo}</MenuItem>
+                  <MenuItem value={request.weekNo}>
+                    {request.weekNo}
+                  </MenuItem>
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined" style={{ color: "black" }}>
+              <StyledFormControl
+                variant="outlined"
+                style={{ color: "black" }}
+              >
                 <InputLabel id="olddow-label">Day of week</InputLabel>
                 <Select
                   inputProps={{ "aria-readonly": true }}
@@ -384,8 +420,13 @@ const RequestDetailPage = () => {
                   <MenuItem value={6}>Sunday</MenuItem>
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined" style={{ color: "black" }}>
-                <InputLabel id="oldstart-label">Start period</InputLabel>
+              <StyledFormControl
+                variant="outlined"
+                style={{ color: "black" }}
+              >
+                <InputLabel id="oldstart-label">
+                  Start period
+                </InputLabel>
                 <Select
                   inputProps={{ "aria-readonly": true }}
                   labelId="oldstart-label"
@@ -399,7 +440,10 @@ const RequestDetailPage = () => {
                   ))}
                 </Select>
               </StyledFormControl>
-              <StyledFormControl variant="outlined" style={{ color: "black" }}>
+              <StyledFormControl
+                variant="outlined"
+                style={{ color: "black" }}
+              >
                 <InputLabel id="oldend-label">End period</InputLabel>
                 <Select
                   inputProps={{ "aria-readonly": true }}
@@ -448,13 +492,21 @@ const RequestDetailPage = () => {
                   </StatusBadge>
                   <span>
                     {"Created at " +
-                      new Date(request.updatedAt!.toString()).toDateString() +
+                      new Date(
+                        request.updatedAt!.toString()
+                      ).toDateString() +
                       " " +
-                      new Date(request.updatedAt!.toString()).getHours() +
+                      new Date(
+                        request.updatedAt!.toString()
+                      ).getHours() +
                       ":" +
-                      new Date(request.updatedAt!.toString()).getMinutes() +
+                      new Date(
+                        request.updatedAt!.toString()
+                      ).getMinutes() +
                       ":" +
-                      new Date(request.updatedAt!.toString()).getSeconds() +
+                      new Date(
+                        request.updatedAt!.toString()
+                      ).getSeconds() +
                       " " +
                       `by ${
                         (users as User[]).find(
@@ -468,10 +520,13 @@ const RequestDetailPage = () => {
                   </span>
                 </Info>
                 <RequestDescription>
-                  {request.description ? request.description : "No description"}
+                  {request.description
+                    ? request.description
+                    : "No description"}
                 </RequestDescription>
                 <UsageContainer>
-                  {request.type === REQUEST_TYPES.MODIFY_LAB_USAGE && (
+                  {request.type ===
+                    REQUEST_TYPES.MODIFY_LAB_USAGE && (
                     <>{renderOldUsage()}</>
                   )}
 
@@ -502,10 +557,26 @@ const RequestDetailPage = () => {
             </Header>
             {commentStatus === "pending" ? (
               <SkeletonContainer>
-                <Skeleton variant="rectangular" height={40} animation="wave" />
-                <Skeleton variant="rectangular" height={40} animation="wave" />
-                <Skeleton variant="rectangular" height={40} animation="wave" />
-                <Skeleton variant="rectangular" height={40} animation="wave" />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  animation="wave"
+                />
               </SkeletonContainer>
             ) : commentStatus === "succeeded" ? (
               <CommentListContainer>
@@ -523,7 +594,9 @@ const RequestDetailPage = () => {
                 ))}
               </CommentListContainer>
             ) : (
-              <CommentListContainer>No comments yet</CommentListContainer>
+              <CommentListContainer>
+                No comments yet
+              </CommentListContainer>
             )}
 
             <AddComment request={request._id} />
@@ -531,9 +604,21 @@ const RequestDetailPage = () => {
         </ScrollArea>
       ) : (
         <PageSkeletonContainer>
-          <Skeleton variant="rectangular" height={80} animation="wave" />
-          <Skeleton variant="rectangular" height={250} animation="wave" />
-          <Skeleton variant="rectangular" height={40} animation="wave" />
+          <Skeleton
+            variant="rectangular"
+            height={80}
+            animation="wave"
+          />
+          <Skeleton
+            variant="rectangular"
+            height={250}
+            animation="wave"
+          />
+          <Skeleton
+            variant="rectangular"
+            height={40}
+            animation="wave"
+          />
         </PageSkeletonContainer>
       )}
     </StyledRequestDetailPage>
@@ -644,7 +729,8 @@ const ActionButton = styled(Button)<ActionButtonProps>`
   font-size: 15px;
   padding: 0 0.7rem;
   border: 1px solid
-    ${({ theme, action }) => (action === "approve" ? theme.green : theme.red)};
+    ${({ theme, action }) =>
+      action === "approve" ? theme.green : theme.red};
   &:active {
     background-color: ${({ theme, action }) =>
       action === "approve" ? theme.lightGreen : theme.lightRed};
@@ -666,10 +752,6 @@ const CommentListContainer = styled.div`
   margin-top: 1rem;
   padding-bottom: 0.3rem;
   border-bottom: 1px solid ${({ theme }) => theme.blue};
-`;
-
-const SmallText = styled.div`
-  font-size: 12px;
 `;
 
 const SkeletonContainer = styled.div`

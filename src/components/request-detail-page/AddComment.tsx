@@ -51,7 +51,6 @@ const AddComment = (props: AddCommentProps) => {
         );
         setEditorState(newEditorState);
       } catch (err) {
-        console.log("Failed to create new comment", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

@@ -59,7 +59,6 @@ const CloseAcademicYearModal = (props: ModalProps) => {
           dispatch(setShowSuccessSnackBar(true));
           props.setShowModal(false);
         } catch (error) {
-          console.log("Close academic year failed", error);
           if (error.response) {
             dispatch(setSnackBarContent(error.response.data.message));
           } else {

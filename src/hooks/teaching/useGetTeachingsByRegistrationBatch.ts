@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "../../store";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { getTeachings, resetState } from "../../reducers/teachingSlice";
 import { Registration } from "../../types/model";
-import { useLocation } from "react-router";
 
 const useGetTeachingsByRegistrationBatch = (
   registrations: Registration[],

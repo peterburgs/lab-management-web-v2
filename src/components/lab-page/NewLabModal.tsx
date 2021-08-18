@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { styled as materialStyled } from "@material-ui/styles";
 import Modal from "../common/Modal";
@@ -26,7 +26,9 @@ const NewLabModal = (props: ModalProps) => {
 
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState("idle");
-  const semesters = useAppSelector((state) => state.semesters.semesters);
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
+  );
 
   // handle new course submit
   const onSubmit = async (data: Lab) => {
@@ -53,7 +55,6 @@ const NewLabModal = (props: ModalProps) => {
       dispatch(setSnackBarContent("New lab created"));
       dispatch(setShowSuccessSnackBar(true));
     } catch (err) {
-      console.log("Failed to create new lab", err);
       if (err.response) {
         dispatch(setSnackBarContent(err.response.data.message));
       } else {
@@ -68,8 +69,9 @@ const NewLabModal = (props: ModalProps) => {
 
   return (
     <Modal {...props}>
-      {semesters.filter((item) => item.status === SEMESTER_STATUSES.OPENING)
-        .length > 0 && (
+      {semesters.filter(
+        (item) => item.status === SEMESTER_STATUSES.OPENING
+      ).length > 0 && (
         <div
           style={{
             display: "flex",
@@ -87,8 +89,9 @@ const NewLabModal = (props: ModalProps) => {
               textAlign: "center",
             }}
           >
-            * There is an opening semester. The new labs will not be used for
-            generating schedule but still be accessible for extra classes.
+            * There is an opening semester. The new labs will not be
+            used for generating schedule but still be accessible for
+            extra classes.
           </div>
         </div>
       )}
@@ -108,7 +111,14 @@ const NewLabModal = (props: ModalProps) => {
           error={Boolean(errors.capacity)}
           helperText={errors.capacity && "*This field is required"}
         />
-
+        <StyledTextField
+          label="Description"
+          defaultValue={30}
+          inputRef={register({ required: false })}
+          name="description"
+          error={Boolean(errors.description)}
+          helperText={errors.description && "*This field is required"}
+        />
         <StyledButton
           disabled={status === "pending"}
           loading={status === "pending"}

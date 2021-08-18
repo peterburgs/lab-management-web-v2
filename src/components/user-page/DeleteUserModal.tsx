@@ -40,7 +40,6 @@ const DeleteUserModal = (props: DeleteUserModalProps) => {
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to delete user", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

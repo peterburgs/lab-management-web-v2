@@ -28,7 +28,6 @@ import RequestCard from "../components/request-page/RequestCard";
 import "simplebar/dist/simplebar.min.css";
 import SimpleBar from "simplebar-react";
 import useGetAllRequests from "../hooks/request/useGetAllRequests";
-import { ReactComponent as NothingImage } from "../assets/images/nothing.svg";
 import _ from "lodash";
 import { useAppSelector } from "../store";
 import useGetAllComments from "../hooks/comment/useGetAllComments";
@@ -69,22 +68,29 @@ const dowNum2String = (dow: number) => {
 };
 
 const RequestPage = () => {
-  const [selectedStatus, setSelectedStatus] = useState<REQUEST_STATUSES>(
-    REQUEST_STATUSES.PENDING
-  );
+  const [selectedStatus, setSelectedStatus] =
+    useState<REQUEST_STATUSES>(REQUEST_STATUSES.PENDING);
 
   const [sortBy, setSortBy] = useState<SORT_BY>(null!);
-  const [upperFilteredRequests, setUpperFilterRequests] = useState<Request[]>(
+  const [upperFilteredRequests, setUpperFilterRequests] = useState<
+    Request[]
+  >([]);
+  const [filteredRequests, setFilterRequests] = useState<Request[]>(
     []
   );
-  const [filteredRequests, setFilterRequests] = useState<Request[]>([]);
-  const [roleFilteredRequests, setRoleFilterRequests] = useState<Request[]>([]);
-  const [selectedSemester, setSelectedSemester] = useState<Semester>(null!);
+  const [roleFilteredRequests, setRoleFilterRequests] = useState<
+    Request[]
+  >([]);
+  const [selectedSemester, setSelectedSemester] = useState<Semester>(
+    null!
+  );
   const [academicYearSemesters, setAcademicYearSemesters] = useState<
     Semester[]
   >([]);
 
-  const [selectedYear, setSelectedYear] = useState<AcademicYear>(null!);
+  const [selectedYear, setSelectedYear] = useState<AcademicYear>(
+    null!
+  );
 
   // call hooks
   const requestSearchText = useAppSelector(
@@ -102,18 +108,24 @@ const RequestPage = () => {
   const academicYears = useAppSelector(
     (state) => state.academicYears.academicYears
   );
-  const semesters = useAppSelector((state) => state.semesters.semesters);
+  const semesters = useAppSelector(
+    (state) => state.semesters.semesters
+  );
   const [courses, courseStatus] = useGetAllCourses();
   const [labs, labStatus] = useGetAllLabs();
 
   const academicYearStatus = useAppSelector(
     (state) => state.academicYears.status
   );
-  const semesterStatus = useAppSelector((state) => state.semesters.status);
+  const semesterStatus = useAppSelector(
+    (state) => state.semesters.status
+  );
   const [labUsages, labUsageStatus] =
     useGetLabUsagesBySemester(selectedSemester);
   const role = useAppSelector((state) => state.auth.verifiedRole);
-  const lecturer = useAppSelector((state) => state.auth.verifiedUser?._id);
+  const lecturer = useAppSelector(
+    (state) => state.auth.verifiedUser?._id
+  );
 
   const getUsage = (
     teachingId: string,
@@ -123,19 +135,24 @@ const RequestPage = () => {
     startPeriod: number,
     endPeriod: number
   ) => {
-    const teaching = teachings.filter((item) => item._id === teachingId)[0];
+    const teaching = teachings.filter(
+      (item) => item._id === teachingId
+    )[0];
     const courseName = (courses as Course[]).filter(
       (item) => item._id === teaching.course
     )[0].courseName;
-    const labName = (labs as Lab[]).filter((item) => item._id === lab)[0]
-      .labName;
+    const labName = (labs as Lab[]).filter(
+      (item) => item._id === lab
+    )[0].labName;
     return `Course: ${courseName}\nLab: ${labName}\nWeek: ${week}\n Day of week: ${dowNum2String(
       dayOfWeek
     )}\n Period: ${startPeriod} -> ${endPeriod}`;
   };
 
   const getLecturerName = (teachingId: string) => {
-    const teaching = teachings.filter((item) => item._id === teachingId)[0];
+    const teaching = teachings.filter(
+      (item) => item._id === teachingId
+    )[0];
     const lecturerName = (users as User[]).filter(
       (item) => item._id === teaching.user
     )[0].fullName;
@@ -143,7 +160,9 @@ const RequestPage = () => {
   };
 
   const getLecturerID = (teachingId: string) => {
-    const teaching = teachings.filter((item) => item._id === teachingId)[0];
+    const teaching = teachings.filter(
+      (item) => item._id === teachingId
+    )[0];
     const lecturerID = (users as User[]).filter(
       (item) => item._id === teaching.user
     )[0]._id;
@@ -210,7 +229,8 @@ const RequestPage = () => {
                   (item) =>
                     item._id ===
                     (labUsages as LabUsage[]).filter(
-                      (item) => item._id === (requests[j].labUsage as string)
+                      (item) =>
+                        item._id === (requests[j].labUsage as string)
                     )[0].teaching
                 )[0]._id!,
                 requests[j].oldLab,
@@ -227,7 +247,8 @@ const RequestPage = () => {
                   (item) =>
                     item._id ===
                     (labUsages as LabUsage[]).filter(
-                      (item) => item._id === (requests[j].labUsage as string)
+                      (item) =>
+                        item._id === (requests[j].labUsage as string)
                     )[0].teaching
                 )[0]._id!,
                 requests[j].lab as string,
@@ -258,7 +279,8 @@ const RequestPage = () => {
                   (item) =>
                     item._id ===
                     (labUsages as LabUsage[]).filter(
-                      (item) => item._id === (requests[j].labUsage as string)
+                      (item) =>
+                        item._id === (requests[j].labUsage as string)
                     )[0].teaching
                 )[0]._id!
               )
@@ -270,7 +292,8 @@ const RequestPage = () => {
                   (item) =>
                     item._id ===
                     (labUsages as LabUsage[]).filter(
-                      (item) => item._id === (requests[j].labUsage as string)
+                      (item) =>
+                        item._id === (requests[j].labUsage as string)
                     )[0].teaching
                 )[0]._id!
               )
@@ -280,7 +303,9 @@ const RequestPage = () => {
       }
       let lastRow: { [index: string]: string } = {};
       lastRow[headers[0]] = "Exported date";
-      lastRow[headers[1]] = moment(new Date()).format("DD:MM:YYYY hh:mm:ss A");
+      lastRow[headers[1]] = moment(new Date()).format(
+        "DD:MM:YYYY hh:mm:ss A"
+      );
       lastRow[headers[2]] = "";
       lastRow[headers[3]] = "";
       lastRow[headers[4]] = "";
@@ -289,12 +314,10 @@ const RequestPage = () => {
       lastRow[headers[7]] = "";
       rows.push(lastRow);
       const ws = XLSX.utils.json_to_sheet(rows);
-      console.log(ws);
       ws["!rows"] = hsrows;
       ws["!cols"] = wscols;
       for (let i = 0; i <= requests.length + 1; i++) {
         for (let j = 1; j <= headers.length; j++) {
-          console.log(`${(j + 9).toString(36).toUpperCase()}${i + 1}`);
           if (i === 0) {
             ws[`${(j + 9).toString(36).toUpperCase()}${i + 1}`].s = {
               font: {
@@ -397,11 +420,14 @@ const RequestPage = () => {
                   pendingAt={request.updatedAt}
                   requestId={request._id}
                   user={
-                    (users as User[]).find((user) => user._id === request.user)!
+                    (users as User[]).find(
+                      (user) => user._id === request.user
+                    )!
                   }
                   numberOfComments={
-                    comments.filter((item) => item.request === request._id)
-                      .length
+                    comments.filter(
+                      (item) => item.request === request._id
+                    ).length
                   }
                 />
               );
@@ -415,11 +441,14 @@ const RequestPage = () => {
                   approvedAt={request.updatedAt}
                   requestId={request._id}
                   user={
-                    (users as User[]).find((user) => user._id === request.user)!
+                    (users as User[]).find(
+                      (user) => user._id === request.user
+                    )!
                   }
                   numberOfComments={
-                    comments.filter((item) => item.request === request._id)
-                      .length
+                    comments.filter(
+                      (item) => item.request === request._id
+                    ).length
                   }
                 />
               );
@@ -433,10 +462,14 @@ const RequestPage = () => {
                 deniedAt={request.updatedAt}
                 requestId={request._id}
                 user={
-                  (users as User[]).find((user) => user._id === request.user)!
+                  (users as User[]).find(
+                    (user) => user._id === request.user
+                  )!
                 }
                 numberOfComments={
-                  comments.filter((item) => item.request === request._id).length
+                  comments.filter(
+                    (item) => item.request === request._id
+                  ).length
                 }
               />
             );
@@ -449,8 +482,8 @@ const RequestPage = () => {
   // initialize
   useEffect(() => {
     if (academicYears.length > 0) {
-      const latestAcademicYear = _.cloneDeep(academicYears).sort((a, b) =>
-        moment(b.createdAt).diff(moment(a.createdAt))
+      const latestAcademicYear = _.cloneDeep(academicYears).sort(
+        (a, b) => moment(b.createdAt).diff(moment(a.createdAt))
       )[0];
       setSelectedYear(latestAcademicYear);
 
@@ -459,8 +492,9 @@ const RequestPage = () => {
       );
       setAcademicYearSemesters(acaSemesters);
       if (
-        acaSemesters.filter((item) => item.status === SEMESTER_STATUSES.OPENING)
-          .length > 0
+        acaSemesters.filter(
+          (item) => item.status === SEMESTER_STATUSES.OPENING
+        ).length > 0
       ) {
         setSelectedSemester(
           acaSemesters.filter(
@@ -468,7 +502,9 @@ const RequestPage = () => {
           )[0]!
         );
       } else {
-        setSelectedSemester(acaSemesters.find((item) => item.index === 1)!);
+        setSelectedSemester(
+          acaSemesters.find((item) => item.index === 1)!
+        );
       }
     }
   }, [academicYears, semesters]);
@@ -502,29 +538,33 @@ const RequestPage = () => {
 
   // upper filter requests
   useEffect(() => {
-    if (registrations.length > 0 && teachings.length > 0 && selectedSemester) {
-      let filteredRequests = (roleFilteredRequests as Request[]).filter(
-        (request) => {
-          if (request.type === REQUEST_TYPES.MODIFY_LAB_USAGE) {
-            const filteredLabUsages = (labUsages as LabUsage[]).filter(
-              (item) => item.semester === selectedSemester._id
-            );
+    if (
+      registrations.length > 0 &&
+      teachings.length > 0 &&
+      selectedSemester
+    ) {
+      let filteredRequests = (
+        roleFilteredRequests as Request[]
+      ).filter((request) => {
+        if (request.type === REQUEST_TYPES.MODIFY_LAB_USAGE) {
+          const filteredLabUsages = (labUsages as LabUsage[]).filter(
+            (item) => item.semester === selectedSemester._id
+          );
 
-            return filteredLabUsages.filter(
-              (item) => item._id === request.labUsage
-            ).length;
-          } else {
-            const teaching = teachings.filter(
-              (item) => item._id === request.teaching
-            )[0];
+          return filteredLabUsages.filter(
+            (item) => item._id === request.labUsage
+          ).length;
+        } else {
+          const teaching = teachings.filter(
+            (item) => item._id === request.teaching
+          )[0];
 
-            const reg = registrations.filter(
-              (item) => item._id === teaching.registration
-            )[0];
-            return selectedSemester._id === reg.semester;
-          }
+          const reg = registrations.filter(
+            (item) => item._id === teaching.registration
+          )[0];
+          return selectedSemester._id === reg.semester;
         }
-      );
+      });
       setUpperFilterRequests(filteredRequests);
     }
   }, [
@@ -537,10 +577,14 @@ const RequestPage = () => {
 
   // filter requests
   useEffect(() => {
-    let filteredRequests = (upperFilteredRequests as Request[]).filter(
+    let filteredRequests = (
+      upperFilteredRequests as Request[]
+    ).filter(
       (request) =>
         request.status === selectedStatus &&
-        request.title.toLowerCase().includes(requestSearchText.toLowerCase())
+        request.title
+          .toLowerCase()
+          .includes(requestSearchText.toLowerCase())
     );
 
     if (sortBy === SORT_BY.NEWEST) {
@@ -555,7 +599,12 @@ const RequestPage = () => {
       );
     }
     setFilterRequests(filteredRequests);
-  }, [upperFilteredRequests, selectedStatus, requestSearchText, sortBy]);
+  }, [
+    upperFilteredRequests,
+    selectedStatus,
+    requestSearchText,
+    sortBy,
+  ]);
 
   return (
     <StyledRequestPage>
@@ -576,7 +625,9 @@ const RequestPage = () => {
           <Toolbar>
             <UpperFilter>
               <StyledFormControl>
-                <InputLabel id="academic-year-label">Years</InputLabel>
+                <InputLabel id="academic-year-label">
+                  Years
+                </InputLabel>
                 <Select
                   labelId="academic-year-label"
                   id="academic-year-select"
@@ -602,7 +653,9 @@ const RequestPage = () => {
                 <Select
                   labelId="semester-label"
                   id="semester-select"
-                  value={selectedSemester ? selectedSemester._id : null}
+                  value={
+                    selectedSemester ? selectedSemester._id : null
+                  }
                   onChange={(e) =>
                     setSelectedSemester(
                       academicYearSemesters.filter(
@@ -622,7 +675,10 @@ const RequestPage = () => {
             </UpperFilter>
             <Action>
               {role === ROLES.ADMIN && (
-                <StyledButton onClick={exportRequestCSV} icon={<GetAppIcon />}>
+                <StyledButton
+                  onClick={exportRequestCSV}
+                  icon={<GetAppIcon />}
+                >
                   Export requests
                 </StyledButton>
               )}
@@ -631,43 +687,61 @@ const RequestPage = () => {
           <Filterbar>
             <StatusContainer>
               <SelectStatusButton
-                isSelected={selectedStatus === REQUEST_STATUSES.PENDING}
-                onClick={() => handleSelectStatus(REQUEST_STATUSES.PENDING)}
+                isSelected={
+                  selectedStatus === REQUEST_STATUSES.PENDING
+                }
+                onClick={() =>
+                  handleSelectStatus(REQUEST_STATUSES.PENDING)
+                }
               >
                 <HourglassEmptyOutlinedIcon fontSize="small" />
                 <span>
                   {`${
                     upperFilteredRequests.filter(
-                      (request) => request.status === REQUEST_STATUSES.PENDING
+                      (request) =>
+                        request.status === REQUEST_STATUSES.PENDING
                     ).length
                   } pending`}
                 </span>
               </SelectStatusButton>
               <SelectStatusButton
-                isSelected={selectedStatus === REQUEST_STATUSES.APPROVED}
-                onClick={() => handleSelectStatus(REQUEST_STATUSES.APPROVED)}
+                isSelected={
+                  selectedStatus === REQUEST_STATUSES.APPROVED
+                }
+                onClick={() =>
+                  handleSelectStatus(REQUEST_STATUSES.APPROVED)
+                }
               >
                 <CheckIcon fontSize="small" />
                 <span>{`${
                   upperFilteredRequests.filter(
-                    (request) => request.status === REQUEST_STATUSES.APPROVED
+                    (request) =>
+                      request.status === REQUEST_STATUSES.APPROVED
                   ).length
                 } approved`}</span>
               </SelectStatusButton>
               <SelectStatusButton
-                isSelected={selectedStatus === REQUEST_STATUSES.DENIED}
-                onClick={() => handleSelectStatus(REQUEST_STATUSES.DENIED)}
+                isSelected={
+                  selectedStatus === REQUEST_STATUSES.DENIED
+                }
+                onClick={() =>
+                  handleSelectStatus(REQUEST_STATUSES.DENIED)
+                }
               >
                 <CloseIcon fontSize="small" />
                 <span>{`${
                   upperFilteredRequests.filter(
-                    (request) => request.status === REQUEST_STATUSES.DENIED
+                    (request) =>
+                      request.status === REQUEST_STATUSES.DENIED
                   ).length
                 } denied`}</span>
               </SelectStatusButton>
             </StatusContainer>
             <Filter isAdmin={role === ROLES.ADMIN}>
-              <FormControl variant="standard" style={{ minWidth: 120 }}>
+              <FormControl
+                variant="standard"
+                style={{ minWidth: 120 }}
+              >
                 <InputLabel id="sort-by-label">Sort By</InputLabel>
                 <Select
                   margin="none"
@@ -732,7 +806,8 @@ interface FilterProps {
 
 const Filter = styled.div<FilterProps>`
   display: grid;
-  grid-template-columns: ${({ isAdmin }) => (isAdmin ? "1fr" : "1fr")};
+  grid-template-columns: ${({ isAdmin }) =>
+    isAdmin ? "1fr" : "1fr"};
   justify-content: center;
   align-items: center;
   column-gap: 1rem;

@@ -28,7 +28,7 @@ import { useParams } from "react-router";
 
 const EditLabModal = (props: ModalProps) => {
   // call hooks
-  const { register, handleSubmit, errors, control } = useForm<Lab>();
+  const { register, handleSubmit, errors } = useForm<Lab>();
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
 
@@ -69,7 +69,6 @@ const EditLabModal = (props: ModalProps) => {
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to edit lab", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {
@@ -110,6 +109,17 @@ const EditLabModal = (props: ModalProps) => {
               error={Boolean(errors.capacity)}
               helperText={
                 errors.capacity && "*This field is required"
+              }
+            />
+
+            <StyledTextField
+              label="Description"
+              inputRef={register({ required: false })}
+              defaultValue={lab.description}
+              name="description"
+              error={Boolean(errors.description)}
+              helperText={
+                errors.description && "*This field is required"
               }
             />
 

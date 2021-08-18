@@ -52,7 +52,6 @@ const CloseRegistrationModal = (props: ModalProps) => {
         props.setShowModal(false);
       } catch (err) {
         setStatus("idle");
-        console.log("Failed to close registration", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

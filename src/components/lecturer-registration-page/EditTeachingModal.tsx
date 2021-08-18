@@ -65,7 +65,6 @@ const EditTeachingModal = (props: ModalProps) => {
 
             clonedTeaching.uId = clonedTeaching.user as string;
 
-            console.log(clonedTeaching);
 
             setStatus("pending");
             const actionResult = await dispatch(editTeaching(clonedTeaching));
@@ -76,7 +75,6 @@ const EditTeachingModal = (props: ModalProps) => {
             dispatch(setShowSuccessSnackBar(true));
             props.setShowModal(false);
           } catch (err) {
-            console.log("Failed to edit teaching", err);
             if (err.response) {
               dispatch(setSnackBarContent(err.response.data.message));
             } else {

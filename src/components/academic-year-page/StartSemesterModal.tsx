@@ -85,7 +85,6 @@ const StartSemesterModal = (props: ModalProps) => {
           dispatch(setShowSuccessSnackBar(true));
           props.setShowModal(false);
         } catch (error) {
-          console.log("Failed to start semester", error);
           if (error.response) {
             dispatch(setSnackBarContent(error.response.data.message));
           } else {

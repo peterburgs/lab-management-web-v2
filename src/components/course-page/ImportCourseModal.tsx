@@ -11,7 +11,6 @@ import { Course, COURSE_TYPES } from "../../types/model";
 // import reducers
 import {
   createBulkOfCourses,
-  newCourse,
   resetState,
 } from "../../reducers/courseSlice";
 import {
@@ -20,7 +19,7 @@ import {
   setSnackBarContent,
 } from "../../reducers/notificationSlice";
 // import hooks
-import { useAppDispatch, useAppSelector } from "../../store";
+import { useAppDispatch } from "../../store";
 
 const ImportCourseModal = (props: ModalProps) => {
   const dispatch = useAppDispatch();
@@ -39,7 +38,13 @@ const ImportCourseModal = (props: ModalProps) => {
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let data = XLSX.utils.sheet_to_json(sheet);
 
-      const attrs = ["#", "course id", "course name", "credits", "course type"];
+      const attrs = [
+        "#",
+        "course id",
+        "course name",
+        "credits",
+        "course type",
+      ];
 
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
@@ -57,7 +62,6 @@ const ImportCourseModal = (props: ModalProps) => {
           attrs.length !==
           Object.keys(item as { [index: string]: string }).length
         ) {
-          console.log("62");
           dispatch(
             setSnackBarContent(
               `${index}/${data.length} courses are ACCEPTED. ${
@@ -96,20 +100,19 @@ const ImportCourseModal = (props: ModalProps) => {
         courses.push(course);
       }
 
-      console.log(courses);
-
       if (courses.length > 0) {
         //send data to server
         setStatus("pending");
         try {
-          const actionResult = await dispatch(createBulkOfCourses(courses));
+          const actionResult = await dispatch(
+            createBulkOfCourses(courses)
+          );
           unwrapResult(actionResult);
           dispatch(resetState());
           dispatch(setShowErrorSnackBar(false));
           dispatch(setSnackBarContent("New courses created"));
           dispatch(setShowSuccessSnackBar(true));
         } catch (err) {
-          console.log("Failed to create courses", err);
           if (err.response) {
             dispatch(setSnackBarContent(err.response.data.message));
           } else {
@@ -227,7 +230,8 @@ const SubmitButton = styled(Button)`
   background-color: ${({ disabled, theme }) =>
     disabled ? theme.grey : theme.veryLightBlue};
   box-shadow: none;
-  color: ${({ disabled, theme }) => (disabled ? theme.darkGrey : theme.blue)};
+  color: ${({ disabled, theme }) =>
+    disabled ? theme.darkGrey : theme.blue};
   font-weight: 500;
   font-size: 18px;
   margin-top: 1rem;

@@ -45,7 +45,6 @@ const NewCourseModal = (props: ModalProps) => {
       dispatch(setSnackBarContent("New course created"));
       dispatch(setShowSuccessSnackBar(true));
     } catch (err) {
-      console.log("Failed to create new course", err);
       if (err.response) {
         dispatch(setSnackBarContent(err.response.data.message));
       } else {

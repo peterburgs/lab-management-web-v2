@@ -19,12 +19,7 @@ import { generateSchedule } from "../../reducers/scheduleSlice";
 // import hooks
 import { useAppDispatch, useAppSelector } from "../../store";
 import useGetAllTeachings from "../../hooks/teaching/useGetAllTeachings";
-import {
-  Teaching,
-  Registration,
-  User,
-  ROLES,
-} from "../../types/model";
+import { Registration, User, ROLES } from "../../types/model";
 import useGetAllUsers from "../../hooks/user/useGetAllUsers";
 import { resetState as resetSemesterState } from "../../reducers/semesterSlice";
 
@@ -72,7 +67,6 @@ const GenerateScheduleModal = (props: ModalProps) => {
             );
             dispatch(setShowSuccessSnackBar(true));
           } catch (err) {
-            console.log("Failed to generate schedule", err);
             if (err.response) {
               dispatch(setSnackBarContent(err.response.data.message));
             } else {

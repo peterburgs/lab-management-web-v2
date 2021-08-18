@@ -5,7 +5,6 @@ import {
 } from "@reduxjs/toolkit";
 import { ROLES, User } from "../types/model";
 import { nodeAPI } from "../api";
-import _ from "lodash";
 import { AppDispatch } from "../store";
 
 interface AuthState {

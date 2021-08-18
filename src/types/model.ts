@@ -115,6 +115,7 @@ export type Lab = {
   labName: string;
   capacity: number;
   isAvailableForCurrentUsing: boolean;
+  description?: string;
   createdAt?: Date;
   updatedAt?: Date;
   isHidden: boolean;

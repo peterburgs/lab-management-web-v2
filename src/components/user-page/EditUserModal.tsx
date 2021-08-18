@@ -47,7 +47,6 @@ const EditUserModal = (props: ModalProps) => {
           ..._.cloneDeep(user),
           ...data,
         };
-        console.log(clonedUser);
 
         setStatus("pending");
         const actionResult = await dispatch(editUser(clonedUser));
@@ -58,7 +57,6 @@ const EditUserModal = (props: ModalProps) => {
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        console.log("Failed to edit user", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

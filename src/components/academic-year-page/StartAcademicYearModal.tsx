@@ -33,7 +33,6 @@ const StartAcademicYearModal = (props: ModalProps) => {
     try {
       data.isOpening = true;
       data.isHidden = false;
-      console.log(data);
       setStatus("pending");
       const actionResult = await dispatch(startAcademicYear(data));
 
@@ -59,7 +58,6 @@ const StartAcademicYearModal = (props: ModalProps) => {
       dispatch(setShowSuccessSnackBar(true));
       props.setShowModal(false);
     } catch (err) {
-      console.log("Failed to start academic year", err);
       if (err.response) {
         dispatch(setSnackBarContent(err.response.data.message));
       } else {

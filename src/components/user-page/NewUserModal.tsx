@@ -38,7 +38,6 @@ const NewUserModal = (props: ModalProps) => {
         data.roles = selectedRoles.map((role) => {
           return role._id === "0" ? ROLES.ADMIN : ROLES.LECTURER;
         });
-        console.log(data);
         setStatus("pending");
         const actionResult = await dispatch(newUser(data));
         unwrapResult(actionResult);
@@ -46,7 +45,6 @@ const NewUserModal = (props: ModalProps) => {
         dispatch(setSnackBarContent("New user created"));
         dispatch(setShowSuccessSnackBar(true));
       } catch (err) {
-        console.log("Failed to create new user", err);
         if (err.response) {
           dispatch(setSnackBarContent(err.response.data.message));
         } else {

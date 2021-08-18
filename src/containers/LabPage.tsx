@@ -90,6 +90,7 @@ const LabPage = () => {
       "#": string;
       "Lab name": string;
       Capacity: number | string;
+      Description: string;
     }[] = (labs as Lab[]).map((lab, i) => {
       return {
         "#": String(i + 1),
@@ -102,6 +103,7 @@ const LabPage = () => {
       "#": "Exported date",
       "Lab name": moment(new Date()).format("DD:MM:YYYY hh:mm:ss A"),
       Capacity: "",
+      Description: "",
     });
 
     const fileType =
@@ -190,7 +192,7 @@ const LabPage = () => {
       },
       {
         Header: "Description",
-        accessor: "capacity" as const,
+        accessor: "description" as const,
       },
       {
         Header: "",
@@ -419,6 +421,9 @@ const AvailableBadge = styled.div`
 
 const Total = styled.div`
   font-size: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export default LabPage;

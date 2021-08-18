@@ -371,7 +371,7 @@ const SkeletonContainer = styled.div`
 const Toolbar = styled.div`
   padding-top: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   box-sizing: border-box;
 
   @media (max-width: 600px) {
@@ -415,6 +415,9 @@ const TableContainer = styled.div`
 
 const Total = styled.div`
   font-size: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ImportPanelContainer = styled.div`

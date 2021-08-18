@@ -472,7 +472,7 @@ const RegistrationPage = () => {
                 )!
               }
             />
-            <Total>Total:&nbsp;{teachings.length}</Total>
+            <Total>Total teachings:&nbsp;{teachings.length}</Total>
             <TableContainer>{renderTable()}</TableContainer>
           </>
         );
@@ -626,6 +626,7 @@ const NotFoundContainer = styled.div`
 
 const Total = styled.div`
   font-size: 13px;
+  margin-top: 1rem;
 `;
 
 export default RegistrationPage;

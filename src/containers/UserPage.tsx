@@ -218,6 +218,7 @@ const UserPage = () => {
       />
       <StyledUserPage>
         <Toolbar>
+          <Total>Total:&nbsp;{users.length}</Total>
           <Action>
             {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>
@@ -257,7 +258,7 @@ const SkeletonContainer = styled.div`
 const Toolbar = styled.div`
   padding-top: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   box-sizing: border-box;
 
   @media (max-width: 600px) {
@@ -311,4 +312,12 @@ const AvailableBadge = styled.div`
   font-weight: 600;
   border-radius: 10px;
 `;
+
+const Total = styled.div`
+  font-size: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 export default UserPage;

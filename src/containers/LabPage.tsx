@@ -109,7 +109,7 @@ const LabPage = () => {
     const fileType =
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const fileExtension = ".xlsx";
-    let wscols = [{ wch: 30 }, { wch: 30 }, { wch: 30 }];
+    let wscols = [{ wch: 30 }, { wch: 30 }, { wch: 30 }, { wch: 30 }];
 
     let hsrows: { hpt: number }[] = (labs as Lab[]).map((_, __) => {
       return {
@@ -285,7 +285,7 @@ const LabPage = () => {
       />
       <StyledLabPage>
         <Toolbar>
-          <Total>Total:&nbsp;{labs.length}</Total>
+          <Total>Total labs:&nbsp;{labs.length}</Total>
           <Action isAdmin={role === ROLES.ADMIN}>
             {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>

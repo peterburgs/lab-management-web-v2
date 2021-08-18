@@ -218,7 +218,7 @@ const UserPage = () => {
       />
       <StyledUserPage>
         <Toolbar>
-          <Total>Total:&nbsp;{users.length}</Total>
+          <Total>Total users:&nbsp;{users.length}</Total>
           <Action>
             {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>

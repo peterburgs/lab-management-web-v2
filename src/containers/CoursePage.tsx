@@ -307,7 +307,7 @@ const CoursePage = () => {
       />
       <StyledCoursePage>
         <Toolbar>
-          <Total>Total:&nbsp;{courses.length}</Total>
+          <Total>Total courses:&nbsp;{courses.length}</Total>
           <Action isAdmin={role === ROLES.ADMIN}>
             {/* <Tooltip title="Refresh table data">
               <IconButtonContainer>

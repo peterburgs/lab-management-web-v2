@@ -43,8 +43,6 @@ const ImportLabModal = (props: ModalProps) => {
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
       let data = XLSX.utils.sheet_to_json(sheet);
 
-      const attrs = ["#", "lab name", "capacity"];
-
       for (let index = 0; index < data.length; index++) {
         const item = data[index];
 
@@ -61,27 +59,10 @@ const ImportLabModal = (props: ModalProps) => {
         let lab: Lab = {
           labName: "",
           capacity: 0,
+          description: "",
           isAvailableForCurrentUsing: isAvailableForCurrentUsing,
           isHidden: false,
         };
-
-        // check if right format
-        if (
-          attrs.length !==
-          Object.keys(item as { [index: string]: string }).length
-        ) {
-          dispatch(
-            setSnackBarContent(
-              `${index}/${data.length} labs are ACCEPTED. ${
-                data.length - index
-              }/${data.length} are invalid and will be dropped.`
-            )
-          );
-          dispatch(setShowErrorSnackBar(true));
-          break;
-        }
-
-        lab.description = "";
 
         for (let [key, value] of Object.entries(
           item as { [index: string]: string }
@@ -195,11 +176,6 @@ const ImportLabModal = (props: ModalProps) => {
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-`;
-
-const ModalText = styled.div`
-  font-size: 13px;
-  margin-bottom: 1rem;
 `;
 
 const InputFile = styled.input`

@@ -44,6 +44,9 @@ const NewLabModal = (props: ModalProps) => {
 
     data.isHidden = false;
     data.isAvailableForCurrentUsing = isAvailableForCurrentUsing;
+    if (!data.description) {
+      data.description = "";
+    }
 
     data.labName = data.labName.trim();
 

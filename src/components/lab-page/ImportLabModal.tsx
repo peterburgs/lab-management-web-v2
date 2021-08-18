@@ -81,6 +81,8 @@ const ImportLabModal = (props: ModalProps) => {
           break;
         }
 
+        lab.description = "";
+
         for (let [key, value] of Object.entries(
           item as { [index: string]: string }
         )) {

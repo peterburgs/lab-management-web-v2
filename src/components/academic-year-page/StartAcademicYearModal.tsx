@@ -87,14 +87,14 @@ const StartAcademicYearModal = (props: ModalProps) => {
       </div>
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <StyledTextField
-          label="Name"
+          label="Academic year"
           inputRef={register({ required: true })}
           name="name"
           defaultValue={`${moment(new Date()).year()} - ${
             Number(moment(new Date()).year()) + 1
           }`}
           error={Boolean(errors.name)}
-          helperText={errors.name && "*This field is required"}
+          helperText={errors.name ? "*This field is required" : "Format: [start year] - [end year]"}
         />
         <Controller
           name="startDate"

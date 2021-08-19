@@ -113,8 +113,8 @@ const ImportCourseModal = (props: ModalProps) => {
           dispatch(setSnackBarContent("New courses created"));
           dispatch(setShowSuccessSnackBar(true));
         } catch (err) {
-          if (err.response) {
-            dispatch(setSnackBarContent(err.response.data.message));
+          if (err.message) {
+            dispatch(setSnackBarContent(err.message));
           } else {
             dispatch(setSnackBarContent("Failed to create courses"));
           }

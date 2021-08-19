@@ -96,8 +96,7 @@ const ImportLabModal = (props: ModalProps) => {
           dispatch(setSnackBarContent("New labs created"));
           dispatch(setShowSuccessSnackBar(true));
         } catch (err) {
-          console.log(err);
-          dispatch(setSnackBarContent(err.response));
+          dispatch(setSnackBarContent(err.message));
 
           dispatch(setShowErrorSnackBar(true));
         } finally {

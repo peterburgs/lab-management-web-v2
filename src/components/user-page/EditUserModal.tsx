@@ -57,8 +57,8 @@ const EditUserModal = (props: ModalProps) => {
         dispatch(setShowSuccessSnackBar(true));
         props.setShowModal(false);
       } catch (err) {
-        if (err.response) {
-          dispatch(setSnackBarContent(err.response.data.message));
+        if (err.message) {
+          dispatch(setSnackBarContent(err.message));
         } else {
           dispatch(setSnackBarContent("Failed to edit user"));
         }

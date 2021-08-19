@@ -22,6 +22,7 @@ import useGetAllTeachings from "../../hooks/teaching/useGetAllTeachings";
 import { Registration, User, ROLES } from "../../types/model";
 import useGetAllUsers from "../../hooks/user/useGetAllUsers";
 import { resetState as resetSemesterState } from "../../reducers/semesterSlice";
+import { editRegistration } from "../../reducers/registrationSlice";
 
 const GenerateScheduleModal = (props: ModalProps) => {
   const { handleSubmit } = useForm();
@@ -43,47 +44,59 @@ const GenerateScheduleModal = (props: ModalProps) => {
 
   const onSubmit = async () => {
     if (latestRegistration) {
-      if (!latestRegistration.isOpening) {
-        if (
-          teachings.filter(
-            (teaching) =>
-              teaching.registration === latestRegistration._id
-          ).length > 0
-        ) {
-          try {
-            setStatus("pending");
-            const actionResult = await dispatch(
-              generateSchedule({
-                registration: latestRegistration._id,
-              })
-            );
-
-            unwrapResult(actionResult);
-
-            dispatch(resetSemesterState());
-
-            dispatch(
-              setSnackBarContent("Generate schedule successfully")
-            );
-            dispatch(setShowSuccessSnackBar(true));
-          } catch (err) {
-            if (err.message) {
-              dispatch(setSnackBarContent(err.message));
-            } else {
-              dispatch(
-                setSnackBarContent("Failed to generate schedule")
+      if (latestRegistration.isGenerable) {
+        if (!latestRegistration.isOpening) {
+          if (
+            teachings.filter(
+              (teaching) =>
+                teaching.registration === latestRegistration._id
+            ).length > 0
+          ) {
+            try {
+              setStatus("pending");
+              const actionResult = await dispatch(
+                generateSchedule({
+                  registration: latestRegistration._id,
+                })
               );
+
+              latestRegistration.isGenerable = false;
+              await dispatch(editRegistration(latestRegistration));
+
+              unwrapResult(actionResult);
+
+              dispatch(resetSemesterState());
+
+              dispatch(
+                setSnackBarContent("Generate schedule successfully")
+              );
+              dispatch(setShowSuccessSnackBar(true));
+            } catch (err) {
+              if (err.message) {
+                dispatch(setSnackBarContent(err.message));
+              } else {
+                dispatch(
+                  setSnackBarContent("Failed to generate schedule")
+                );
+              }
+              dispatch(setShowErrorSnackBar(true));
+            } finally {
+              setStatus("idle");
+              props.setShowModal(false);
             }
+          } else {
             dispatch(setShowErrorSnackBar(true));
-          } finally {
-            setStatus("idle");
-            props.setShowModal(false);
+            dispatch(
+              setSnackBarContent(
+                "Cannot create schedule since no teachings found."
+              )
+            );
           }
         } else {
           dispatch(setShowErrorSnackBar(true));
           dispatch(
             setSnackBarContent(
-              "Cannot create schedule since no teachings found."
+              "A registration is opening. Cannot create schedule"
             )
           );
         }
@@ -91,7 +104,7 @@ const GenerateScheduleModal = (props: ModalProps) => {
         dispatch(setShowErrorSnackBar(true));
         dispatch(
           setSnackBarContent(
-            "A registration is opening. Cannot create schedule"
+            "This batch already generated a schedule"
           )
         );
       }

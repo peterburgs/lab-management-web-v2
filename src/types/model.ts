@@ -79,6 +79,7 @@ export type Registration = {
   semester: string | Semester;
   updatedAt: Date;
   createdAt: Date;
+  isGenerable: boolean;
   isHidden: boolean;
 };
 

@@ -61,6 +61,7 @@ const OpenRegistrationModal = (props: OpenRegistrationModalProps) => {
       try {
         data.batch = registrations.length + 1;
         data.isOpening = true;
+        data.isGenerable = true;
         data.isHidden = false;
         data.semester = openSemester._id!;
         setStatus("pending");

@@ -84,6 +84,7 @@ export const createBulkOfLabs = createAsyncThunk<
     );
     return data as { labs: Lab[]; message: string };
   } catch (err) {
+    console.log(err.message);
     return thunkApi.rejectWithValue(
       err.response.data as { labs: Lab[]; message: string }
     );

@@ -276,10 +276,10 @@ const AttendancePage = () => {
       "Course",
       "Lab",
       "Period",
-      "Check in",
-      "Check out",
       "Lecturer",
       "Lecturer ID",
+      "Check in",
+      "Check out",
     ];
 
     // loop through week
@@ -329,17 +329,7 @@ const AttendancePage = () => {
         row[
           headers[3]
         ] = `${labUsagesByWeek[j].startPeriod} - ${labUsagesByWeek[j].endPeriod}`;
-        row[headers[4]] = labUsagesByWeek[j].checkInAt
-          ? moment(new Date(labUsagesByWeek[j].checkInAt!)).format(
-              "DD/MM/YYYY h:m:s A"
-            )
-          : "pending";
-        row[headers[5]] = labUsagesByWeek[j].checkInAt
-          ? moment(new Date(labUsagesByWeek[j].checkOutAt!)).format(
-              "DD/MM/YYYY h:m:s A"
-            )
-          : "pending";
-        row[headers[6]] =
+        row[headers[4]] =
           users &&
           teachings.find(
             (teaching) => teaching._id === labUsagesByWeek[j].teaching
@@ -353,7 +343,7 @@ const AttendancePage = () => {
                   )!.user
               )!.fullName
             : "";
-        row[headers[7]] =
+        row[headers[5]] =
           users &&
           teachings.find(
             (teaching) => teaching._id === labUsagesByWeek[j].teaching
@@ -367,6 +357,16 @@ const AttendancePage = () => {
                   )!.user
               )!._id
             : "";
+        row[headers[6]] = labUsagesByWeek[j].checkInAt
+          ? moment(new Date(labUsagesByWeek[j].checkInAt!)).format(
+              "DD/MM/YYYY h:m:s A"
+            )
+          : "pending";
+        row[headers[7]] = labUsagesByWeek[j].checkInAt
+          ? moment(new Date(labUsagesByWeek[j].checkOutAt!)).format(
+              "DD/MM/YYYY h:m:s A"
+            )
+          : "pending";
 
         rows.push(row);
       }
@@ -482,6 +482,14 @@ const AttendancePage = () => {
         accessor: "period" as const,
       },
       {
+        Header: "Lecturer",
+        accessor: "lecturer" as const,
+      },
+      {
+        Header: "Lecturer ID",
+        accessor: "lecturerId" as const,
+      },
+      {
         Header: "Check in at",
         accessor: "checkIn" as const,
         disableSortBy: true,
@@ -492,14 +500,6 @@ const AttendancePage = () => {
         accessor: "checkOut" as const,
         disableSortBy: true,
         width: 150,
-      },
-      {
-        Header: "Lecturer",
-        accessor: "lecturer" as const,
-      },
-      {
-        Header: "Lecturer ID",
-        accessor: "lecturerId" as const,
       },
     ];
 
